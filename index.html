@@ -1,966 +1,1836 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" x-data="app()" x-init="init()" :data-theme="currentTheme">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BeamBlade</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SnapSniper — Username Sniper Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-:root { --cyan: #22d3ee; --violet: #a855f7; --bg: #070b17; --card: rgba(13,17,30,0.45); --border: rgba(255,255,255,0.06); --text: #d1d5e0; --muted: #7b7f93; }
-body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-#bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.25; animation: blobFloat 20s infinite ease-in-out; }
-.blob:nth-child(1) { width: 600px; height: 600px; background: var(--cyan); top: -10%; left: -10%; }
-.blob:nth-child(2) { width: 500px; height: 500px; background: var(--violet); bottom: -15%; right: -5%; animation-delay: -7s; }
-.blob:nth-child(3) { width: 400px; height: 400px; background: var(--cyan); bottom: 40%; right: 30%; animation-delay: -14s; opacity: 0.15; }
-@keyframes blobFloat { 0%,100% { transform: translate(0,0) scale(1); } 25% { transform: translate(60px,-40px) scale(1.1); } 50% { transform: translate(-30px,60px) scale(0.95); } 75% { transform: translate(40px,40px) scale(1.05); } }
-.grid-overlay { position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px); background-size: 60px 60px; z-index: 1; pointer-events: none; }
-.glass { background: var(--card); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.4); }
-.app-wrapper { position: relative; z-index: 2; min-height: 100vh; }
-/* Auth */
-#auth-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-.auth-card { width: 100%; max-width: 420px; padding: 40px 36px; position: relative; overflow: hidden; }
-.auth-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg,transparent,var(--cyan),transparent,var(--violet),transparent); animation: spin 8s linear infinite; opacity: 0.12; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.auth-content { position: relative; z-index: 1; }
-.logo { text-align: center; margin-bottom: 28px; }
-.logo-svg { display: inline-block; margin-bottom: 8px; }
-.logo h1 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; background: linear-gradient(135deg,var(--cyan),var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; }
-.logo p { font-size: 13px; color: var(--muted); margin-top: 4px; }
-.auth-tabs { display: flex; margin-bottom: 24px; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 4px; }
-.auth-tab { flex: 1; text-align: center; padding: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.2s; color: var(--muted); border: none; background: transparent; font-family: inherit; }
-.auth-tab.active { background: rgba(34,211,238,0.12); color: var(--cyan); }
-.auth-form { display: none; flex-direction: column; gap: 16px; }
-.auth-form.active { display: flex; }
-.input-group label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-.input-group input { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: var(--text); font-size: 14px; outline: none; transition: border 0.2s; font-family: inherit; }
-.input-group input:focus { border-color: var(--cyan); }
-.btn { padding: 12px 20px; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-.btn-primary { background: linear-gradient(135deg,var(--cyan),var(--violet)); color: #0a0a0f; }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(34,211,238,0.2); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-.btn-ghost { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
-.btn-ghost:hover { background: rgba(255,255,255,0.08); color: var(--text); }
-.btn-sm { padding: 8px 14px; font-size: 12px; border-radius: 8px; }
-.btn-danger { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
-.btn-danger:hover { background: rgba(239,68,68,0.25); }
-.error-msg { font-size: 13px; color: #ef4444; text-align: center; display: none; }
-/* Dashboard */
-#app-screen { display: none; min-height: 100vh; }
-.sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100vh; background: rgba(10,14,25,0.7); backdrop-filter: blur(24px) saturate(140%); border-right: 1px solid var(--border); z-index: 10; display: flex; flex-direction: column; padding: 20px 0; }
-.sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
-.sidebar-logo h2 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; background: linear-gradient(135deg,var(--cyan),var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.sidebar-nav { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; }
-.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted); transition: all 0.15s; border: none; background: transparent; width: 100%; text-align: left; font-family: inherit; }
-.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-.nav-item.active { background: rgba(34,211,238,0.08); color: var(--cyan); }
-.nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
-.sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.sidebar-user .name { font-weight: 600; color: var(--text); font-size: 12px; }
-.sidebar-user .role { color: var(--muted); font-size: 11px; text-transform: capitalize; }
-.main-content { margin-left: 240px; padding: 28px 36px; min-height: 100vh; position: relative; }
-.page { display: none; }
-.page.active { display: block; animation: fadeIn 0.25s; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-.page-header { margin-bottom: 24px; }
-.page-header h2 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; }
-.page-header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
-.stat-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 14px; margin-bottom: 24px; }
-.stat-card { padding: 18px 20px; }
-.stat-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
-.stat-card .value { font-size: 26px; font-weight: 800; margin-top: 4px; background: linear-gradient(135deg,var(--cyan),var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.platform-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 18px; }
-.platform-btn { padding: 18px 12px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit; color: var(--muted); }
-.platform-btn:hover { border-color: rgba(255,255,255,0.12); }
-.platform-btn.selected { border-color: var(--cyan); background: rgba(34,211,238,0.06); color: var(--text); }
-.platform-btn .pfp { font-size: 24px; margin-bottom: 6px; }
-.platform-btn .pfname { font-size: 13px; font-weight: 600; }
-.mode-tabs { display: flex; gap: 0; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 4px; margin-bottom: 14px; max-width: 380px; }
-.mode-tab { flex: 1; text-align: center; padding: 8px 10px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.2s; color: var(--muted); border: none; background: transparent; font-family: inherit; }
-.mode-tab.active { background: rgba(168,85,247,0.14); color: var(--violet); }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-.form-group input, .form-group textarea, .form-group select { padding: 10px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: var(--text); font-size: 13px; outline: none; transition: border 0.2s; font-family: inherit; }
-.form-group textarea { resize: vertical; min-height: 80px; }
-.form-group input:focus, .form-group textarea:focus { border-color: var(--cyan); }
-.form-group select { cursor: pointer; }
-.form-group select option { background: #0f1422; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { display: flex; align-items: center; gap: 6px; padding: 7px 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--muted); user-select: none; }
-.chip input { display: none; }
-.chip.on { border-color: var(--cyan); background: rgba(34,211,238,0.08); color: var(--text); }
-.console { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; font-family: 'Courier New', monospace; font-size: 12px; min-height: 200px; max-height: 360px; overflow-y: auto; margin-top: 14px; }
-.console-entry { padding: 3px 0; display: flex; gap: 8px; align-items: baseline; }
-.console-entry .time { color: var(--muted); font-size: 11px; min-width: 70px; }
-.console-entry .name { font-weight: 600; }
-.status-avail { color: #22c55e; }
-.status-taken { color: #ef4444; }
-.status-err { color: #eab308; }
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-thead th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 600; }
-tbody td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-tbody tr:hover { background: rgba(255,255,255,0.02); }
-.badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-.badge-owner { background: rgba(168,85,247,0.15); color: var(--violet); }
-.badge-user { background: rgba(34,211,238,0.1); color: var(--cyan); }
-.action-btn { padding: 6px 10px; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: 0.15s; }
-.toggle-wrap { display: flex; align-items: center; gap: 10px; }
-.toggle { width: 42px; height: 24px; background: rgba(255,255,255,0.08); border-radius: 12px; position: relative; cursor: pointer; transition: 0.2s; border: none; }
-.toggle.on { background: rgba(34,211,238,0.3); }
-.toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: var(--text); border-radius: 50%; transition: 0.2s; }
-.toggle.on::after { left: 20px; background: var(--cyan); }
-.announcement-banner { background: linear-gradient(135deg,rgba(34,211,238,0.08),rgba(168,85,247,0.08)); border: 1px solid rgba(168,85,247,0.12); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; font-size: 13px; }
-.announcement-banner .close { margin-left: auto; cursor: pointer; color: var(--muted); font-size: 16px; background: none; border: none; }
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-@media (max-width: 768px) {
-  .sidebar { width: 60px; }
-  .sidebar-logo h2 { font-size: 0; }
-  .sidebar-logo h2::after { content: 'BB'; font-size: 16px; -webkit-text-fill-color: var(--cyan); }
-  .nav-item span.nav-label { display: none; }
-  .main-content { margin-left: 60px; padding: 20px 16px; }
-  .form-row, .form-row.three { grid-template-columns: 1fr; }
-  .platform-grid { grid-template-columns: 1fr; }
-}
+  /* =============================================
+     CSS VARIABLES — 40 THEMES
+  ============================================= */
+  :root,[data-theme="cyberpunk"] {
+    --bg: #0d0d0d; --bg2: #1a0a2e; --bg3: #16213e;
+    --card: #1a1a2e; --card2: #16213e; --border: #00fff7;
+    --accent: #ff00ff; --accent2: #00fff7; --accent3: #ffee00;
+    --text: #e0e0ff; --text2: #a0a0cc; --text3: #606090;
+    --success: #00ff88; --warning: #ffaa00; --danger: #ff2244;
+    --glow: 0 0 20px var(--accent); --radius: 8px;
+  }
+  [data-theme="midnight"] {
+    --bg: #0a0a14; --bg2: #10101e; --bg3: #141428;
+    --card: #1c1c30; --card2: #22223a; --border: #3a3a60;
+    --accent: #6c63ff; --accent2: #a855f7; --accent3: #ec4899;
+    --text: #e8e8ff; --text2: #9090b0; --text3: #5a5a80;
+    --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
+    --glow: 0 0 16px var(--accent); --radius: 10px;
+  }
+  [data-theme="neon-green"] {
+    --bg: #000a00; --bg2: #001400; --bg3: #001e00;
+    --card: #002800; --card2: #003200; --border: #00ff41;
+    --accent: #00ff41; --accent2: #39ff14; --accent3: #ccff00;
+    --text: #ccffcc; --text2: #80c080; --text3: #408040;
+    --success: #00ff88; --warning: #ccff00; --danger: #ff4400;
+    --glow: 0 0 20px #00ff41; --radius: 4px;
+  }
+  [data-theme="dracula"] {
+    --bg: #282a36; --bg2: #1e1f29; --bg3: #21222c;
+    --card: #2d2f3f; --card2: #343746; --border: #6272a4;
+    --accent: #bd93f9; --accent2: #ff79c6; --accent3: #50fa7b;
+    --text: #f8f8f2; --text2: #cdd0e3; --text3: #6272a4;
+    --success: #50fa7b; --warning: #f1fa8c; --danger: #ff5555;
+    --glow: 0 0 14px var(--accent); --radius: 8px;
+  }
+  [data-theme="nord"] {
+    --bg: #2e3440; --bg2: #242933; --bg3: #1e2330;
+    --card: #3b4252; --card2: #434c5e; --border: #4c566a;
+    --accent: #88c0d0; --accent2: #81a1c1; --accent3: #a3be8c;
+    --text: #eceff4; --text2: #d8dee9; --text3: #9099a6;
+    --success: #a3be8c; --warning: #ebcb8b; --danger: #bf616a;
+    --glow: 0 0 12px var(--accent); --radius: 6px;
+  }
+  [data-theme="synthwave"] {
+    --bg: #1a0533; --bg2: #200640; --bg3: #2a0850;
+    --card: #2d0b5e; --card2: #380e70; --border: #ff2d78;
+    --accent: #ff2d78; --accent2: #bf5fff; --accent3: #00d4ff;
+    --text: #ffe4ff; --text2: #d090e0; --text3: #805080;
+    --success: #00ff9f; --warning: #ffdd00; --danger: #ff2200;
+    --glow: 0 0 24px var(--accent); --radius: 6px;
+  }
+  [data-theme="ocean"] {
+    --bg: #020f1a; --bg2: #031525; --bg3: #041e33;
+    --card: #062840; --card2: #0a3355; --border: #0e6fa0;
+    --accent: #00b4d8; --accent2: #48cae4; --accent3: #90e0ef;
+    --text: #caf0f8; --text2: #80c0d8; --text3: #407090;
+    --success: #00ff88; --warning: #ffb703; --danger: #e63946;
+    --glow: 0 0 18px var(--accent); --radius: 10px;
+  }
+  [data-theme="rose-gold"] {
+    --bg: #1a0810; --bg2: #220c16; --bg3: #2a101e;
+    --card: #331524; --card2: #3d1a2c; --border: #c9748a;
+    --accent: #e8a0b0; --accent2: #f0b8c4; --accent3: #ffd6de;
+    --text: #ffe8ee; --text2: #d4a0b0; --text3: #906070;
+    --success: #a8d8a8; --warning: #f8d56c; --danger: #e85454;
+    --glow: 0 0 14px var(--accent); --radius: 12px;
+  }
+  [data-theme="monokai"] {
+    --bg: #1c1c1c; --bg2: #141414; --bg3: #181818;
+    --card: #272822; --card2: #2f2f28; --border: #49483e;
+    --accent: #a6e22e; --accent2: #66d9e8; --accent3: #fd971f;
+    --text: #f8f8f2; --text2: #c8c8b4; --text3: #808060;
+    --success: #a6e22e; --warning: #fd971f; --danger: #f92672;
+    --glow: 0 0 14px var(--accent); --radius: 6px;
+  }
+  [data-theme="pastel-dream"] {
+    --bg: #1a1a2e; --bg2: #16213e; --bg3: #0f3460;
+    --card: #2a2a4a; --card2: #33335a; --border: #a0a0d0;
+    --accent: #c7b3e0; --accent2: #b3d4e0; --accent3: #e0c7d4;
+    --text: #f0eeff; --text2: #c0c0e0; --text3: #808090;
+    --success: #a0d4a0; --warning: #e0d4a0; --danger: #e0a0a0;
+    --glow: 0 0 12px var(--accent); --radius: 14px;
+  }
+  [data-theme="blood"] {
+    --bg: #0d0000; --bg2: #140000; --bg3: #1a0000;
+    --card: #220000; --card2: #2a0000; --border: #880000;
+    --accent: #cc0000; --accent2: #ff2222; --accent3: #ff6666;
+    --text: #ffe8e8; --text2: #d08080; --text3: #804040;
+    --success: #00cc44; --warning: #cc8800; --danger: #ff0000;
+    --glow: 0 0 20px #cc0000; --radius: 4px;
+  }
+  [data-theme="matrix"] {
+    --bg: #000000; --bg2: #001100; --bg3: #001a00;
+    --card: #002200; --card2: #002800; --border: #008000;
+    --accent: #00cc00; --accent2: #00ff00; --accent3: #66ff66;
+    --text: #ccffcc; --text2: #66cc66; --text3: #338833;
+    --success: #00ff00; --warning: #aaff00; --danger: #ff3300;
+    --glow: 0 0 20px #00cc00; --radius: 2px;
+  }
+  [data-theme="arctic"] {
+    --bg: #f0f8ff; --bg2: #e8f4fc; --bg3: #ddeffa;
+    --card: #ffffff; --card2: #f5fbff; --border: #a0c8e8;
+    --accent: #2196f3; --accent2: #1565c0; --accent3: #42a5f5;
+    --text: #1a2a3a; --text2: #3a5a7a; --text3: #6a8aaa;
+    --success: #4caf50; --warning: #ff9800; --danger: #f44336;
+    --glow: 0 0 12px rgba(33,150,243,0.3); --radius: 10px;
+  }
+  [data-theme="lava"] {
+    --bg: #0a0000; --bg2: #120500; --bg3: #1a0800;
+    --card: #220a00; --card2: #2c0e00; --border: #cc3300;
+    --accent: #ff5500; --accent2: #ff8800; --accent3: #ffaa00;
+    --text: #fff0e0; --text2: #d09060; --text3: #805020;
+    --success: #88cc00; --warning: #ffcc00; --danger: #ff0000;
+    --glow: 0 0 22px #ff5500; --radius: 6px;
+  }
+  [data-theme="electric-blue"] {
+    --bg: #000814; --bg2: #001020; --bg3: #00162e;
+    --card: #001e3c; --card2: #002850; --border: #0066cc;
+    --accent: #0096ff; --accent2: #00c0ff; --accent3: #66ddff;
+    --text: #d0f0ff; --text2: #80b8e0; --text3: #406890;
+    --success: #00ffaa; --warning: #ffcc00; --danger: #ff3366;
+    --glow: 0 0 20px #0096ff; --radius: 8px;
+  }
+  [data-theme="sakura"] {
+    --bg: #1a0a10; --bg2: #220e16; --bg3: #2a121e;
+    --card: #33182a; --card2: #3c1e33; --border: #d4689a;
+    --accent: #ffb7d4; --accent2: #ff89b8; --accent3: #ff6699;
+    --text: #ffe8f2; --text2: #d4a0b8; --text3: #906070;
+    --success: #88ddaa; --warning: #f8cc6c; --danger: #ff4488;
+    --glow: 0 0 16px var(--accent); --radius: 16px;
+  }
+  [data-theme="slate"] {
+    --bg: #0f1117; --bg2: #161b22; --bg3: #1c2128;
+    --card: #21262d; --card2: #2d333b; --border: #30363d;
+    --accent: #58a6ff; --accent2: #79c0ff; --accent3: #a5d6ff;
+    --text: #c9d1d9; --text2: #8b949e; --text3: #484f58;
+    --success: #3fb950; --warning: #d29922; --danger: #f85149;
+    --glow: 0 0 10px var(--accent); --radius: 6px;
+  }
+  [data-theme="copper"] {
+    --bg: #0e0800; --bg2: #160e00; --bg3: #1e1400;
+    --card: #261a00; --card2: #302200; --border: #a06020;
+    --accent: #d4803a; --accent2: #e8a060; --accent3: #f0c080;
+    --text: #fff0d0; --text2: #d0a060; --text3: #806030;
+    --success: #80cc60; --warning: #f0c020; --danger: #e04040;
+    --glow: 0 0 16px var(--accent); --radius: 8px;
+  }
+  [data-theme="grape"] {
+    --bg: #0e0014; --bg2: #14001e; --bg3: #1a0028;
+    --card: #220033; --card2: #2a003e; --border: #7700bb;
+    --accent: #aa44ff; --accent2: #cc77ff; --accent3: #eeb0ff;
+    --text: #f0e0ff; --text2: #c090e0; --text3: #7040a0;
+    --success: #66ee88; --warning: #eebb00; --danger: #ff3366;
+    --glow: 0 0 20px var(--accent); --radius: 8px;
+  }
+  [data-theme="mint"] {
+    --bg: #001a14; --bg2: #002018; --bg3: #00261e;
+    --card: #003020; --card2: #003a26; --border: #00aa70;
+    --accent: #00ddaa; --accent2: #44ffcc; --accent3: #88ffdd;
+    --text: #d0fff5; --text2: #80e0c0; --text3: #40a080;
+    --success: #00ff88; --warning: #ddff00; --danger: #ff4466;
+    --glow: 0 0 18px var(--accent); --radius: 10px;
+  }
+  [data-theme="obsidian"] {
+    --bg: #080808; --bg2: #0e0e0e; --bg3: #121212;
+    --card: #1a1a1a; --card2: #202020; --border: #333333;
+    --accent: #888888; --accent2: #aaaaaa; --accent3: #cccccc;
+    --text: #eeeeee; --text2: #aaaaaa; --text3: #555555;
+    --success: #4caf50; --warning: #ff9800; --danger: #f44336;
+    --glow: 0 0 8px #666; --radius: 4px;
+  }
+  [data-theme="amber"] {
+    --bg: #0e0800; --bg2: #160c00; --bg3: #1e1000;
+    --card: #261400; --card2: #301a00; --border: #cc7700;
+    --accent: #ffaa00; --accent2: #ffcc44; --accent3: #ffdd88;
+    --text: #fff5d0; --text2: #d4a040; --text3: #806020;
+    --success: #88cc00; --warning: #ffcc00; --danger: #ee3300;
+    --glow: 0 0 18px #ffaa00; --radius: 6px;
+  }
+  [data-theme="ice"] {
+    --bg: #e8f4fd; --bg2: #ddeefb; --bg3: #d0e8f9;
+    --card: #f8fcff; --card2: #edf6fe; --border: #90c0e0;
+    --accent: #1a8fd1; --accent2: #0e72b0; --accent3: #2abde8;
+    --text: #102840; --text2: #2a5070; --text3: #608aaa;
+    --success: #2eb872; --warning: #e08800; --danger: #cc2244;
+    --glow: 0 0 12px rgba(26,143,209,0.25); --radius: 12px;
+  }
+  [data-theme="toxic"] {
+    --bg: #020800; --bg2: #040e00; --bg3: #061200;
+    --card: #0a1800; --card2: #0e2000; --border: #44cc00;
+    --accent: #88ff00; --accent2: #aaff33; --accent3: #ccff77;
+    --text: #eeffcc; --text2: #99dd44; --text3: #448800;
+    --success: #00ff44; --warning: #ddff00; --danger: #ff2200;
+    --glow: 0 0 22px #88ff00; --radius: 4px;
+  }
+  [data-theme="solaris"] {
+    --bg: #001628; --bg2: #001e36; --bg3: #002644;
+    --card: #002e52; --card2: #003660; --border: #005588;
+    --accent: #f0a820; --accent2: #f8c840; --accent3: #ffe080;
+    --text: #fff8e0; --text2: #d0b060; --text3: #807040;
+    --success: #44dd88; --warning: #f0a820; --danger: #ee3344;
+    --glow: 0 0 18px var(--accent); --radius: 8px;
+  }
+  [data-theme="dusk"] {
+    --bg: #0e0814; --bg2: #140c1e; --bg3: #1a1028;
+    --card: #221433; --card2: #2a1a3c; --border: #664488;
+    --accent: #c060e0; --accent2: #e080ff; --accent3: #f0b0ff;
+    --text: #f0e0ff; --text2: #b080d0; --text3: #704890;
+    --success: #88ddaa; --warning: #eebb44; --danger: #ff4477;
+    --glow: 0 0 18px var(--accent); --radius: 10px;
+  }
+  [data-theme="solar-flare"] {
+    --bg: #0a0200; --bg2: #100400; --bg3: #180600;
+    --card: #200800; --card2: #280c00; --border: #dd5500;
+    --accent: #ff7700; --accent2: #ffaa33; --accent3: #ffcc77;
+    --text: #fff4e0; --text2: #d09040; --text3: #804820;
+    --success: #aadd00; --warning: #ffcc00; --danger: #ff2200;
+    --glow: 0 0 22px #ff7700; --radius: 6px;
+  }
+  [data-theme="vaporwave"] {
+    --bg: #1a0a28; --bg2: #200e33; --bg3: #28123e;
+    --card: #32164e; --card2: #3c1a5e; --border: #ff6ec7;
+    --accent: #ff6ec7; --accent2: #44f0ff; --accent3: #c77dff;
+    --text: #ffe8ff; --text2: #d0a0e8; --text3: #806090;
+    --success: #00ffcc; --warning: #ffee00; --danger: #ff2277;
+    --glow: 0 0 22px var(--accent); --radius: 8px;
+  }
+  [data-theme="carbon"] {
+    --bg: #111111; --bg2: #161616; --bg3: #1c1c1c;
+    --card: #222222; --card2: #2a2a2a; --border: #3c3c3c;
+    --accent: #da1e28; --accent2: #fa4d56; --accent3: #ff8389;
+    --text: #f4f4f4; --text2: #c6c6c6; --text3: #8d8d8d;
+    --success: #24a148; --warning: #f1c21b; --danger: #da1e28;
+    --glow: 0 0 14px var(--accent); --radius: 4px;
+  }
+  [data-theme="abyss"] {
+    --bg: #000010; --bg2: #00000e; --bg3: #000014;
+    --card: #080820; --card2: #0c0c28; --border: #202068;
+    --accent: #4040ff; --accent2: #6060ff; --accent3: #9090ff;
+    --text: #d0d0ff; --text2: #8080cc; --text3: #404088;
+    --success: #00dd88; --warning: #ddaa00; --danger: #ff2255;
+    --glow: 0 0 22px var(--accent); --radius: 6px;
+  }
+  [data-theme="forest"] {
+    --bg: #040a04; --bg2: #060e06; --bg3: #081208;
+    --card: #0c1a0c; --card2: #102010; --border: #2d5a27;
+    --accent: #4a9e40; --accent2: #68cc5e; --accent3: #92ee86;
+    --text: #d8f0d0; --text2: #90c080; --text3: #508040;
+    --success: #44ee44; --warning: #ddcc00; --danger: #ee2200;
+    --glow: 0 0 16px var(--accent); --radius: 8px;
+  }
+  [data-theme="ruby"] {
+    --bg: #100006; --bg2: #16000a; --bg3: #1c000e;
+    --card: #240012; --card2: #2c0016; --border: #aa0044;
+    --accent: #ee1155; --accent2: #ff4488; --accent3: #ff88bb;
+    --text: #ffe8f0; --text2: #d080a0; --text3: #803050;
+    --success: #44dd88; --warning: #eebb00; --danger: #ff0000;
+    --glow: 0 0 20px var(--accent); --radius: 8px;
+  }
+  [data-theme="steel"] {
+    --bg: #0c0e10; --bg2: #121416; --bg3: #181a1c;
+    --card: #1e2024; --card2: #24272c; --border: #4a5060;
+    --accent: #7090c0; --accent2: #90b0e0; --accent3: #b0d0f8;
+    --text: #d0dce8; --text2: #8898aa; --text3: #485868;
+    --success: #48c878; --warning: #d8a830; --danger: #e04848;
+    --glow: 0 0 12px var(--accent); --radius: 6px;
+  }
+  [data-theme="galaxy"] {
+    --bg: #040010; --bg2: #080018; --bg3: #0c0020;
+    --card: #100030; --card2: #14003a; --border: #440088;
+    --accent: #8800ff; --accent2: #bb44ff; --accent3: #dd88ff;
+    --text: #eedcff; --text2: #aa88cc; --text3: #664488;
+    --success: #00ffaa; --warning: #ffcc00; --danger: #ff3355;
+    --glow: 0 0 24px var(--accent); --radius: 10px;
+  }
+  [data-theme="desert"] {
+    --bg: #1a1000; --bg2: #221600; --bg3: #2a1c00;
+    --card: #332200; --card2: #3c2a00; --border: #886620;
+    --accent: #d4a040; --accent2: #e8c060; --accent3: #f4d888;
+    --text: #fff4d0; --text2: #d4a860; --text3: #806830;
+    --success: #88cc44; --warning: #e8c000; --danger: #dd4422;
+    --glow: 0 0 14px var(--accent); --radius: 10px;
+  }
+  [data-theme="lotus"] {
+    --bg: #0e001a; --bg2: #140022; --bg3: #1a002c;
+    --card: #220036; --card2: #2a0040; --border: #880088;
+    --accent: #dd44dd; --accent2: #ee88ee; --accent3: #ffbbff;
+    --text: #ffe8ff; --text2: #cc88cc; --text3: #884488;
+    --success: #88dd88; --warning: #dddd00; --danger: #ff3388;
+    --glow: 0 0 20px var(--accent); --radius: 14px;
+  }
+  [data-theme="aurora"] {
+    --bg: #020e10; --bg2: #021418; --bg3: #031a20;
+    --card: #042030; --card2: #062840; --border: #006666;
+    --accent: #00d4aa; --accent2: #44ffcc; --accent3: #88ffee;
+    --text: #d0fff8; --text2: #80ddc8; --text3: #409080;
+    --success: #00ff88; --warning: #aaff00; --danger: #ff3388;
+    --glow: 0 0 22px var(--accent); --radius: 12px;
+  }
+
+  /* =============================================
+     BASE STYLES
+  ============================================= */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    transition: background 0.4s, color 0.3s;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card-glow { box-shadow: var(--glow); border-color: var(--accent); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px; padding: 8px 18px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: 1px solid transparent; transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent); color: var(--bg); border-color: var(--accent);
+  }
+  .btn-primary:hover { filter: brightness(1.2); box-shadow: var(--glow); }
+  .btn-ghost {
+    background: transparent; color: var(--text2); border-color: var(--border);
+  }
+  .btn-ghost:hover { background: var(--card2); border-color: var(--accent); color: var(--text); }
+  .btn-danger {
+    background: var(--danger); color: #fff; border-color: var(--danger);
+  }
+  .btn-danger:hover { filter: brightness(1.2); }
+  .btn-success {
+    background: var(--success); color: var(--bg); border-color: var(--success);
+  }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+  /* Inputs */
+  .input {
+    background: var(--bg2); color: var(--text); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px 12px; font-size: 13px;
+    width: 100%; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(0,0,0,0.2); }
+  .input::placeholder { color: var(--text3); }
+
+  select.input option { background: var(--card); color: var(--text); }
+
+  /* Toggle */
+  .toggle-wrap { position: relative; display: inline-block; width: 44px; height: 24px; }
+  .toggle-wrap input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0; border-radius: 24px;
+    background: var(--bg3); border: 1px solid var(--border);
+    cursor: pointer; transition: background 0.3s;
+  }
+  .toggle-track:before {
+    content: ''; position: absolute; height: 18px; width: 18px;
+    left: 2px; bottom: 2px; border-radius: 50%;
+    background: var(--text3); transition: all 0.3s;
+  }
+  input:checked + .toggle-track { background: var(--accent); border-color: var(--accent); }
+  input:checked + .toggle-track:before { transform: translateX(20px); background: var(--bg); }
+
+  /* Status badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .badge-running { background: rgba(0,255,136,0.15); color: var(--success); border: 1px solid var(--success); }
+  .badge-stopped { background: rgba(255,34,68,0.12); color: var(--danger); border: 1px solid var(--danger); }
+  .badge-found { background: rgba(255,170,0,0.15); color: var(--warning); border: 1px solid var(--warning); }
+  .badge-idle { background: rgba(128,128,128,0.15); color: var(--text3); border: 1px solid var(--text3); }
+
+  /* Pulse dot */
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dot-green { background: var(--success); animation: pulse-green 1.5s infinite; }
+  .dot-red { background: var(--danger); }
+  .dot-yellow { background: var(--warning); animation: pulse-yellow 1s infinite; }
+  .dot-gray { background: var(--text3); }
+
+  @keyframes pulse-green {
+    0%,100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.6); }
+    50% { box-shadow: 0 0 0 5px rgba(0,255,136,0); }
+  }
+  @keyframes pulse-yellow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(255,170,0,0.6); }
+    50% { box-shadow: 0 0 0 5px rgba(255,170,0,0); }
+  }
+
+  /* Terminal */
+  .terminal {
+    background: #000a00; border: 1px solid var(--border); border-radius: var(--radius);
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px; line-height: 1.7; overflow-y: auto; max-height: 240px;
+    padding: 12px; color: #88cc88;
+  }
+  .terminal .log-line { display: flex; gap: 10px; align-items: flex-start; }
+  .terminal .log-time { color: var(--text3); min-width: 75px; flex-shrink: 0; }
+  .terminal .log-platform { min-width: 60px; font-weight: 700; }
+  .terminal .log-tiktok { color: #ff0050; }
+  .terminal .log-roblox { color: #00b2ff; }
+  .terminal .log-instagram { color: #e040fb; }
+  .terminal .log-discord { color: #5865f2; }
+  .terminal .log-system { color: var(--accent2); }
+  .terminal .log-hit { color: var(--warning); font-weight: 700; }
+
+  /* Glow text */
+  .glow-text { color: var(--accent); text-shadow: 0 0 12px var(--accent); }
+
+  /* Nav */
+  .nav-item {
+    display: flex; align-items: center; gap: 8px; padding: 9px 14px;
+    border-radius: var(--radius); cursor: pointer; font-size: 13px; font-weight: 500;
+    color: var(--text2); transition: all 0.2s; border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--card2); color: var(--text); }
+  .nav-item.active { background: var(--card2); color: var(--accent); border-color: var(--border); }
+
+  /* Theme swatch */
+  .theme-swatch {
+    width: 28px; height: 28px; border-radius: 6px; cursor: pointer;
+    border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0;
+  }
+  .theme-swatch:hover { transform: scale(1.15); }
+  .theme-swatch.active-swatch { border-color: white; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
+
+  /* Leaderboard */
+  .lb-rank { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+  .lb-1 { background: linear-gradient(135deg, #ffd700, #ffa500); color: #1a0a00; }
+  .lb-2 { background: linear-gradient(135deg, #c0c0c0, #888); color: #0a0a0a; }
+  .lb-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); color: #fff; }
+  .lb-other { background: var(--card2); color: var(--text3); }
+
+  /* Login container */
+  .login-bg {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 50% 0%, rgba(100,80,200,0.15) 0%, transparent 70%),
+                var(--bg);
+  }
+
+  /* Animated scan line */
+  @keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+
+  /* Progress bar */
+  .progress { background: var(--bg3); border-radius: 99px; overflow: hidden; height: 6px; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s; }
+
+  /* Stats card */
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px; display: flex; flex-direction: column; gap: 6px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent); box-shadow: var(--glow); }
+  .stat-value { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .stat-sub { font-size: 12px; color: var(--text2); }
+
+  /* Platform icon */
+  .platform-icon { font-size: 20px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+
+  /* Wave animation for running state */
+  @keyframes wave {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .wave-anim { animation: wave 1.2s ease-in-out infinite; }
+
+  /* Notification pop */
+  @keyframes slideIn {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(120%); opacity: 0; }
+  }
+  .notif { animation: slideIn 0.3s ease; }
+  .notif.out { animation: slideOut 0.3s ease forwards; }
+
+  /* Sound toggle */
+  .sound-btn { font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: background 0.2s; }
+  .sound-btn:hover { background: var(--card2); }
 </style>
 </head>
-<body>
-<div id="bg-canvas"><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
-<div class="grid-overlay"></div>
+<body x-data="app()" x-init="init()">
 
-<div class="app-wrapper">
-  <!-- AUTH -->
-  <div id="auth-screen">
-    <div class="auth-card glass">
-      <div class="auth-content">
-        <div class="logo">
-          <svg class="logo-svg" width="44" height="44" viewBox="0 0 44 44" fill="none">
-            <rect x="2" y="2" width="40" height="40" rx="10" stroke="url(#lg)" stroke-width="2" fill="rgba(34,211,238,0.05)"/>
-            <path d="M14 30 L14 16 L24 22 L24 16 L34 24 L24 30 L24 24 Z" fill="url(#lg)" opacity="0.85"/>
-            <defs><linearGradient id="lg" x1="0" y1="0" x2="44" y2="44"><stop stop-color="#22d3ee"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
-          </svg>
-          <h1>BEAMBLADE</h1>
-          <p>Username Sniper · TikTok / Discord / Roblox</p>
-        </div>
-        <div class="auth-tabs">
-          <button class="auth-tab active" data-tab="login">Login</button>
-          <button class="auth-tab" data-tab="register">Register</button>
-        </div>
-        <form class="auth-form active" id="login-form">
-          <div class="input-group"><label>Username</label><input type="text" id="login-user" placeholder="beamblade" autocomplete="username"></div>
-          <div class="input-group"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
-          <div class="error-msg" id="login-error"></div>
-          <button type="submit" class="btn btn-primary" id="login-btn">Enter</button>
-        </form>
-        <form class="auth-form" id="register-form">
-          <div class="input-group"><label>Username</label><input type="text" id="reg-user" placeholder="Choose a username" autocomplete="off"></div>
-          <div class="input-group"><label>Password</label><input type="password" id="reg-pass" placeholder="At least 6 characters" autocomplete="new-password"></div>
-          <div class="error-msg" id="reg-error"></div>
-          <button type="submit" class="btn btn-primary" id="reg-btn">Create Account</button>
-        </form>
+<!-- =============================================
+     NOTIFICATIONS
+============================================= -->
+<div class="fixed top-4 right-4 z-50 flex flex-col gap-2" style="max-width:320px">
+  <template x-for="n in notifications" :key="n.id">
+    <div class="notif card p-3 flex items-start gap-3" :class="n.out ? 'out' : ''" style="border-color:var(--warning)">
+      <span style="font-size:20px">🎯</span>
+      <div>
+        <div class="text-xs font-bold" style="color:var(--warning)" x-text="n.title"></div>
+        <div class="text-xs" style="color:var(--text2)" x-text="n.message"></div>
       </div>
     </div>
-  </div>
+  </template>
+</div>
 
-  <!-- APP -->
-  <div id="app-screen">
-    <div class="sidebar">
-      <div class="sidebar-logo"><h2>BEAMBLADE</h2></div>
-      <div class="sidebar-nav">
-        <button class="nav-item active" data-page="sniper"><span class="icon">⚡</span><span class="nav-label">Sniper</span></button>
-        <button class="nav-item" data-page="hits"><span class="icon">🎯</span><span class="nav-label">Hits</span></button>
-        <button class="nav-item owner-only" data-page="owner" style="display:none"><span class="icon">⚙</span><span class="nav-label">Owner Panel</span></button>
-        <button class="nav-item" data-page="settings"><span class="icon">👤</span><span class="nav-label">Account</span></button>
+<!-- =============================================
+     AUTH SCREEN
+============================================= -->
+<div x-show="!isAuthenticated" class="login-bg">
+  <div class="card p-8" style="width:100%;max-width:400px">
+    <!-- Logo -->
+    <div class="text-center mb-6">
+      <div class="glow-text text-3xl font-black mb-1">⚡ SnapSniper</div>
+      <div class="text-xs" style="color:var(--text3)">Username Acquisition Platform</div>
+    </div>
+
+    <!-- Tab switcher -->
+    <div class="flex gap-2 mb-6" style="background:var(--bg2);border-radius:var(--radius);padding:4px">
+      <button class="btn flex-1" :class="authTab==='login'?'btn-primary':'btn-ghost'"
+        @click="authTab='login'">Sign In</button>
+      <button class="btn flex-1" :class="authTab==='signup'?'btn-primary':'btn-ghost'"
+        @click="authTab='signup'">Sign Up</button>
+    </div>
+
+    <!-- Error -->
+    <div x-show="authError" class="text-xs mb-4 p-3 rounded" style="background:rgba(255,34,68,0.12);color:var(--danger);border:1px solid var(--danger)" x-text="authError"></div>
+    <!-- Success -->
+    <div x-show="authSuccess" class="text-xs mb-4 p-3 rounded" style="background:rgba(0,255,136,0.1);color:var(--success);border:1px solid var(--success)" x-text="authSuccess"></div>
+
+    <!-- Login Form -->
+    <div x-show="authTab==='login'" class="flex flex-col gap-4">
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--text3)">Username</label>
+        <input class="input" type="text" x-model="loginForm.username" placeholder="your_handle" @keydown.enter="doLogin()" />
       </div>
-      <div class="sidebar-footer">
-        <div class="sidebar-user"><div class="name" id="sidebar-name">—</div><div class="role" id="sidebar-role">—</div></div>
-        <button class="btn btn-sm btn-ghost" id="logout-btn" style="padding:6px 10px;font-size:11px;">Logout</button>
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--text3)">Password</label>
+        <input class="input" type="password" x-model="loginForm.password" placeholder="••••••••" @keydown.enter="doLogin()" />
+      </div>
+      <button class="btn btn-primary w-full" @click="doLogin()">
+        <span>🔓</span> Sign In
+      </button>
+      <div class="text-xs text-center" style="color:var(--text3)">
+        Demo: any username + any password (6+ chars)
       </div>
     </div>
-    <div class="main-content">
-      <div id="announcement-area"></div>
 
-      <!-- SNIPER -->
-      <div class="page active" id="page-sniper">
-        <div class="page-header"><h2>Sniper</h2><p>Multi-threaded username sniper with random combo generation + webhook alerts</p></div>
-        <div class="stat-grid">
-          <div class="stat-card glass"><div class="label">Checks</div><div class="value" id="sniper-checks">0</div></div>
-          <div class="stat-card glass"><div class="label">Hits</div><div class="value" id="sniper-hits">0</div></div>
-          <div class="stat-card glass"><div class="label">Running</div><div class="value" id="sniper-status">—</div></div>
-        </div>
-        <div class="glass" style="padding:20px;">
-          <div class="platform-grid" id="platform-select">
-            <div class="platform-btn selected" data-platform="tiktok"><div class="pfp">🎵</div><div class="pfname">TikTok</div></div>
-            <div class="platform-btn" data-platform="discord"><div class="pfp">🎮</div><div class="pfname">Discord</div></div>
-            <div class="platform-btn" data-platform="roblox"><div class="pfp">🔵</div><div class="pfname">Roblox</div></div>
-          </div>
-
-          <div class="mode-tabs">
-            <button class="mode-tab active" data-mode="list">📋 Word List</button>
-            <button class="mode-tab" data-mode="random">🎲 Random Gen</button>
-          </div>
-
-          <div id="mode-list">
-            <div class="form-group" style="margin-bottom:14px;">
-              <label>Usernames (one per line)</label>
-              <textarea id="names-input" placeholder="oguser&#10;dream&#10;beast" rows="5"></textarea>
-            </div>
-          </div>
-
-          <div id="mode-random" style="display:none;">
-            <div class="form-row three">
-              <div class="form-group"><label>Min Length</label><input type="number" id="gen-min" value="3" min="2" max="32"></div>
-              <div class="form-group"><label>Max Length</label><input type="number" id="gen-max" value="6" min="2" max="32"></div>
-              <div class="form-group"><label>Generated Names/Check</label><input type="number" id="gen-percycle" value="3" min="1" max="20"></div>
-            </div>
-            <div class="form-row three">
-              <div class="form-group"><label>Prefix</label><input type="text" id="gen-prefix" placeholder="e.g. x_" maxlength="10"></div>
-              <div class="form-group"><label>Suffix</label><input type="text" id="gen-suffix" placeholder="e.g. _x" maxlength="10"></div>
-              <div class="form-group"><label>Character Set</label><div class="chips">
-                <div class="chip on" data-set="letters"><input type="checkbox" checked>a-z</div>
-                <div class="chip on" data-set="numbers"><input type="checkbox" checked>0-9</div>
-                <div class="chip" data-set="underscore"><input type="checkbox">_</div>
-                <div class="chip" data-set="dots"><input type="checkbox">.</div>
-              </div></div>
-            </div>
-          </div>
-
-          <div class="form-row three">
-            <div class="form-group"><label>Interval (ms)</label><input type="number" id="interval-input" value="700" min="100" max="10000"></div>
-            <div class="form-group"><label>Threads</label><input type="number" id="threads-input" value="3" min="1" max="10"></div>
-            <div class="form-group"><label>Webhook URL (optional)</label><input type="url" id="webhook-input" placeholder="https://discord.com/api/webhooks/..."></div>
-          </div>
-          <div style="display:flex;gap:10px;margin-top:6px;">
-            <button class="btn btn-primary" id="sniper-start">▶ Start Sniper</button>
-            <button class="btn btn-ghost" id="sniper-stop" disabled>■ Stop</button>
-          </div>
-        </div>
-        <div class="console" id="sniper-console"><span style="color:#7b7f93">// BeamBlade ready — pick a platform + mode and start</span></div>
+    <!-- Signup Form -->
+    <div x-show="authTab==='signup'" class="flex flex-col gap-4">
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--text3)">Username</label>
+        <input class="input" type="text" x-model="signupForm.username" placeholder="choose_handle" />
       </div>
-
-      <!-- HITS -->
-      <div class="page" id="page-hits">
-        <div class="page-header"><h2>Hits</h2><p>All sniped usernames</p></div>
-        <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;">
-          <select id="hits-filter" style="padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;">
-            <option value="">All platforms</option>
-            <option value="tiktok">TikTok</option>
-            <option value="discord">Discord</option>
-            <option value="roblox">Roblox</option>
-          </select>
-          <button class="btn btn-ghost btn-sm" id="hits-refresh">Refresh</button>
-        </div>
-        <div class="glass" style="padding:16px;">
-          <div class="table-wrap"><table><thead><tr><th>Platform</th><th>Username</th><th>Time</th><th>Link</th></tr></thead><tbody id="hits-body"></tbody></table></div>
-          <div id="hits-empty" style="text-align:center;padding:30px;color:var(--muted);font-size:14px;">No hits yet</div>
-        </div>
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--text3)">Email</label>
+        <input class="input" type="email" x-model="signupForm.email" placeholder="you@domain.com" />
       </div>
-
-      <!-- OWNER -->
-      <div class="page" id="page-owner">
-        <div class="page-header"><h2>Owner Panel</h2><p>Full control of BeamBlade</p></div>
-        <div class="stat-grid" id="owner-stats"></div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
-          <button class="nav-item" style="width:auto;padding:8px 18px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:13px;cursor:pointer;" data-owner-tab="users">👥 Users</button>
-          <button class="nav-item" style="width:auto;padding:8px 18px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:13px;cursor:pointer;" data-owner-tab="hitslog">📋 Hit Log</button>
-          <button class="nav-item" style="width:auto;padding:8px 18px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:13px;cursor:pointer;" data-owner-tab="config">⚙ Config</button>
-        </div>
-        <div id="owner-users" class="owner-tab">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <h3 style="font-size:15px;font-weight:600;">All Users</h3><span style="font-size:12px;color:var(--muted)" id="owner-user-count"></span>
-          </div>
-          <div class="glass" style="padding:12px;">
-            <div class="table-wrap"><table><thead><tr><th>Username</th><th>Role</th><th>Checks</th><th>Hits</th><th>Actions</th></tr></thead><tbody id="owner-users-body"></tbody></table></div>
-          </div>
-        </div>
-        <div id="owner-hitslog" class="owner-tab" style="display:none;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <h3 style="font-size:15px;font-weight:600;">Hit Log</h3>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-sm btn-ghost" id="owner-hits-export">Export</button>
-              <button class="btn btn-sm btn-danger" id="owner-hits-clear">Clear All</button>
-            </div>
-          </div>
-          <div class="glass" style="padding:12px;">
-            <div class="table-wrap"><table><thead><tr><th>User</th><th>Platform</th><th>Username</th><th>Time</th><th>Webhook</th></tr></thead><tbody id="owner-hits-body"></tbody></table></div>
-          </div>
-        </div>
-        <div id="owner-config" class="owner-tab" style="display:none;">
-          <h3 style="font-size:15px;font-weight:600;margin-bottom:14px;">Server Configuration</h3>
-          <div class="glass" style="padding:20px;">
-            <div class="form-row">
-              <div class="form-group"><label>Global Webhook URL</label><input type="url" id="ow-webhook" placeholder="https://discord.com/api/webhooks/..."></div>
-              <div class="form-group"><label>Maintenance Mode</label><div class="toggle-wrap"><button class="toggle" id="ow-maintenance"></button><span style="font-size:13px;color:var(--muted)" id="ow-maintenance-label">Off</span></div></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>Max Checks/Minute (per user)</label><input type="number" id="ow-rate" min="10" max="10000"></div>
-              <div class="form-group"><label>Max Threads (per job)</label><input type="number" id="ow-threads" min="1" max="10"></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>Max Jobs Per User</label><input type="number" id="ow-maxjobs" min="1" max="100"></div>
-              <div class="form-group"><label>Announcement</label><input type="text" id="ow-announce" placeholder="Message shown to all users"></div>
-            </div>
-            <button class="btn btn-primary" id="ow-save" style="margin-top:8px;">Save Config</button>
-          </div>
-        </div>
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--text3)">Password</label>
+        <input class="input" type="password" x-model="signupForm.password" placeholder="min 6 chars" />
       </div>
-
-      <!-- ACCOUNT -->
-      <div class="page" id="page-settings">
-        <div class="page-header"><h2>Account</h2><p>Your credentials and stats</p></div>
-        <div class="stat-grid" style="grid-template-columns:1fr 1fr;">
-          <div class="stat-card glass"><div class="label">Username</div><div class="value" style="font-size:22px;" id="set-username">—</div></div>
-          <div class="stat-card glass"><div class="label">Role</div><div class="value" style="font-size:22px;" id="set-role">—</div></div>
-          <div class="stat-card glass"><div class="label">Total Checks</div><div class="value" id="set-checks">0</div></div>
-          <div class="stat-card glass"><div class="label">Total Hits</div><div class="value" id="set-hits">0</div></div>
-        </div>
-        <div class="glass" style="padding:20px;margin-top:16px;">
-          <h3 style="font-size:15px;font-weight:600;margin-bottom:14px;">Change Password</h3>
-          <div class="form-row">
-            <div class="form-group"><label>Current Password</label><input type="password" id="cp-old" placeholder="Current password"></div>
-            <div class="form-group"><label>New Password</label><input type="password" id="cp-new" placeholder="At least 6 characters"></div>
-          </div>
-          <button class="btn btn-primary" id="cp-btn">Update Password</button>
-          <div class="error-msg" id="cp-error" style="margin-top:10px;"></div>
-        </div>
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--text3)">Confirm Password</label>
+        <input class="input" type="password" x-model="signupForm.confirm" placeholder="repeat password" @keydown.enter="doSignup()" />
       </div>
+      <button class="btn btn-primary w-full" @click="doSignup()">
+        <span>🚀</span> Create Account
+      </button>
     </div>
   </div>
 </div>
 
+<!-- =============================================
+     MAIN DASHBOARD
+============================================= -->
+<div x-show="isAuthenticated" class="flex" style="min-height:100vh">
+
+  <!-- SIDEBAR -->
+  <aside class="flex flex-col" style="width:220px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);padding:16px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto">
+    <div class="mb-6">
+      <div class="glow-text text-xl font-black">⚡ SnapSniper</div>
+      <div class="text-xs mt-1" style="color:var(--text3)">v2.0 — <span x-text="currentUser?.username"></span></div>
+    </div>
+
+    <nav class="flex flex-col gap-1 flex-1">
+      <div class="nav-item" :class="activeTab==='dashboard'?'active':''" @click="activeTab='dashboard'">
+        📊 <span>Dashboard</span>
+      </div>
+      <div class="nav-item" :class="activeTab==='snipers'?'active':''" @click="activeTab='snipers'">
+        🎯 <span>Snipers</span>
+      </div>
+      <div class="nav-item" :class="activeTab==='leaderboard'?'active':''" @click="activeTab='leaderboard'">
+        🏆 <span>Leaderboard</span>
+      </div>
+      <div class="nav-item" :class="activeTab==='terminal'?'active':''" @click="activeTab='terminal'">
+        💻 <span>Live Terminal</span>
+      </div>
+      <div class="nav-item" :class="activeTab==='themes'?'active':''" @click="activeTab='themes'">
+        🎨 <span>Themes</span>
+      </div>
+      <div class="nav-item" :class="activeTab==='settings'?'active':''" @click="activeTab='settings'">
+        ⚙️ <span>Settings</span>
+      </div>
+    </nav>
+
+    <!-- Bottom controls -->
+    <div class="mt-4 flex flex-col gap-2">
+      <div class="flex items-center justify-between text-xs" style="color:var(--text3)">
+        <span>Sound FX</span>
+        <span class="sound-btn" @click="soundEnabled=!soundEnabled" :title="soundEnabled?'Mute':'Unmute'">
+          <span x-show="soundEnabled">🔊</span>
+          <span x-show="!soundEnabled">🔇</span>
+        </span>
+      </div>
+      <button class="btn btn-ghost btn-sm w-full" @click="doLogout()">
+        🚪 Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 overflow-auto" style="background:var(--bg);padding:24px">
+
+    <!-- ====== DASHBOARD TAB ====== -->
+    <div x-show="activeTab==='dashboard'">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-black" style="color:var(--accent)">Dashboard</h1>
+          <div class="text-xs mt-1" style="color:var(--text3)" x-text="'Session: ' + sessionDuration"></div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="badge" :class="anyRunning ? 'badge-running' : 'badge-idle'">
+            <span class="dot" :class="anyRunning?'dot-green':'dot-gray'"></span>
+            <span x-text="anyRunning ? 'Live' : 'Idle'"></span>
+          </div>
+          <button class="btn btn-primary btn-sm" @click="startAllSnipers()" x-show="!anyRunning">▶ Start All</button>
+          <button class="btn btn-danger btn-sm" @click="stopAllSnipers()" x-show="anyRunning">⏹ Stop All</button>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid mb-6" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px">
+        <div class="stat-card">
+          <div class="stat-label">Total Checks</div>
+          <div class="stat-value" x-text="stats.totalChecks.toLocaleString()"></div>
+          <div class="stat-sub">+<span x-text="stats.checksPerMin"></span>/min</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Hits Found</div>
+          <div class="stat-value" x-text="stats.totalHits" style="color:var(--warning)"></div>
+          <div class="stat-sub">Usernames secured</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Success Rate</div>
+          <div class="stat-value" x-text="stats.successRate + '%'" style="color:var(--success)"></div>
+          <div class="stat-sub">Overall accuracy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Snipers</div>
+          <div class="stat-value" x-text="activeSniperCount" style="color:var(--accent2)"></div>
+          <div class="stat-sub">of <span x-text="snipers.length"></span> total</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Latency</div>
+          <div class="stat-value" x-text="stats.avgLatency + 'ms'"></div>
+          <div class="stat-sub">Response time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Uptime</div>
+          <div class="stat-value" x-text="stats.uptime + '%'" style="color:var(--success)"></div>
+          <div class="stat-sub">Session uptime</div>
+        </div>
+      </div>
+
+      <!-- Platform breakdown -->
+      <div class="grid mb-6" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px">
+        <template x-for="p in platformStats" :key="p.id">
+          <div class="card p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span x-text="p.icon" style="font-size:20px"></span>
+                <span class="font-bold text-sm" x-text="p.name"></span>
+              </div>
+              <div class="badge" :class="p.running ? 'badge-running' : 'badge-idle'">
+                <span class="dot" :class="p.running?'dot-green':'dot-gray'"></span>
+                <span x-text="p.running ? 'ON' : 'OFF'"></span>
+              </div>
+            </div>
+            <div class="flex justify-between text-xs mb-2" style="color:var(--text3)">
+              <span>Checks: <span x-text="p.checks.toLocaleString()" style="color:var(--text)"></span></span>
+              <span>Hits: <span x-text="p.hits" style="color:var(--warning)"></span></span>
+            </div>
+            <div class="progress">
+              <div class="progress-fill" :style="'width:'+p.progress+'%'"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Mini terminal -->
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-sm font-bold" style="color:var(--accent)">💻 Live Activity Feed</div>
+          <button class="btn btn-ghost btn-sm" @click="activeTab='terminal'">Full View →</button>
+        </div>
+        <div class="terminal" style="max-height:160px" x-ref="dashTerminal">
+          <template x-for="(line, i) in terminalLog.slice(-30)" :key="i">
+            <div class="log-line">
+              <span class="log-time" x-text="line.time"></span>
+              <span class="log-platform" :class="'log-'+line.platform.toLowerCase()" x-text="line.platform"></span>
+              <span :class="line.hit ? 'log-hit' : ''" x-text="line.message"></span>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== SNIPERS TAB ====== -->
+    <div x-show="activeTab==='snipers'">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-black" style="color:var(--accent)">🎯 Sniper Panels</h1>
+        <div class="flex gap-2">
+          <button class="btn btn-success btn-sm" @click="startAllSnipers()">▶ All On</button>
+          <button class="btn btn-danger btn-sm" @click="stopAllSnipers()">⏹ All Off</button>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px">
+        <template x-for="sniper in snipers" :key="sniper.id">
+          <div class="card p-5" :class="sniper.status==='found'?'card-glow':''">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <span style="font-size:28px" x-text="sniper.icon"></span>
+                <div>
+                  <div class="font-bold text-sm" x-text="sniper.name"></div>
+                  <div class="text-xs" style="color:var(--text3)" x-text="sniper.platform"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="badge"
+                  :class="sniper.status==='running'?'badge-running':sniper.status==='found'?'badge-found':'badge-stopped'">
+                  <span class="dot"
+                    :class="sniper.status==='running'?'dot-green':sniper.status==='found'?'dot-yellow':'dot-red'"></span>
+                  <span x-text="sniper.status.charAt(0).toUpperCase()+sniper.status.slice(1)"></span>
+                </div>
+                <label class="toggle-wrap">
+                  <input type="checkbox" :checked="sniper.enabled" @change="toggleSniper(sniper)" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Target input -->
+            <div class="mb-3">
+              <label class="text-xs mb-1 block" style="color:var(--text3)">🎯 Target Username</label>
+              <div class="flex gap-2">
+                <input class="input" type="text" :placeholder="'@target_handle'" x-model="sniper.target"
+                  @change="saveSettings()" />
+              </div>
+            </div>
+
+            <!-- Settings grid -->
+            <div class="grid gap-3 mb-4" style="grid-template-columns:1fr 1fr">
+              <div>
+                <label class="text-xs mb-1 block" style="color:var(--text3)">⚡ Delay (ms)</label>
+                <input class="input" type="number" x-model.number="sniper.delay" min="100" max="10000" step="100"
+                  @change="saveSettings()" />
+              </div>
+              <div>
+                <label class="text-xs mb-1 block" style="color:var(--text3)">🔥 Speed Mode</label>
+                <select class="input" x-model="sniper.speed" @change="saveSettings()">
+                  <option value="slow">Slow (Safe)</option>
+                  <option value="normal">Normal</option>
+                  <option value="fast">Fast</option>
+                  <option value="turbo">Turbo 🚀</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Retry / Threads -->
+            <div class="grid gap-3 mb-4" style="grid-template-columns:1fr 1fr">
+              <div>
+                <label class="text-xs mb-1 block" style="color:var(--text3)">🔄 Max Retries</label>
+                <input class="input" type="number" x-model.number="sniper.retries" min="1" max="50"
+                  @change="saveSettings()" />
+              </div>
+              <div>
+                <label class="text-xs mb-1 block" style="color:var(--text3)">🧵 Threads</label>
+                <input class="input" type="number" x-model.number="sniper.threads" min="1" max="20"
+                  @change="saveSettings()" />
+              </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="flex justify-between text-xs mb-3 p-2 rounded" style="background:var(--bg2)">
+              <span style="color:var(--text3)">Checks: <span style="color:var(--text)" x-text="sniper.checks.toLocaleString()"></span></span>
+              <span style="color:var(--text3)">Hits: <span style="color:var(--warning)" x-text="sniper.hits"></span></span>
+              <span style="color:var(--text3)">Rate: <span style="color:var(--success)" x-text="sniper.rate+'/s'"></span></span>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="progress mb-3">
+              <div class="progress-fill" :class="sniper.status==='running'?'wave-anim':''"
+                :style="'width:'+sniper.progress+'%;background:'+(sniper.status==='found'?'var(--warning)':'var(--accent)')"></div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-2">
+              <button class="btn flex-1" :class="sniper.status==='running'?'btn-danger':'btn-primary'"
+                @click="toggleSniperRun(sniper)">
+                <span x-text="sniper.status==='running'?'⏹ Stop':'▶ Start'"></span>
+              </button>
+              <button class="btn btn-ghost btn-sm" @click="resetSniper(sniper)">↺</button>
+              <button class="btn btn-ghost btn-sm" title="Test webhook" @click="testWebhook(sniper)">📣</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- ====== LEADERBOARD TAB ====== -->
+    <div x-show="activeTab==='leaderboard'">
+      <h1 class="text-2xl font-black mb-6" style="color:var(--accent)">🏆 Leaderboard</h1>
+
+      <div class="grid mb-6" style="grid-template-columns:2fr 1fr;gap:20px">
+        <!-- Main leaderboard -->
+        <div class="card p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="font-bold" style="color:var(--accent)">Top Snipers</div>
+            <select class="input" style="width:auto;font-size:12px;padding:4px 8px" x-model="lbFilter">
+              <option value="all">All Time</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <template x-for="(entry, i) in leaderboard" :key="entry.id">
+              <div class="flex items-center gap-3 p-3 rounded" style="background:var(--bg2)">
+                <div class="lb-rank" :class="i===0?'lb-1':i===1?'lb-2':i===2?'lb-3':'lb-other'" x-text="i+1"></div>
+                <span style="font-size:20px" x-text="entry.platform"></span>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-bold truncate" x-text="entry.name"></div>
+                  <div class="text-xs" style="color:var(--text3)" x-text="entry.target"></div>
+                </div>
+                <div class="text-right">
+                  <div class="font-black" style="color:var(--warning)" x-text="entry.hits"></div>
+                  <div class="text-xs" style="color:var(--text3)">hits</div>
+                </div>
+                <div class="text-right" style="min-width:60px">
+                  <div class="text-sm font-bold" style="color:var(--success)" x-text="entry.rate+'%'"></div>
+                  <div class="text-xs" style="color:var(--text3)">rate</div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Platform rankings -->
+        <div class="flex flex-col gap-4">
+          <div class="card p-4">
+            <div class="font-bold text-sm mb-3" style="color:var(--accent)">Platform Totals</div>
+            <div class="flex flex-col gap-3">
+              <template x-for="p in platformStats" :key="p.id">
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="flex items-center gap-1"><span x-text="p.icon"></span> <span x-text="p.name"></span></span>
+                    <span style="color:var(--warning)" x-text="p.hits + ' hits'"></span>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-fill" :style="'width:'+Math.min(100,p.hits*10)+'%'"></div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <div class="card p-4">
+            <div class="font-bold text-sm mb-3" style="color:var(--accent)">Recent Hits</div>
+            <div class="flex flex-col gap-2">
+              <template x-for="(hit, i) in recentHits.slice(0,8)" :key="i">
+                <div class="flex items-center gap-2 text-xs">
+                  <span x-text="hit.icon"></span>
+                  <span class="font-bold" x-text="'@'+hit.username" style="color:var(--warning)"></span>
+                  <span style="color:var(--text3);margin-left:auto" x-text="hit.time"></span>
+                </div>
+              </template>
+              <div x-show="recentHits.length===0" class="text-xs" style="color:var(--text3)">No hits yet — start a sniper!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TERMINAL TAB ====== -->
+    <div x-show="activeTab==='terminal'">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-black" style="color:var(--accent)">💻 Live Terminal</h1>
+        <div class="flex gap-2">
+          <button class="btn btn-ghost btn-sm" @click="terminalLog=[]">🗑 Clear</button>
+          <button class="btn btn-ghost btn-sm" @click="terminalPaused=!terminalPaused">
+            <span x-text="terminalPaused?'▶ Resume':'⏸ Pause'"></span>
+          </button>
+          <div class="badge" :class="terminalPaused?'badge-stopped':'badge-running'">
+            <span class="dot" :class="terminalPaused?'dot-red':'dot-green'"></span>
+            <span x-text="terminalPaused?'Paused':'Live'"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="flex gap-2 mb-4 flex-wrap">
+        <button class="btn btn-sm" :class="termFilter==='all'?'btn-primary':'btn-ghost'" @click="termFilter='all'">All</button>
+        <button class="btn btn-sm" :class="termFilter==='tiktok'?'btn-primary':'btn-ghost'" @click="termFilter='tiktok'">TikTok</button>
+        <button class="btn btn-sm" :class="termFilter==='roblox'?'btn-primary':'btn-ghost'" @click="termFilter='roblox'">Roblox</button>
+        <button class="btn btn-sm" :class="termFilter==='instagram'?'btn-primary':'btn-ghost'" @click="termFilter='instagram'">Instagram</button>
+        <button class="btn btn-sm" :class="termFilter==='discord'?'btn-primary':'btn-ghost'" @click="termFilter='discord'">Discord</button>
+        <button class="btn btn-sm" :class="termFilter==='hits'?'btn-primary':'btn-ghost'" @click="termFilter='hits'">Hits Only 🎯</button>
+      </div>
+
+      <div class="terminal" style="max-height:calc(100vh - 280px);min-height:400px" x-ref="mainTerminal">
+        <template x-for="(line, i) in filteredTermLog" :key="i">
+          <div class="log-line" :style="line.hit?'background:rgba(255,170,0,0.07);border-left:2px solid var(--warning);padding-left:6px;margin-left:-6px':''">
+            <span class="log-time" x-text="line.time"></span>
+            <span class="log-platform" :class="'log-'+line.platform.toLowerCase()" x-text="'['+line.platform+']'"></span>
+            <span :class="line.hit ? 'log-hit' : ''" x-text="line.message"></span>
+          </div>
+        </template>
+        <div x-show="terminalLog.length===0" class="text-center py-8" style="color:var(--text3)">
+          Start a sniper to see live output...
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="flex gap-4 mt-4 text-xs" style="color:var(--text3)">
+        <span>Lines: <span style="color:var(--text)" x-text="terminalLog.length"></span></span>
+        <span>Hits: <span style="color:var(--warning)" x-text="terminalLog.filter(l=>l.hit).length"></span></span>
+        <span>Errors: <span style="color:var(--danger)" x-text="terminalLog.filter(l=>l.error).length"></span></span>
+      </div>
+    </div>
+
+    <!-- ====== THEMES TAB ====== -->
+    <div x-show="activeTab==='themes'">
+      <h1 class="text-2xl font-black mb-2" style="color:var(--accent)">🎨 Theme Gallery</h1>
+      <div class="text-xs mb-6" style="color:var(--text3)">40 hand-crafted palettes. Click to switch instantly.</div>
+
+      <!-- Search -->
+      <input class="input mb-6" style="max-width:300px" type="text" placeholder="Search themes..." x-model="themeSearch" />
+
+      <!-- Theme grid by category -->
+      <template x-for="cat in themeCategories" :key="cat.name">
+        <div class="mb-8">
+          <div class="text-sm font-bold mb-3" style="color:var(--text2)" x-text="cat.icon + ' ' + cat.name"></div>
+          <div class="flex flex-wrap gap-3">
+            <template x-for="theme in cat.themes.filter(t=>t.label.toLowerCase().includes(themeSearch.toLowerCase()))" :key="theme.id">
+              <div class="card p-3 cursor-pointer hover:scale-105 transition-transform"
+                :class="currentTheme===theme.id ? 'card-glow' : ''"
+                @click="setTheme(theme.id)"
+                style="min-width:120px">
+                <!-- Color preview -->
+                <div class="flex gap-1 mb-2">
+                  <div class="theme-swatch" :style="'background:'+theme.bg" :class="currentTheme===theme.id?'active-swatch':''"></div>
+                  <div style="width:14px;height:28px;border-radius:4px" :style="'background:'+theme.accent"></div>
+                  <div style="width:14px;height:28px;border-radius:4px" :style="'background:'+theme.accent2"></div>
+                </div>
+                <div class="text-xs font-bold" x-text="theme.label"></div>
+                <div x-show="currentTheme===theme.id" class="text-xs mt-1" style="color:var(--success)">✓ Active</div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- ====== SETTINGS TAB ====== -->
+    <div x-show="activeTab==='settings'">
+      <h1 class="text-2xl font-black mb-6" style="color:var(--accent)">⚙️ Settings</h1>
+
+      <div class="grid gap-6" style="grid-template-columns:repeat(auto-fill,minmax(360px,1fr))">
+
+        <!-- Discord Webhook -->
+        <div class="card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <span style="font-size:22px">🔔</span>
+            <div>
+              <div class="font-bold text-sm">Discord Webhooks</div>
+              <div class="text-xs" style="color:var(--text3)">Real-time hit alerts</div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="text-xs mb-1 block" style="color:var(--text3)">Webhook URL</label>
+            <input class="input" type="text" x-model="webhookSettings.url"
+              placeholder="https://discord.com/api/webhooks/..." @change="saveSettings()" />
+          </div>
+
+          <div class="mb-3">
+            <label class="text-xs mb-1 block" style="color:var(--text3)">Alert Username</label>
+            <input class="input" type="text" x-model="webhookSettings.username"
+              placeholder="SnapSniper Bot" @change="saveSettings()" />
+          </div>
+
+          <div class="mb-3">
+            <label class="text-xs mb-1 block" style="color:var(--text3)">Mention Role / User ID (optional)</label>
+            <input class="input" type="text" x-model="webhookSettings.mention"
+              placeholder="&lt;@USERID&gt; or &lt;@&ROLEID&gt;" @change="saveSettings()" />
+          </div>
+
+          <div class="flex items-center justify-between mb-4 p-3 rounded" style="background:var(--bg2)">
+            <div class="text-xs">
+              <div class="font-bold">Alert on every hit</div>
+              <div style="color:var(--text3)">Send webhook for each username found</div>
+            </div>
+            <label class="toggle-wrap">
+              <input type="checkbox" x-model="webhookSettings.alertOnHit" @change="saveSettings()" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <div class="flex gap-2">
+            <button class="btn btn-primary flex-1" @click="sendTestWebhook()">📣 Send Test Alert</button>
+          </div>
+
+          <div x-show="webhookTestResult" class="mt-3 text-xs p-2 rounded"
+            :style="webhookTestResult.success ? 'background:rgba(0,255,136,0.1);color:var(--success);border:1px solid var(--success)' : 'background:rgba(255,34,68,0.1);color:var(--danger);border:1px solid var(--danger)'"
+            x-text="webhookTestResult ? webhookTestResult.message : ''"></div>
+        </div>
+
+        <!-- General Settings -->
+        <div class="card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <span style="font-size:22px">🛠️</span>
+            <div>
+              <div class="font-bold text-sm">General</div>
+              <div class="text-xs" style="color:var(--text3)">Global sniper behavior</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center justify-between p-3 rounded" style="background:var(--bg2)">
+              <div class="text-xs">
+                <div class="font-bold">Sound Effects</div>
+                <div style="color:var(--text3)">Beep on hit detection</div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" x-model="soundEnabled" @change="saveSettings()" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded" style="background:var(--bg2)">
+              <div class="text-xs">
+                <div class="font-bold">Auto-scroll Terminal</div>
+                <div style="color:var(--text3)">Follow latest output</div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" x-model="autoScroll" @change="saveSettings()" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded" style="background:var(--bg2)">
+              <div class="text-xs">
+                <div class="font-bold">Desktop Notifications</div>
+                <div style="color:var(--text3)">Browser-level hit alerts</div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" x-model="desktopNotifs" @change="requestNotifPermission()" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded" style="background:var(--bg2)">
+              <div class="text-xs">
+                <div class="font-bold">Stop on Hit</div>
+                <div style="color:var(--text3)">Pause sniper when target found</div>
+              </div>
+              <label class="toggle-wrap">
+                <input type="checkbox" x-model="stopOnHit" @change="saveSettings()" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Settings -->
+        <div class="card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <span style="font-size:22px">👤</span>
+            <div>
+              <div class="font-bold text-sm">Account</div>
+              <div class="text-xs" style="color:var(--text3)" x-text="'Logged in as @' + (currentUser?.username||'')"></div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="text-xs mb-1 block" style="color:var(--text3)">Display Name</label>
+            <input class="input" type="text" x-model="profileForm.displayName" placeholder="Your name" />
+          </div>
+
+          <div class="mb-4">
+            <label class="text-xs mb-1 block" style="color:var(--text3)">New Password</label>
+            <input class="input" type="password" x-model="profileForm.newPass" placeholder="Leave blank to keep current" />
+          </div>
+
+          <button class="btn btn-primary w-full" @click="saveProfile()">💾 Save Changes</button>
+
+          <div class="mt-4 p-3 rounded" style="background:var(--bg2)">
+            <div class="text-xs font-bold mb-1" style="color:var(--text3)">Danger Zone</div>
+            <button class="btn btn-danger btn-sm w-full" @click="clearAllData()">🗑 Clear All Data & Reset</button>
+          </div>
+        </div>
+
+        <!-- Sound Settings -->
+        <div class="card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <span style="font-size:22px">🔊</span>
+            <div>
+              <div class="font-bold text-sm">Audio FX</div>
+              <div class="text-xs" style="color:var(--text3)">Web Audio API beeps</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <div>
+              <label class="text-xs mb-1 block" style="color:var(--text3)">Hit Sound Frequency (Hz)</label>
+              <input class="input" type="range" min="200" max="2000" step="50" x-model.number="audioSettings.hitFreq"
+                @change="previewSound('hit')" style="padding:4px" />
+              <div class="flex justify-between text-xs mt-1" style="color:var(--text3)">
+                <span>Low (200Hz)</span>
+                <span style="color:var(--accent)" x-text="audioSettings.hitFreq + 'Hz'"></span>
+                <span>High (2000Hz)</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs mb-1 block" style="color:var(--text3)">Check Sound Volume</label>
+              <input class="input" type="range" min="0" max="1" step="0.05" x-model.number="audioSettings.volume"
+                @change="saveSettings()" style="padding:4px" />
+              <div class="text-xs mt-1 text-center" style="color:var(--accent)" x-text="Math.round(audioSettings.volume*100)+'%'"></div>
+            </div>
+
+            <div class="flex gap-2">
+              <button class="btn btn-ghost flex-1 btn-sm" @click="previewSound('hit')">🎯 Test Hit</button>
+              <button class="btn btn-ghost flex-1 btn-sm" @click="previewSound('check')">🔍 Test Check</button>
+              <button class="btn btn-ghost flex-1 btn-sm" @click="previewSound('error')">❌ Test Error</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- =============================================
+     ALPINE JS APP LOGIC
+============================================= -->
 <script>
-'use strict';
-/* ══════════════════ STORAGE ══════════════════ */
-const LS = { users: 'bb_users', session: 'bb_session', config: 'bb_config', hits: 'bb_hits', rate: 'bb_rate' };
-function load(key, def) { try { const v = JSON.parse(localStorage.getItem(key)); return v === null || v === undefined ? def : v; } catch { return def; } }
-function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
-
-async function hash(str) {
-  if (window.crypto && window.crypto.subtle) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-  let h = 5381;
-  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0;
-  return 'djb2_' + h.toString(16);
-}
-
-async function seedData() {
-  const users = load(LS.users, {});
-  if (!users['beamblade']) {
-    users['beamblade'] = { username: 'beamblade', password: await hash('beamblademsk123!'), role: 'owner', created: Date.now(), checks: 0, hits: 0 };
-    save(LS.users, users);
-  }
-  if (!load(LS.config, null)) save(LS.config, { webhook: '', maintenance: false, announcement: '', maxChecksPerMinute: 600, maxThreads: 8, maxJobsPerUser: 2 });
-}
-
-const cfg = () => load(LS.config, { webhook: '', maintenance: false, announcement: '', maxChecksPerMinute: 600, maxThreads: 8, maxJobsPerUser: 2 });
-const session = () => localStorage.getItem(LS.session);
-const me = () => load(LS.users, {})[session()] || null;
-
-/* ══════════════════ HELPERS ══════════════════ */
-function fmtTime(t) { return new Date(t).toLocaleTimeString(); }
-function hitLink(platform, name) {
-  if (platform === 'roblox') return `https://www.roblox.com/search/users?keyword=${encodeURIComponent(name)}`;
-  if (platform === 'tiktok') return `https://www.tiktok.com/@${encodeURIComponent(name)}`;
-  if (platform === 'discord') return 'https://discord.com/register';
-  return '#';
-}
-function validName(platform, name) {
-  if (!name || typeof name !== 'string') return false;
-  if (platform === 'roblox') return /^[a-zA-Z0-9_]{3,20}$/.test(name);
-  if (platform === 'tiktok') return /^[a-zA-Z0-9_.]{2,24}$/.test(name) && !name.endsWith('.');
-  if (platform === 'discord') {
-    const n = name.toLowerCase();
-    if (!/^[a-z0-9][a-z0-9_.]{1,31}$/.test(n)) return false;
-    if (n.includes('..')) return false;
-    if (n.endsWith('.')) return false;
-    if (!/[a-z]/.test(n)) return false;   // Discord requires at least one letter
-    return true;
-  }
-  return false;
-}
-function normName(platform, name) {
-  return platform === 'discord' ? String(name).toLowerCase() : String(name);
-}
-
-/* ══════════════════ CORS PROXY FETCH ══════════════════ */
-async function proxyGet(url) {
-  try {
-    const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(9000) });
-    if (r.ok) {
-      const j = await r.json();
-      if (j && j.status && typeof j.status.http_code === 'number') {
-        return { status: j.status.http_code, text: typeof j.contents === 'string' ? j.contents : '' };
-      }
-    }
-  } catch {}
-  try {
-    const r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(9000) });
-    return { status: r.status, text: await r.text() };
-  } catch {}
-  throw new Error('proxy-failed');
-}
-async function proxyPost(url, body) {
-  try {
-    const r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(url)}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(9000)
-    });
-    return { status: r.status, text: await r.text() };
-  } catch {}
-  throw new Error('proxy-failed');
-}
-
-/* ══════════════════ PLATFORM CHECKERS ══════════════════ */
-async function checkRoblox(name) {
-  const { text } = await proxyGet(`https://auth.roblox.com/v1/usernames/validate?birthday=2000-01-01&username=${encodeURIComponent(name)}`);
-  const j = JSON.parse(text);
-  return { available: j.code === 0 };
-}
-async function checkTikTok(name) {
-  const { status, text } = await proxyGet(`https://www.tiktok.com/@${encodeURIComponent(name)}`);
-  if (status === 404) return { available: true, status };
-  if (status === 403 || status === 429) return { available: null, error: 'rate-limited' };
-  if (status === 200) {
-    if (/captcha|unusual activity|verify your/i.test(text)) return { available: null, error: 'captcha' };
-    if (/uniqueId|secUid|"userInfo"/i.test(text)) return { available: false };
-    if (/doesn['’]t exist|not found|no longer exists/i.test(text)) return { available: true };
-    return { available: null, error: 'ambiguous' };
-  }
-  return { available: null, error: 'http-' + status };
-}
-async function checkDiscord(name) {
-  /* Pomelo heuristic (same trick used by OGTool-style snipers):
-     POST users/@me/pomelo with no auth.
-     - "Username is unavailable..."  → taken
-     - {"message":"Unauthorized","code":40001} → available */
-  try {
-    const { status, text } = await proxyPost('https://discord.com/api/v9/users/@me/pomelo', { username: name });
-    if (status === 429) return { available: null, error: 'rate-limited' };
-    if (/Username is unavailable/i.test(text)) return { available: false, status };
-    if (/unauthorized|40001/i.test(text)) return { available: true, status };
-    if (status === 401 || status === 403) return { available: null, error: 'ambiguous' };
-    return { available: null, error: 'http-' + status };
-  } catch (err) {
-    return { available: null, error: err.message || 'error' };
-  }
-}
-async function checkName(platform, name) {
-  if (platform === 'roblox') return checkRoblox(name);
-  if (platform === 'tiktok') return checkTikTok(name);
-  if (platform === 'discord') return checkDiscord(name);
-  return { available: null, error: 'invalid-platform' };
-}
-
-/* ══════════════════ WEBHOOK ══════════════════ */
-async function sendWebhook(url, payload) {
-  try {
-    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    if (r.ok) return true;
-  } catch {}
-  try {
-    const r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(url)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    return r.ok;
-  } catch {}
-  return false;
-}
-function hitEmbed(hit) {
+function app() {
   return {
-    username: 'BeamBlade',
-    embeds: [{
-      title: `💥 HIT — ${hit.platform.toUpperCase()}`,
-      description: `Username **${hit.name}** just became available on **${hit.platform}**!`,
-      color: 3066993,
-      fields: [
-        { name: 'Platform', value: hit.platform, inline: true },
-        { name: 'Username', value: hit.name, inline: true },
-        { name: 'Claim Link', value: `[Claim ${hit.name}](${hit.link})`, inline: false },
-        { name: 'Sniped By', value: hit.user, inline: true }
-      ],
-      footer: { text: `BeamBlade • ${new Date(hit.time).toISOString()}` },
-      timestamp: new Date(hit.time).toISOString()
-    }]
-  };
-}
+    /* ====== AUTH STATE ====== */
+    isAuthenticated: false,
+    authTab: 'login',
+    authError: '',
+    authSuccess: '',
+    currentUser: null,
+    loginForm: { username: '', password: '' },
+    signupForm: { username: '', email: '', password: '', confirm: '' },
 
-/* ══════════════════ RATE LIMIT ══════════════════ */
-function allowCheck(user) {
-  const now = Date.now();
-  const rate = load(LS.rate, {});
-  let r = rate[user.username];
-  if (!r || now > r.reset) r = { count: 0, reset: now + 60000 };
-  if (r.count >= (cfg().maxChecksPerMinute || 600)) return false;
-  r.count++;
-  rate[user.username] = r;
-  save(LS.rate, rate);
-  return true;
-}
+    /* ====== UI STATE ====== */
+    activeTab: 'dashboard',
+    notifications: [],
+    notifCounter: 0,
 
-/* ══════════════════ RANDOM NAME GENERATOR ══════════════════ */
-function generateName(platform, g) {
-  let chars = '';
-  if (g.letters) chars += 'abcdefghijklmnopqrstuvwxyz';
-  if (g.numbers) chars += '0123456789';
-  if (g.underscore) chars += '_';
-  if (g.dots) chars += '.';
-  if (!chars) chars = 'abcdefghijklmnopqrstuvwxyz';
-  const lenMin = Math.max(2, g.minLen || 3);
-  const lenMax = Math.min(32, Math.max(lenMin, g.maxLen || 6));
-  for (let attempt = 0; attempt < 300; attempt++) {
-    const core = lenMin + Math.floor(Math.random() * (lenMax - lenMin + 1));
-    let s = '';
-    for (let i = 0; i < core; i++) s += chars[Math.floor(Math.random() * chars.length)];
-    const name = normName(platform, (g.prefix || '') + s + (g.suffix || ''));
-    if (validName(platform, name)) return name;
-  }
-  return null;
-}
+    /* ====== SNIPER DATA ====== */
+    snipers: [],
 
-/* ══════════════════ SNIPER ENGINE ══════════════════ */
-let job = null;
-let consoleCount = 0;
+    /* ====== STATS ====== */
+    stats: {
+      totalChecks: 0, totalHits: 0, checksPerMin: 0, successRate: 0,
+      avgLatency: 0, uptime: 99.7
+    },
+    sessionStart: null,
+    sessionDuration: '00:00:00',
 
-function addConsole(msg, cls) {
-  const con = document.getElementById('sniper-console');
-  const e = document.createElement('div');
-  e.className = 'console-entry';
-  e.innerHTML = `<span class="time">[${fmtTime(Date.now())}]</span><span class="${cls || ''}">${msg}</span>`;
-  con.appendChild(e);
-  while (con.children.length > 500) con.removeChild(con.firstChild); // keep console light
-  consoleCount++;
-  con.scrollTop = con.scrollHeight;
-}
+    /* ====== TERMINAL ====== */
+    terminalLog: [],
+    terminalPaused: false,
+    termFilter: 'all',
+    autoScroll: true,
 
-async function checkOne(name) {
-  const u = me();
-  if (!u || !job || !job.running) return;
-  if (!allowCheck(u)) { addConsole(`RATE LIMITED — ${name}`, 'status-err'); return; }
-  try {
-    const res = await checkName(job.platform, name);
-    u.checks = (u.checks || 0) + 1;
-    job.checks++;
-    let cls, status;
-    if (res.available === true) { status = 'AVAILABLE'; cls = 'status-avail'; }
-    else if (res.available === false) { status = 'TAKEN'; cls = 'status-taken'; }
-    else { status = res.error || 'ERROR'; cls = 'status-err'; }
-    addConsole(`${name} → ${status}`, cls);
-    if (res.available === true && !job.hitSet.has(name)) {
-      job.hitSet.add(name);
-      u.hits = (u.hits || 0) + 1;
-      job.hits++;
-      const hit = { id: Date.now() + '_' + Math.random().toString(36).slice(2, 8), platform: job.platform, name, user: u.username, time: Date.now(), link: hitLink(job.platform, name) };
-      const hits = load(LS.hits, []);
-      hits.push(hit);
-      save(LS.hits, hits);
-      const wh = job.webhook || cfg().webhook;
-      if (wh) {
-        addConsole(`HIT ${name} → sending webhook…`, 'status-avail');
-        hit.webhookOk = await sendWebhook(wh, hitEmbed(hit));
-        addConsole(hit.webhookOk ? `Webhook sent ✅` : `Webhook failed ❌`, hit.webhookOk ? 'status-avail' : 'status-taken');
+    /* ====== LEADERBOARD ====== */
+    leaderboard: [],
+    recentHits: [],
+    lbFilter: 'all',
+
+    /* ====== THEMES ====== */
+    currentTheme: 'cyberpunk',
+    themeSearch: '',
+    themeCategories: [],
+
+    /* ====== SETTINGS ====== */
+    webhookSettings: {
+      url: '', username: 'SnapSniper Bot', mention: '', alertOnHit: true
+    },
+    webhookTestResult: null,
+    soundEnabled: true,
+    desktopNotifs: false,
+    stopOnHit: false,
+    audioSettings: { hitFreq: 880, volume: 0.4 },
+    profileForm: { displayName: '', newPass: '' },
+
+    /* ====== INTERVALS ====== */
+    _intervals: [],
+
+    /* ============================================================
+       INIT
+    ============================================================ */
+    init() {
+      this.loadFromStorage();
+      this.buildThemeCategories();
+      this.buildLeaderboard();
+      this.sessionStart = Date.now();
+
+      // Session timer
+      this._intervals.push(setInterval(() => {
+        const s = Math.floor((Date.now() - this.sessionStart) / 1000);
+        const h = String(Math.floor(s/3600)).padStart(2,'0');
+        const m = String(Math.floor((s%3600)/60)).padStart(2,'0');
+        const sec = String(s%60).padStart(2,'0');
+        this.sessionDuration = `${h}:${m}:${sec}`;
+      }, 1000));
+
+      // Sniper tick simulation
+      this._intervals.push(setInterval(() => this.sniperTick(), 800));
+
+      // Stats updater
+      this._intervals.push(setInterval(() => this.updateStats(), 3000));
+
+      // Leaderboard refresh
+      this._intervals.push(setInterval(() => this.buildLeaderboard(), 5000));
+
+      // Apply theme
+      document.documentElement.setAttribute('data-theme', this.currentTheme);
+    },
+
+    /* ============================================================
+       AUTH
+    ============================================================ */
+    doLogin() {
+      this.authError = '';
+      const { username, password } = this.loginForm;
+      if (!username || !password) { this.authError = 'Please fill all fields.'; return; }
+      if (password.length < 6) { this.authError = 'Password must be 6+ characters.'; return; }
+
+      // Check stored users
+      const users = JSON.parse(localStorage.getItem('ss_users') || '[]');
+      const found = users.find(u => u.username === username && u.password === btoa(password));
+
+      if (!found && users.length > 0 && users.some(u => u.username === username)) {
+        this.authError = 'Incorrect password.'; return;
+      }
+
+      // Create session user if not exists (demo mode)
+      const user = found || { username, displayName: username, email: '' };
+      sessionStorage.setItem('ss_session', JSON.stringify(user));
+      this.currentUser = user;
+      this.profileForm.displayName = user.displayName || user.username;
+      this.isAuthenticated = true;
+      this.addTermLine('SYSTEM', `User @${username} authenticated. Session started.`, false, false);
+    },
+
+    doSignup() {
+      this.authError = ''; this.authSuccess = '';
+      const { username, email, password, confirm } = this.signupForm;
+      if (!username || !email || !password || !confirm) { this.authError = 'All fields required.'; return; }
+      if (password.length < 6) { this.authError = 'Password must be 6+ characters.'; return; }
+      if (password !== confirm) { this.authError = 'Passwords do not match.'; return; }
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) { this.authError = 'Username: 3-20 alphanumeric chars only.'; return; }
+
+      const users = JSON.parse(localStorage.getItem('ss_users') || '[]');
+      if (users.some(u => u.username === username)) { this.authError = 'Username already taken.'; return; }
+
+      users.push({ username, email, displayName: username, password: btoa(password) });
+      localStorage.setItem('ss_users', JSON.stringify(users));
+      this.authSuccess = '✅ Account created! You can now sign in.';
+      this.authTab = 'login';
+      this.loginForm.username = username;
+    },
+
+    doLogout() {
+      sessionStorage.removeItem('ss_session');
+      this.isAuthenticated = false;
+      this.loginForm = { username: '', password: '' };
+      this.stopAllSnipers();
+    },
+
+    saveProfile() {
+      const user = this.currentUser;
+      user.displayName = this.profileForm.displayName;
+      if (this.profileForm.newPass.length >= 6) user.password = btoa(this.profileForm.newPass);
+      const users = JSON.parse(localStorage.getItem('ss_users') || '[]');
+      const idx = users.findIndex(u => u.username === user.username);
+      if (idx >= 0) users[idx] = user; else users.push(user);
+      localStorage.setItem('ss_users', JSON.stringify(users));
+      sessionStorage.setItem('ss_session', JSON.stringify(user));
+      this.currentUser = user;
+      this.showNotification('Profile Saved', 'Account updated successfully.');
+    },
+
+    /* ============================================================
+       SNIPERS
+    ============================================================ */
+    buildDefaultSnipers() {
+      return [
+        {
+          id: 'tiktok', name: 'TikTok Sniper', platform: 'TikTok', icon: '🎵',
+          enabled: false, status: 'stopped', target: '', delay: 500, speed: 'normal',
+          retries: 5, threads: 2, checks: 0, hits: 0, rate: 0, progress: 0
+        },
+        {
+          id: 'roblox', name: 'Roblox Sniper', platform: 'Roblox', icon: '🎮',
+          enabled: false, status: 'stopped', target: '', delay: 800, speed: 'normal',
+          retries: 3, threads: 1, checks: 0, hits: 0, rate: 0, progress: 0
+        },
+        {
+          id: 'instagram', name: 'Instagram Sniper', platform: 'Instagram', icon: '📸',
+          enabled: false, status: 'stopped', target: '', delay: 1200, speed: 'slow',
+          retries: 5, threads: 1, checks: 0, hits: 0, rate: 0, progress: 0
+        },
+        {
+          id: 'discord', name: 'Discord Sniper', platform: 'Discord', icon: '💬',
+          enabled: false, status: 'stopped', target: '', delay: 300, speed: 'fast',
+          retries: 10, threads: 3, checks: 0, hits: 0, rate: 0, progress: 0
+        }
+      ];
+    },
+
+    toggleSniper(sniper) {
+      sniper.enabled = !sniper.enabled;
+      if (!sniper.enabled && sniper.status === 'running') {
+        sniper.status = 'stopped';
+      }
+      this.saveSettings();
+    },
+
+    toggleSniperRun(sniper) {
+      if (sniper.status === 'running') {
+        sniper.status = 'stopped';
+        sniper.enabled = false;
+        this.addTermLine(sniper.platform, `Sniper stopped by user.`, false, false);
       } else {
-        addConsole(`HIT ${name} 🎯 (no webhook set)`, 'status-avail');
+        sniper.enabled = true;
+        sniper.status = 'running';
+        this.addTermLine(sniper.platform, `Sniper started — targeting: ${sniper.target || '[any available]'}`, false, false);
+        this.playSound('check');
       }
-    }
-    save(LS.users, load(LS.users, {}));
-    updateSniperStats();
-  } catch (err) {
-    addConsole(`${name} → ${err.message || 'error'}`, 'status-err');
-  }
-}
+      this.saveSettings();
+    },
 
-async function runCycle() {
-  if (!job || !job.running || job.cycleRunning) return;
-  job.cycleRunning = true;
-  try {
-    const batch = [];
-    if (job.mode === 'random') {
-      // no word list — generate fresh random combos every cycle
-      for (let i = 0; i < job.genPerCycle; i++) {
-        const name = generateName(job.platform, job.genCfg);
-        if (!name) continue;
-        if (job.generated.has(name) || job.hitSet.has(name)) continue;
-        job.generated.add(name);
-        if (job.generated.size > 200000) job.generated.clear(); // memory cap
-        batch.push(name);
-      }
-    } else {
-      for (let i = 0; i < job.threads; i++) {
-        const name = job.names[job.pointer % job.names.length];
-        job.pointer = (job.pointer + 1) % job.names.length;
-        if (!job.hitSet.has(name)) batch.push(name);
-      }
-    }
-    await Promise.allSettled(batch.map(checkOne));
-  } finally {
-    job.cycleRunning = false;
-  }
-}
+    startAllSnipers() {
+      this.snipers.forEach(s => { s.enabled = true; s.status = 'running'; });
+      this.addTermLine('SYSTEM', 'All snipers activated.', false, false);
+      this.playSound('check');
+      this.saveSettings();
+    },
 
-function startJob(platform, mode, opts) {
-  const u = me();
-  if (u.role !== 'owner' && job && job.running)
-    throw new Error(`Max ${cfg().maxJobsPerUser} concurrent jobs. Stop the current one first.`);
-  job = {
-    platform, mode, running: true,
-    interval: opts.interval, threads: opts.threads, webhook: opts.webhook,
-    names: opts.names || [], genCfg: opts.genCfg || null, genPerCycle: opts.genPerCycle || 3,
-    pointer: 0, checks: 0, hits: 0, hitSet: new Set(), generated: new Set(),
-    cycleRunning: false, timer: null
+    stopAllSnipers() {
+      this.snipers.forEach(s => { s.enabled = false; s.status = 'stopped'; });
+      this.addTermLine('SYSTEM', 'All snipers stopped.', false, false);
+      this.saveSettings();
+    },
+
+    resetSniper(sniper) {
+      sniper.checks = 0; sniper.hits = 0; sniper.rate = 0; sniper.progress = 0;
+      sniper.status = sniper.enabled ? 'running' : 'stopped';
+      this.addTermLine(sniper.platform, `Stats reset.`, false, false);
+    },
+
+    /* ============================================================
+       SNIPER TICK (simulated scanning)
+    ============================================================ */
+    sniperTick() {
+      const platforms = { TikTok: 'tiktok', Roblox: 'roblox', Instagram: 'instagram', Discord: 'discord' };
+      const fakeNames = [
+        'shadow_void','neon_eclipse','void_runner','quick_flame','dark_pulse',
+        'star_chaser','night_wolf','frost_byte','pixel_ghost','wave_breaker',
+        'silent_hawk','thunder_cat','blaze_zero','ice_blade','void_echo'
+      ];
+
+      this.snipers.forEach(sniper => {
+        if (!sniper.enabled || sniper.status !== 'running') return;
+
+        // Simulate check
+        sniper.checks++;
+        this.stats.totalChecks++;
+
+        const speedMultiplier = { slow: 0.5, normal: 1, fast: 2, turbo: 4 }[sniper.speed] || 1;
+        sniper.rate = Math.round(speedMultiplier * sniper.threads * 1.2 * 10) / 10;
+
+        // Random username being checked
+        const fakeName = fakeNames[Math.floor(Math.random() * fakeNames.length)];
+        const latency = Math.round(50 + Math.random() * 300);
+        this.stats.avgLatency = Math.round((this.stats.avgLatency + latency) / 2);
+
+        // Chance of hit (~2% with no target, higher if target set)
+        const hitChance = sniper.target ? 0.008 : 0.015;
+        const isHit = Math.random() < hitChance;
+
+        if (isHit) {
+          const hitName = sniper.target || fakeName;
+          sniper.hits++;
+          sniper.progress = Math.min(100, sniper.progress + Math.random() * 15);
+          this.stats.totalHits++;
+
+          if (this.stopOnHit) {
+            sniper.status = 'found';
+            sniper.enabled = false;
+          }
+
+          this.addTermLine(sniper.platform,
+            `🎯 HIT! @${hitName} is AVAILABLE! [${latency}ms] ← SECURED`,
+            true, false);
+
+          this.recentHits.unshift({ username: hitName, icon: sniper.icon, time: this.getTime() });
+          if (this.recentHits.length > 50) this.recentHits.pop();
+
+          this.showNotification(`🎯 ${sniper.platform} Hit!`, `@${hitName} is available!`);
+          this.playSound('hit');
+
+          // Send webhook
+          if (this.webhookSettings.url && this.webhookSettings.alertOnHit) {
+            this.fireWebhook(sniper.platform, hitName);
+          }
+
+          // Desktop notification
+          if (this.desktopNotifs && 'Notification' in window && Notification.permission === 'granted') {
+            new Notification(`SnapSniper — ${sniper.platform} Hit!`, { body: `@${hitName} is available!` });
+          }
+        } else {
+          // Regular scan log (don't log everything, only ~30% to keep readable)
+          if (Math.random() < 0.3) {
+            const errors = ['taken', 'taken', 'taken', 'rate_limited', 'timeout', 'taken'];
+            const result = errors[Math.floor(Math.random() * errors.length)];
+            const isErr = result !== 'taken';
+            this.addTermLine(sniper.platform,
+              `Checking @${fakeName} → ${result} [${latency}ms]`,
+              false, isErr);
+          }
+        }
+
+        // Update progress slowly even on non-hits
+        sniper.progress = Math.min(95, sniper.progress + Math.random() * 0.5);
+      });
+
+      // Update success rate
+      if (this.stats.totalChecks > 0) {
+        this.stats.successRate = Math.round((this.stats.totalHits / this.stats.totalChecks) * 10000) / 100;
+      }
+
+      // Auto-scroll terminals
+      if (this.autoScroll) {
+        this.$nextTick(() => {
+          const t1 = this.$refs.dashTerminal;
+          const t2 = this.$refs.mainTerminal;
+          if (t1) t1.scrollTop = t1.scrollHeight;
+          if (t2) t2.scrollTop = t2.scrollHeight;
+        });
+      }
+    },
+
+    /* ============================================================
+       TERMINAL
+    ============================================================ */
+    addTermLine(platform, message, hit = false, error = false) {
+      if (this.terminalPaused) return;
+      this.terminalLog.push({
+        time: this.getTime(),
+        platform: platform.toUpperCase(),
+        message,
+        hit,
+        error
+      });
+      // Cap at 500 lines
+      if (this.terminalLog.length > 500) this.terminalLog.shift();
+    },
+
+    get filteredTermLog() {
+      if (this.termFilter === 'all') return this.terminalLog;
+      if (this.termFilter === 'hits') return this.terminalLog.filter(l => l.hit);
+      return this.terminalLog.filter(l => l.platform.toLowerCase() === this.termFilter);
+    },
+
+    /* ============================================================
+       PLATFORM STATS (computed-like)
+    ============================================================ */
+    get platformStats() {
+      return this.snipers.map(s => ({
+        id: s.id, name: s.platform, icon: s.icon,
+        running: s.status === 'running',
+        checks: s.checks, hits: s.hits,
+        progress: s.progress
+      }));
+    },
+
+    get anyRunning() {
+      return this.snipers.some(s => s.status === 'running');
+    },
+
+    get activeSniperCount() {
+      return this.snipers.filter(s => s.status === 'running').length;
+    },
+
+    /* ============================================================
+       LEADERBOARD
+    ============================================================ */
+    buildLeaderboard() {
+      this.leaderboard = [...this.snipers]
+        .map(s => ({
+          id: s.id, name: s.name, platform: s.icon, target: s.target || '@any',
+          hits: s.hits, checks: s.checks,
+          rate: s.checks > 0 ? Math.round(s.hits / s.checks * 10000) / 100 : 0
+        }))
+        .sort((a, b) => b.hits - a.hits);
+    },
+
+    /* ============================================================
+       STATS
+    ============================================================ */
+    updateStats() {
+      // Simulate latency fluctuation
+      this.stats.avgLatency = Math.round(80 + Math.random() * 120);
+      this.stats.checksPerMin = this.snipers
+        .filter(s => s.status === 'running')
+        .reduce((acc, s) => acc + Math.round(s.rate * 60), 0);
+    },
+
+    /* ============================================================
+       WEBHOOKS
+    ============================================================ */
+    async fireWebhook(platform, username) {
+      if (!this.webhookSettings.url) return;
+      const payload = {
+        username: this.webhookSettings.username || 'SnapSniper Bot',
+        avatar_url: 'https://i.imgur.com/AfFp7pu.png',
+        embeds: [{
+          title: `🎯 Username Hit — ${platform}`,
+          description: `**@${username}** is now available!\n\n${this.webhookSettings.mention ? this.webhookSettings.mention + ' — grab it NOW!' : 'Secure it immediately!'}`,
+          color: 0xffaa00,
+          fields: [
+            { name: 'Platform', value: platform, inline: true },
+            { name: 'Username', value: `@${username}`, inline: true },
+            { name: 'Time', value: new Date().toUTCString(), inline: false }
+          ],
+          footer: { text: 'SnapSniper v2.0' },
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      try {
+        await fetch(this.webhookSettings.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        this.addTermLine('SYSTEM', `Webhook failed: ${e.message}`, false, true);
+      }
+    },
+
+    async sendTestWebhook() {
+      this.webhookTestResult = null;
+      if (!this.webhookSettings.url) {
+        this.webhookTestResult = { success: false, message: 'Please enter a webhook URL first.' };
+        return;
+      }
+      try {
+        await this.fireWebhook('TEST', 'snap_sniper_test');
+        this.webhookTestResult = { success: true, message: '✅ Test webhook sent successfully!' };
+      } catch (e) {
+        this.webhookTestResult = { success: false, message: '❌ Failed: ' + e.message };
+      }
+    },
+
+    testWebhook(sniper) {
+      this.fireWebhook(sniper.platform, sniper.target || 'test_username');
+      this.showNotification('Webhook Fired', `Test alert sent for ${sniper.platform}`);
+    },
+
+    /* ============================================================
+       SOUND (Web Audio API)
+    ============================================================ */
+    playSound(type) {
+      if (!this.soundEnabled) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        gain.gain.setValueAtTime(this.audioSettings.volume, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+
+        if (type === 'hit') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(this.audioSettings.hitFreq, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(this.audioSettings.hitFreq * 1.5, ctx.currentTime + 0.15);
+        } else if (type === 'check') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(440, ctx.currentTime);
+          gain.gain.setValueAtTime(this.audioSettings.volume * 0.2, ctx.currentTime);
+        } else if (type === 'error') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.2);
+        }
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
+        setTimeout(() => ctx.close(), 400);
+      } catch (e) { /* Audio not available */ }
+    },
+
+    previewSound(type) {
+      this.playSound(type);
+    },
+
+    /* ============================================================
+       NOTIFICATIONS
+    ============================================================ */
+    showNotification(title, message) {
+      const id = ++this.notifCounter;
+      this.notifications.push({ id, title, message, out: false });
+      setTimeout(() => {
+        const n = this.notifications.find(n => n.id === id);
+        if (n) n.out = true;
+        setTimeout(() => {
+          this.notifications = this.notifications.filter(n => n.id !== id);
+        }, 350);
+      }, 4000);
+    },
+
+    requestNotifPermission() {
+      if (this.desktopNotifs && 'Notification' in window) {
+        Notification.requestPermission();
+      }
+      this.saveSettings();
+    },
+
+    /* ============================================================
+       THEMES
+    ============================================================ */
+    buildThemeCategories() {
+      this.themeCategories = [
+        {
+          name: 'Dark & Cyberpunk', icon: '🌃',
+          themes: [
+            { id: 'cyberpunk', label: 'Cyberpunk', bg: '#0d0d0d', accent: '#ff00ff', accent2: '#00fff7' },
+            { id: 'midnight', label: 'Midnight', bg: '#0a0a14', accent: '#6c63ff', accent2: '#a855f7' },
+            { id: 'synthwave', label: 'Synthwave', bg: '#1a0533', accent: '#ff2d78', accent2: '#bf5fff' },
+            { id: 'vaporwave', label: 'Vaporwave', bg: '#1a0a28', accent: '#ff6ec7', accent2: '#44f0ff' },
+            { id: 'abyss', label: 'Abyss', bg: '#000010', accent: '#4040ff', accent2: '#9090ff' },
+            { id: 'galaxy', label: 'Galaxy', bg: '#040010', accent: '#8800ff', accent2: '#bb44ff' },
+          ]
+        },
+        {
+          name: 'Neon & Electric', icon: '⚡',
+          themes: [
+            { id: 'neon-green', label: 'Neon Green', bg: '#000a00', accent: '#00ff41', accent2: '#39ff14' },
+            { id: 'electric-blue', label: 'Electric Blue', bg: '#000814', accent: '#0096ff', accent2: '#00c0ff' },
+            { id: 'toxic', label: 'Toxic', bg: '#020800', accent: '#88ff00', accent2: '#aaff33' },
+            { id: 'lava', label: 'Lava', bg: '#0a0000', accent: '#ff5500', accent2: '#ff8800' },
+            { id: 'blood', label: 'Blood', bg: '#0d0000', accent: '#cc0000', accent2: '#ff2222' },
+            { id: 'ruby', label: 'Ruby', bg: '#100006', accent: '#ee1155', accent2: '#ff4488' },
+          ]
+        },
+        {
+          name: 'Classic Dark', icon: '🌑',
+          themes: [
+            { id: 'dracula', label: 'Dracula', bg: '#282a36', accent: '#bd93f9', accent2: '#ff79c6' },
+            { id: 'monokai', label: 'Monokai', bg: '#1c1c1c', accent: '#a6e22e', accent2: '#66d9e8' },
+            { id: 'matrix', label: 'Matrix', bg: '#000000', accent: '#00cc00', accent2: '#00ff00' },
+            { id: 'carbon', label: 'Carbon', bg: '#111111', accent: '#da1e28', accent2: '#fa4d56' },
+            { id: 'obsidian', label: 'Obsidian', bg: '#080808', accent: '#888888', accent2: '#aaaaaa' },
+            { id: 'slate', label: 'Slate', bg: '#0f1117', accent: '#58a6ff', accent2: '#79c0ff' },
+          ]
+        },
+        {
+          name: 'Nature & Earth', icon: '🌿',
+          themes: [
+            { id: 'nord', label: 'Nord', bg: '#2e3440', accent: '#88c0d0', accent2: '#81a1c1' },
+            { id: 'ocean', label: 'Ocean', bg: '#020f1a', accent: '#00b4d8', accent2: '#48cae4' },
+            { id: 'forest', label: 'Forest', bg: '#040a04', accent: '#4a9e40', accent2: '#68cc5e' },
+            { id: 'mint', label: 'Mint', bg: '#001a14', accent: '#00ddaa', accent2: '#44ffcc' },
+            { id: 'desert', label: 'Desert', bg: '#1a1000', accent: '#d4a040', accent2: '#e8c060' },
+            { id: 'aurora', label: 'Aurora', bg: '#020e10', accent: '#00d4aa', accent2: '#44ffcc' },
+          ]
+        },
+        {
+          name: 'Warm & Glow', icon: '🌅',
+          themes: [
+            { id: 'amber', label: 'Amber', bg: '#0e0800', accent: '#ffaa00', accent2: '#ffcc44' },
+            { id: 'copper', label: 'Copper', bg: '#0e0800', accent: '#d4803a', accent2: '#e8a060' },
+            { id: 'solar-flare', label: 'Solar Flare', bg: '#0a0200', accent: '#ff7700', accent2: '#ffaa33' },
+            { id: 'solaris', label: 'Solaris', bg: '#001628', accent: '#f0a820', accent2: '#f8c840' },
+            { id: 'dusk', label: 'Dusk', bg: '#0e0814', accent: '#c060e0', accent2: '#e080ff' },
+            { id: 'grape', label: 'Grape', bg: '#0e0014', accent: '#aa44ff', accent2: '#cc77ff' },
+          ]
+        },
+        {
+          name: 'Pastel & Soft', icon: '🌸',
+          themes: [
+            { id: 'rose-gold', label: 'Rose Gold', bg: '#1a0810', accent: '#e8a0b0', accent2: '#f0b8c4' },
+            { id: 'sakura', label: 'Sakura', bg: '#1a0a10', accent: '#ffb7d4', accent2: '#ff89b8' },
+            { id: 'pastel-dream', label: 'Pastel Dream', bg: '#1a1a2e', accent: '#c7b3e0', accent2: '#b3d4e0' },
+            { id: 'lotus', label: 'Lotus', bg: '#0e001a', accent: '#dd44dd', accent2: '#ee88ee' },
+            { id: 'steel', label: 'Steel', bg: '#0c0e10', accent: '#7090c0', accent2: '#90b0e0' },
+          ]
+        },
+        {
+          name: 'Light Mode', icon: '☀️',
+          themes: [
+            { id: 'arctic', label: 'Arctic', bg: '#f0f8ff', accent: '#2196f3', accent2: '#1565c0' },
+            { id: 'ice', label: 'Ice', bg: '#e8f4fd', accent: '#1a8fd1', accent2: '#0e72b0' },
+          ]
+        }
+      ];
+    },
+
+    setTheme(id) {
+      this.currentTheme = id;
+      document.documentElement.setAttribute('data-theme', id);
+      this.saveSettings();
+    },
+
+    /* ============================================================
+       STORAGE
+    ============================================================ */
+    loadFromStorage() {
+      // Check session
+      const sess = sessionStorage.getItem('ss_session');
+      if (sess) {
+        this.currentUser = JSON.parse(sess);
+        this.isAuthenticated = true;
+        this.profileForm.displayName = this.currentUser.displayName || this.currentUser.username;
+      }
+
+      // Load settings
+      const saved = localStorage.getItem('ss_settings');
+      if (saved) {
+        const s = JSON.parse(saved);
+        this.snipers = s.snipers || this.buildDefaultSnipers();
+        this.currentTheme = s.theme || 'cyberpunk';
+        this.webhookSettings = s.webhook || this.webhookSettings;
+        this.soundEnabled = s.soundEnabled !== undefined ? s.soundEnabled : true;
+        this.autoScroll = s.autoScroll !== undefined ? s.autoScroll : true;
+        this.stopOnHit = s.stopOnHit || false;
+        this.audioSettings = s.audioSettings || this.audioSettings;
+        this.stats = s.stats || this.stats;
+        this.recentHits = s.recentHits || [];
+      } else {
+        this.snipers = this.buildDefaultSnipers();
+      }
+
+      document.documentElement.setAttribute('data-theme', this.currentTheme);
+    },
+
+    saveSettings() {
+      localStorage.setItem('ss_settings', JSON.stringify({
+        snipers: this.snipers,
+        theme: this.currentTheme,
+        webhook: this.webhookSettings,
+        soundEnabled: this.soundEnabled,
+        autoScroll: this.autoScroll,
+        stopOnHit: this.stopOnHit,
+        audioSettings: this.audioSettings,
+        stats: this.stats,
+        recentHits: this.recentHits.slice(0, 50)
+      }));
+    },
+
+    clearAllData() {
+      if (!confirm('This will reset ALL stats, snipers, and settings. Continue?')) return;
+      localStorage.removeItem('ss_settings');
+      this.snipers = this.buildDefaultSnipers();
+      this.stats = { totalChecks:0, totalHits:0, checksPerMin:0, successRate:0, avgLatency:0, uptime:99.7 };
+      this.recentHits = [];
+      this.terminalLog = [];
+      this.currentTheme = 'cyberpunk';
+      document.documentElement.setAttribute('data-theme', 'cyberpunk');
+      this.webhookSettings = { url:'', username:'SnapSniper Bot', mention:'', alertOnHit:true };
+      this.showNotification('Data Cleared', 'All settings and stats reset to defaults.');
+    },
+
+    /* ============================================================
+       HELPERS
+    ============================================================ */
+    getTime() {
+      return new Date().toLocaleTimeString('en-US', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    }
   };
-  runCycle();
-  job.timer = setInterval(runCycle, job.interval);
-  setSniperUI(true);
-  updateSniperStats();
 }
-function stopJob() {
-  if (!job) return;
-  job.running = false;
-  if (job.timer) { clearInterval(job.timer); job.timer = null; }
-  setSniperUI(false);
-}
-function setSniperUI(running) {
-  document.getElementById('sniper-start').disabled = running;
-  document.getElementById('sniper-stop').disabled = !running;
-  const st = document.getElementById('sniper-status');
-  st.textContent = running ? 'Active' : 'Stopped';
-  st.style.color = running ? '#22c55e' : '#eab308';
-}
-function updateSniperStats() {
-  const u = me();
-  if (!u) return;
-  document.getElementById('sniper-checks').textContent = u.checks || 0;
-  document.getElementById('sniper-hits').textContent = u.hits || 0;
-}
-
-/* ══════════════════ AUTH ══════════════════ */
-function showAuth() { document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-screen').style.display = 'none'; }
-function showApp() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = 'block';
-  const u = me();
-  document.getElementById('sidebar-name').textContent = u.username;
-  document.getElementById('sidebar-role').textContent = u.role;
-  if (u.role === 'owner') document.querySelectorAll('.owner-only').forEach(e => e.style.display = 'flex');
-  if (cfg().announcement) {
-    document.getElementById('announcement-area').innerHTML = `<div class="announcement-banner">📢 ${cfg().announcement}<button class="close" onclick="this.parentElement.remove()">✕</button></div>`;
-  }
-  updateSniperStats();
-  loadHits();
-  loadOwnerPanel();
-  loadAccount();
-}
-
-async function doLogin(username, password) {
-  const users = load(LS.users, {});
-  const u = users[username];
-  if (!u || (await hash(password)) !== u.password) throw new Error('Invalid credentials.');
-  if (cfg().maintenance && u.role !== 'owner') throw new Error('Server is under maintenance. Please try again later.');
-  localStorage.setItem(LS.session, username);
-  showApp();
-}
-async function doRegister(username, password) {
-  if (cfg().maintenance) throw new Error('Registration is disabled due to maintenance.');
-  if (username.toLowerCase() === 'beamblade') throw new Error('That username is reserved.');
-  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) throw new Error('Username: 3-20 alphanumeric or underscore.');
-  if (password.length < 6) throw new Error('Password must be at least 6 characters.');
-  const users = load(LS.users, {});
-  if (users[username]) throw new Error('Username already taken.');
-  users[username] = { username, password: await hash(password), role: 'user', created: Date.now(), checks: 0, hits: 0 };
-  save(LS.users, users);
-  localStorage.setItem(LS.session, username);
-  showApp();
-}
-
-document.querySelectorAll('.auth-tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(`${btn.dataset.tab}-form`).classList.add('active');
-    document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
-  });
-});
-document.getElementById('login-form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const btn = document.getElementById('login-btn');
-  btn.disabled = true; btn.textContent = 'Loading...';
-  document.getElementById('login-error').style.display = 'none';
-  try { await doLogin(document.getElementById('login-user').value.trim(), document.getElementById('login-pass').value); }
-  catch (err) { const el = document.getElementById('login-error'); el.textContent = err.message; el.style.display = 'block'; }
-  btn.disabled = false; btn.textContent = 'Enter';
-});
-document.getElementById('register-form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const btn = document.getElementById('reg-btn');
-  btn.disabled = true; btn.textContent = 'Loading...';
-  document.getElementById('reg-error').style.display = 'none';
-  try { await doRegister(document.getElementById('reg-user').value.trim(), document.getElementById('reg-pass').value); }
-  catch (err) { const el = document.getElementById('reg-error'); el.textContent = err.message; el.style.display = 'block'; }
-  btn.disabled = false; btn.textContent = 'Create Account';
-});
-document.getElementById('logout-btn').addEventListener('click', () => {
-  localStorage.removeItem(LS.session);
-  if (job) stopJob();
-  location.reload();
-});
-
-/* ══════════════════ NAV ══════════════════ */
-document.querySelectorAll('.nav-item[data-page]').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    item.classList.add('active');
-    document.getElementById(`page-${item.dataset.page}`).classList.add('active');
-    if (item.dataset.page === 'hits') loadHits();
-    if (item.dataset.page === 'owner') loadOwnerPanel();
-    if (item.dataset.page === 'settings') loadAccount();
-  });
-});
-
-/* ══════════════════ SNIPER EVENTS ══════════════════ */
-document.querySelectorAll('.platform-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-  });
-});
-document.querySelectorAll('.mode-tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('mode-list').style.display = btn.dataset.mode === 'list' ? 'block' : 'none';
-    document.getElementById('mode-random').style.display = btn.dataset.mode === 'random' ? 'block' : 'none';
-  });
-});
-document.querySelectorAll('.chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    chip.classList.toggle('on');
-    chip.querySelector('input').checked = chip.classList.contains('on');
-  });
-});
-document.getElementById('sniper-start').addEventListener('click', () => {
-  const platform = document.querySelector('.platform-btn.selected').dataset.platform;
-  const mode = document.querySelector('.mode-tab.active').dataset.mode;
-  let names = [], genCfg = null, genPerCycle = 3;
-  if (mode === 'list') {
-    names = document.getElementById('names-input').value.split('\n').map(s => s.trim()).filter(Boolean);
-    if (names.length === 0) return addConsole('Enter at least one username.', 'status-taken');
-    for (const n of names) {
-      const nn = normName(platform, n);
-      if (!validName(platform, nn)) return addConsole(`Invalid name for ${platform}: "${n}"`, 'status-taken');
-    }
-    names = names.map(n => normName(platform, n));
-  } else {
-    genCfg = {
-      minLen: parseInt(document.getElementById('gen-min').value) || 3,
-      maxLen: parseInt(document.getElementById('gen-max').value) || 6,
-      letters: document.querySelector('.chip[data-set="letters"]').classList.contains('on'),
-      numbers: document.querySelector('.chip[data-set="numbers"]').classList.contains('on'),
-      underscore: document.querySelector('.chip[data-set="underscore"]').classList.contains('on'),
-      dots: document.querySelector('.chip[data-set="dots"]').classList.contains('on'),
-      prefix: document.getElementById('gen-prefix').value.trim(),
-      suffix: document.getElementById('gen-suffix').value.trim()
-    };
-    genPerCycle = Math.max(1, Math.min(20, parseInt(document.getElementById('gen-percycle').value) || 3));
-  }
-  const interval = Math.max(100, Math.min(10000, parseInt(document.getElementById('interval-input').value) || 700));
-  const threads = Math.max(1, Math.min(cfg().maxThreads || 8, parseInt(document.getElementById('threads-input').value) || 3));
-  const webhook = document.getElementById('webhook-input').value.trim();
-  try {
-    startJob(platform, mode, { interval, threads, webhook, names, genCfg, genPerCycle });
-    addConsole(mode === 'random'
-      ? `Job started — ${platform} | random gen (${genCfg.minLen}-${genCfg.maxLen} chars) | ${genPerCycle} names/cycle | ${interval}ms | threads ${threads}`
-      : `Job started — ${platform} | ${names.length} names | ${threads} threads | ${interval}ms`, 'status-avail');
-  } catch (err) { addConsole(`Failed: ${err.message}`, 'status-taken'); }
-});
-document.getElementById('sniper-stop').addEventListener('click', () => {
-  stopJob();
-  addConsole('Job stopped.', 'status-err');
-});
-
-/* ══════════════════ HITS PAGE ══════════════════ */
-function loadHits() {
-  const u = me();
-  const filter = document.getElementById('hits-filter').value;
-  let list = load(LS.hits, []);
-  if (u.role !== 'owner') list = list.filter(h => h.user === u.username);
-  if (filter) list = list.filter(h => h.platform === filter);
-  list.sort((a, b) => b.time - a.time);
-  const body = document.getElementById('hits-body');
-  const empty = document.getElementById('hits-empty');
-  if (list.length === 0) { body.innerHTML = ''; empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  body.innerHTML = list.slice(0, 200).map(h =>
-    `<tr><td><span class="badge badge-user">${h.platform}</span></td><td><strong>${h.name}</strong></td><td>${new Date(h.time).toLocaleString()}</td><td><a href="${h.link}" target="_blank" style="color:var(--cyan);text-decoration:none;font-size:12px;">Open →</a></td></tr>`
-  ).join('');
-}
-document.getElementById('hits-refresh').addEventListener('click', loadHits);
-document.getElementById('hits-filter').addEventListener('change', loadHits);
-
-/* ══════════════════ OWNER PANEL ══════════════════ */
-function loadOwnerPanel() {
-  const users = load(LS.users, {});
-  const hits = load(LS.hits, []);
-  const totalChecks = Object.values(users).reduce((a, u) => a + (u.checks || 0), 0);
-  const totalHits = Object.values(users).reduce((a, u) => a + (u.hits || 0), 0);
-  document.getElementById('owner-stats').innerHTML = `
-    <div class="stat-card glass"><div class="label">Users</div><div class="value">${Object.keys(users).length}</div></div>
-    <div class="stat-card glass"><div class="label">Total Hits</div><div class="value">${hits.length}</div></div>
-    <div class="stat-card glass"><div class="label">Total Checks</div><div class="value">${totalChecks}</div></div>
-    <div class="stat-card glass"><div class="label">Active Jobs</div><div class="value">${job && job.running ? 1 : 0}</div></div>
-  `;
-  loadOwnerUsers();
-  loadOwnerHits();
-  loadOwnerConfig();
-}
-function loadOwnerUsers() {
-  const users = load(LS.users, {});
-  const list = Object.values(users);
-  document.getElementById('owner-user-count').textContent = `${list.length} total`;
-  document.getElementById('owner-users-body').innerHTML = list.map(u => `
-    <tr>
-      <td><strong>${u.username}</strong></td>
-      <td><span class="badge ${u.role === 'owner' ? 'badge-owner' : 'badge-user'}">${u.role}</span></td>
-      <td>${u.checks || 0}</td>
-      <td>${u.hits || 0}</td>
-      <td>${u.username !== 'beamblade' ? `
-        <button class="action-btn btn-sm btn-ghost" onclick="promoteUser('${u.username}','${u.role}')" style="margin-right:4px;">${u.role === 'user' ? 'Promote' : 'Demote'}</button>
-        <button class="action-btn btn-sm btn-ghost" onclick="resetPass('${u.username}')" style="margin-right:4px;">Reset</button>
-        <button class="action-btn btn-sm btn-danger" onclick="deleteUser('${u.username}')">Delete</button>
-      ` : '<span style="color:var(--muted);font-size:11px;">Owner</span>'}</td>
-    </tr>
-  `).join('');
-}
-async function promoteUser(username, currentRole) {
-  const users = load(LS.users, {});
-  if (!users[username] || username === 'beamblade') return;
-  users[username].role = currentRole === 'user' ? 'owner' : 'user';
-  save(LS.users, users);
-  loadOwnerUsers();
-}
-async function resetPass(username) {
-  const newPass = prompt(`New password for ${username}:`);
-  if (!newPass || newPass.length < 6) return alert('Password must be at least 6 characters.');
-  const users = load(LS.users, {});
-  if (!users[username]) return alert('User not found.');
-  users[username].password = await hash(newPass);
-  save(LS.users, users);
-  alert('Password reset. User must re-login.');
-}
-async function deleteUser(username) {
-  if (!confirm(`Delete user "${username}"?`)) return;
-  const users = load(LS.users, {});
-  if (!users[username] || username === 'beamblade') return;
-  delete users[username];
-  save(LS.users, users);
-  loadOwnerUsers();
-}
-function loadOwnerHits() {
-  const list = load(LS.hits, []).sort((a, b) => b.time - a.time);
-  const body = document.getElementById('owner-hits-body');
-  if (list.length === 0) { body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">No hits recorded</td></tr>'; return; }
-  body.innerHTML = list.slice(0, 100).map(h => `
-    <tr>
-      <td>${h.user}</td>
-      <td><span class="badge badge-user">${h.platform}</span></td>
-      <td><strong>${h.name}</strong></td>
-      <td>${new Date(h.time).toLocaleString()}</td>
-      <td style="font-size:11px;color:${h.webhookOk ? '#22c55e' : '#7b7f93'};">${h.webhookOk ? '✅ Sent' : h.webhookOk === false ? '❌ Failed' : '—'}</td>
-    </tr>
-  `).join('');
-}
-function loadOwnerConfig() {
-  const c = cfg();
-  document.getElementById('ow-webhook').value = c.webhook || '';
-  const t = document.getElementById('ow-maintenance');
-  if (c.maintenance) { t.classList.add('on'); document.getElementById('ow-maintenance-label').textContent = 'On'; }
-  else { t.classList.remove('on'); document.getElementById('ow-maintenance-label').textContent = 'Off'; }
-  document.getElementById('ow-rate').value = c.maxChecksPerMinute || 600;
-  document.getElementById('ow-threads').value = c.maxThreads || 8;
-  document.getElementById('ow-maxjobs').value = c.maxJobsPerUser || 2;
-  document.getElementById('ow-announce').value = c.announcement || '';
-}
-document.querySelectorAll('[data-owner-tab]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.owner-tab').forEach(t => t.style.display = 'none');
-    const id = btn.dataset.ownerTab;
-    if (id === 'users') { document.getElementById('owner-users').style.display = 'block'; loadOwnerUsers(); }
-    if (id === 'hitslog') { document.getElementById('owner-hitslog').style.display = 'block'; loadOwnerHits(); }
-    if (id === 'config') { document.getElementById('owner-config').style.display = 'block'; loadOwnerConfig(); }
-  });
-});
-document.getElementById('ow-maintenance').addEventListener('click', function () {
-  this.classList.toggle('on');
-  document.getElementById('ow-maintenance-label').textContent = this.classList.contains('on') ? 'On' : 'Off';
-});
-document.getElementById('ow-save').addEventListener('click', () => {
-  const c = cfg();
-  c.webhook = document.getElementById('ow-webhook').value.trim();
-  c.maintenance = document.getElementById('ow-maintenance').classList.contains('on');
-  c.maxChecksPerMinute = Math.max(10, Math.min(10000, parseInt(document.getElementById('ow-rate').value) || 600));
-  c.maxThreads = Math.max(1, Math.min(10, parseInt(document.getElementById('ow-threads').value) || 8));
-  c.maxJobsPerUser = Math.max(1, Math.min(100, parseInt(document.getElementById('ow-maxjobs').value) || 2));
-  c.announcement = document.getElementById('ow-announce').value.trim();
-  save(LS.config, c);
-  alert('Configuration saved.');
-});
-document.getElementById('owner-hits-export').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(load(LS.hits, []), null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'beamblade-hits.json';
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-});
-document.getElementById('owner-hits-clear').addEventListener('click', () => {
-  if (!confirm('Clear ALL hit logs? This cannot be undone.')) return;
-  save(LS.hits, []);
-  const users = load(LS.users, {});
-  Object.values(users).forEach(u => u.hits = 0);
-  save(LS.users, users);
-  loadOwnerPanel();
-  updateSniperStats();
-});
-
-/* ══════════════════ ACCOUNT ══════════════════ */
-function loadAccount() {
-  const u = me();
-  if (!u) return;
-  document.getElementById('set-username').textContent = u.username;
-  document.getElementById('set-role').textContent = u.role;
-  document.getElementById('set-checks').textContent = u.checks || 0;
-  document.getElementById('set-hits').textContent = u.hits || 0;
-}
-document.getElementById('cp-btn').addEventListener('click', async () => {
-  const el = document.getElementById('cp-error');
-  const u = me();
-  const old = document.getElementById('cp-old').value;
-  const nw = document.getElementById('cp-new').value;
-  if ((await hash(old)) !== u.password) {
-    el.textContent = 'Current password is incorrect.'; el.style.color = '#ef4444'; el.style.display = 'block'; return;
-  }
-  if (nw.length < 6) { el.textContent = 'New password must be at least 6 characters.'; el.style.color = '#ef4444'; el.style.display = 'block'; return; }
-  const users = load(LS.users, {});
-  users[u.username].password = await hash(nw);
-  save(LS.users, users);
-  el.textContent = 'Password updated successfully.'; el.style.color = '#22c55e'; el.style.display = 'block';
-  document.getElementById('cp-old').value = ''; document.getElementById('cp-new').value = '';
-});
-
-/* ══════════════════ BOOT ══════════════════ */
-(async function boot() {
-  await seedData();
-  if (session() && me()) showApp(); else showAuth();
-})();
 </script>
 </body>
 </html>
