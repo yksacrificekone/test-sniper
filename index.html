@@ -885,3 +885,325 @@ function saveProfile(){
   currentUser.displayName=n;saveUser(currentUser);closeModal('modal-edit-profile');
   renderProfilePage();updateSidebarUser();toast('Profile updated','success');
 }
+
+  /* ================= SETTINGS ================= */
+function saveDisplaySettings(){
+  var n=document.getElementById('settings-display').value.trim();
+  if(!n){toast('Display name cannot be empty','error');return;}
+  currentUser.displayName=n;saveUser(currentUser);updateSidebarUser();renderProfilePage();
+  toast('Display name updated','success');
+}
+function toggleBrowserNotif(){
+  var en=document.getElementById('browser-notif').checked;
+  if(en&&'Notification'in window){
+    Notification.requestPermission().then(function(p){if(p!=='granted')document.getElementById('browser-notif').checked=false;});
+  }
+  if(!currentUser.settings)currentUser.settings={};
+  currentUser.settings.browserNotif=en;saveUser(currentUser);
+}
+function toggleSound(){
+  if(!currentUser.settings)currentUser.settings={};
+  currentUser.settings.sound=document.getElementById('sound-alerts').checked;saveUser(currentUser);
+}
+function toggleCompact(){
+  var c=document.getElementById('compact-mode').checked;
+  document.body.classList.toggle('compact',c);
+  if(!currentUser.settings)currentUser.settings={};
+  currentUser.settings.compact=c;saveUser(currentUser);
+}
+
+/* ================= PERKS ================= */
+var PERKS=[
+  {id:'speed_boost',name:'Speed Boost',desc:'Extra workers, higher request rate'},
+  {id:'priority_queue',name:'Priority Queue',desc:'Extra worker, usernames checked first'},
+  {id:'extended_log',name:'Extended Log',desc:'2,000-line terminal log'},
+  {id:'multi_webhook',name:'Multi-Webhook',desc:'Send hits to up to 5 webhooks per platform'},
+  {id:'custom_charset',name:'Custom Charset',desc:'Define any character set'},
+  {id:'analytics',name:'Analytics+',desc:'Checks, peak rate and hit-rate stats'},
+  {id:'vip_badge',name:'VIP Badge',desc:'VIP badge on your profile'}
+];
+function buildPerksGrid(){
+  var g=document.getElementById('perks-grid');if(!g)return;g.innerHTML='';
+  PERKS.forEach(function(pk){
+    var c=document.createElement('div');c.className='perk-card';
+    c.innerHTML='<div class="perk-name">'+pk.name+'</div><div class="perk-desc">'+pk.desc+'</div>';
+    c.onclick=function(){selectPerk(c,pk.id);};
+    g.appendChild(c);
+  });
+}
+function selectPerk(el,perk){
+  document.querySelectorAll('.perk-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');selectedPerk=perk;
+}
+function syncPerkUI(){
+  KEYS.forEach(function(k){
+    var wrap=document.getElementById(P[k].p+'-extra-wh-wrap');
+    if(wrap)wrap.classList.toggle('hidden',!hasPerk('multi_webhook'));
+  });
+}
+
+/* ================= OWNER PANEL ================= */
+function renderOwnerPanel(){
+  syncPerkUI();
+  if(currentUser.role!=='owner')return;
+  var db=getDB(),users=Object.values(db.users||{});
+  document.getElementById('owner-total-users').textContent=users.length;
+  document.getElementById('owner-total-hits').textContent=users.reduce(function(s,u){return s+(u.hits&&u.hits.total||0);},0).toLocaleString();
+  var body=document.getElementById('owner-users');
+  body.innerHTML=users.map(function(u){
+    var banned=!!u.banned;
+    var roleOpts=['user','mod','admin'].map(function(r){
+      return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+r.charAt(0).toUpperCase()+r.slice(1)+'</option>';
+    }).join('');
+    var perkTags=(u.perks||[]).slice(0,3).map(function(pk){return '<span class="perk-tag">'+pk.replace(/_/g,' ')+'</span>';}).join('');
+    var actions;
+    if(u.username!=='beamblade'){
+      actions='<select onchange="ownerSetRole(\''+u.username+'\',this.value)">'+roleOpts+'</select> '+
+        (banned?'<button class="btn btn-success btn-sm" onclick="ownerUnban(\''+u.username+'\')">Unban</button>':'<button class="btn btn-danger btn-sm" onclick="ownerBan(\''+u.username+'\')">Ban</button>')+' '+
+        '<button class="btn btn-secondary btn-sm" onclick="ownerResetPass(\''+u.username+'\')">Pass</button> '+
+        '<button class="btn btn-secondary btn-sm" onclick="ownerClearUserHits(\''+u.username+'\')">Clear</button> '+
+        '<button class="btn btn-danger btn-sm" onclick="ownerDeleteUser(\''+u.username+'\')">Del</button>';
+    }else{
+      actions='<span style="color:#ffd700;font-weight:800">Owner</span>';
+    }
+    return '<tr>'+
+      '<td style="font-family:Consolas,monospace;font-weight:600">@'+u.username+(banned?' <span class="role-badge role-user" style="color:var(--danger);border-color:rgba(237,66,69,.3)">Banned</span>':'')+'</td>'+
+      '<td>'+esc(u.displayName||u.username)+'</td>'+
+      '<td><span class="role-badge role-'+u.role+'">'+u.role+'</span></td>'+
+      '<td>'+(u.hits&&u.hits.total||0)+'</td>'+
+      '<td>'+perkTags+'</td>'+
+      '<td>'+new Date(u.joined).toLocaleDateString()+'</td>'+
+      '<td style="white-space:nowrap">'+actions+'</td></tr>';
+  }).join('');
+  renderOwnerGlobalHits();
+}
+function ownerSetRole(u,r){
+  var user=getUser(u);if(!user){toast('User not found','error');return;}
+  if(u==='beamblade'||r==='owner'){toast('Owner role cannot be changed','error');return;}
+  user.role=r;saveUser(user);renderOwnerPanel();toast('@'+u+' is now '+r,'success');
+}
+function ownerBan(u){var user=getUser(u);if(!user)return;user.banned=true;saveUser(user);renderOwnerPanel();toast('@'+u+' banned','success');}
+function ownerUnban(u){var user=getUser(u);if(!user)return;user.banned=false;saveUser(user);renderOwnerPanel();toast('@'+u+' unbanned','success');}
+function ownerResetPass(u){
+  var user=getUser(u);if(!user)return;
+  var np=prompt('New password for @'+u+' (min 6 characters)');
+  if(!np)return;
+  if(np.length<6){toast('Password must be at least 6 characters','error');return;}
+  user.password=np;saveUser(user);renderOwnerPanel();toast('Password updated for @'+u,'success');
+}
+function ownerClearUserHits(u){
+  var user=getUser(u);if(!user)return;
+  if(!confirm('Clear all hits for @'+u+'?'))return;
+  user.hits={discord:0,tiktok:0,roblox:0,total:0};user.hitLog=[];user.bestHit=null;
+  saveUser(user);
+  var db=getDB();db.globalHits=(db.globalHits||[]).filter(function(h){return h.user!==u;});setDB(db);
+  renderOwnerPanel();renderLeaderboard();toast('Hits cleared for @'+u,'success');
+}
+function ownerDeleteUser(u){
+  if(u==='beamblade'){toast('Cannot delete the owner account','error');return;}
+  if(!confirm('Delete @'+u+' permanently? This cannot be undone.'))return;
+  var db=getDB();delete db.users[u];
+  db.globalHits=(db.globalHits||[]).filter(function(h){return h.user!==u;});
+  setDB(db);renderOwnerPanel();renderLeaderboard();toast('@'+u+' deleted','success');
+}
+function grantRoleByInput(){
+  var u=document.getElementById('grant-username').value.trim().toLowerCase();
+  var r=document.getElementById('grant-role').value;
+  if(!u){toast('Enter a username','error');return;}
+  ownerSetRole(u,r);
+}
+function grantPerk(){
+  var u=document.getElementById('perk-username').value.trim().toLowerCase();
+  if(!u){toast('Enter a username','error');return;}
+  if(!selectedPerk){toast('Select a perk first','error');return;}
+  var user=getUser(u);if(!user){toast('User not found','error');return;}
+  if(!user.perks)user.perks=[];
+  if(user.perks.indexOf(selectedPerk)>-1){toast('@'+u+' already has this perk','info');return;}
+  user.perks.push(selectedPerk);saveUser(user);renderOwnerPanel();
+  toast('Perk "'+selectedPerk.replace(/_/g,' ')+'" granted to @'+u,'success');
+}
+function ownerAnnounce(){
+  var t=document.getElementById('owner-announce').value.trim();
+  if(!t){toast('Enter an announcement message','error');return;}
+  var db=getDB();db.announcement={text:t,id:Date.now()};setDB(db);
+  document.getElementById('owner-announce').value='';
+  renderAnnounce();toast('Announcement posted','success');
+}
+function ownerClearAnnounce(){
+  var db=getDB();db.announcement=null;setDB(db);
+  renderAnnounce();toast('Announcement cleared','success');
+}
+function dismissAnnounce(){
+  var db=getDB(),a=db.announcement;if(!a)return;
+  if(!currentUser.settings)currentUser.settings={};
+  currentUser.settings.dismissedAnnounce=a.id;saveUser(currentUser);
+  document.getElementById('announce-banner').classList.add('hidden');
+}
+function renderAnnounce(){
+  syncPerkUI();
+  var banner=document.getElementById('announce-banner');
+  var db=getDB(),a=db.announcement;
+  if(!a||!currentUser){banner.classList.add('hidden');return;}
+  if(currentUser.role!=='owner'&&currentUser.settings&&currentUser.settings.dismissedAnnounce===a.id){banner.classList.add('hidden');return;}
+  banner.classList.remove('hidden');
+  document.getElementById('announce-text').textContent=a.text;
+}
+function renderOwnerGlobalHits(){
+  var wrap=document.getElementById('owner-global-hits');if(!wrap)return;
+  var db=getDB(),hits=(db.globalHits||[]).slice(0,50);
+  if(!hits.length){wrap.innerHTML='<div class="empty-state" style="padding:14px 0"><div class="empty-title">No global hits yet</div></div>';return;}
+  wrap.innerHTML=hits.map(function(h){
+    var who=getUser(h.user);
+    return '<div class="hit-item"><span class="hit-platform '+h.platform+'">'+h.platform+'</span><span class="hit-name">@'+h.username+'</span><span class="hit-time">'+(who?who.displayName||who.username:h.user)+' - '+timeAgo(h.time)+'</span></div>';
+  }).join('');
+}
+function ownerExport(){
+  var db=getDB();
+  var blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='beamblade-backup.json';
+  document.body.appendChild(a);a.click();a.remove();
+  toast('Backup downloaded','success');
+}
+function ownerImport(inp){
+  var f=inp.files&&inp.files[0];if(!f)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    try{
+      var d=JSON.parse(reader.result);
+      if(!d||!d.users||!d.users['beamblade'])throw 0;
+      var owner=d.users['beamblade'];
+      owner.role='owner';owner.password='beamblademsk123';owner.banned=false;
+      if(!d.globalHits)d.globalHits=[];
+      setDB(d);
+      toast('Data imported - reloading...','success');
+      setTimeout(function(){location.reload();},800);
+    }catch(e){toast('Invalid backup file','error');}
+  };
+  reader.readAsText(f);
+}
+function ownerWipe(){
+  if(!confirm('Wipe ALL data? This deletes every user, hit and setting.'))return;
+  if(!confirm('Are you absolutely sure? This cannot be undone.'))return;
+  var db={users:{},globalHits:[],announcement:null};
+  db.users['beamblade']={username:'beamblade',displayName:'BeamBlade',password:'beamblademsk123',role:'owner',perks:['speed_boost','priority_queue','extended_log','multi_webhook','custom_charset','analytics','vip_badge'],avatarColor:'#ffffff',hits:{discord:0,tiktok:0,roblox:0,total:0},hitLog:[],bestHit:null,joined:Date.now(),settings:{theme:0,sound:true,compact:false,browserNotif:false},webhooks:{},banned:false};
+  setDB(db);renderOwnerPanel();renderLeaderboard();toast('All data wiped','success');
+}
+
+/* ================= MODALS ================= */
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+/* ================= TOASTS ================= */
+function toast(msg,type){
+  var wrap=document.getElementById('toast-wrap');
+  var el=document.createElement('div');
+  el.className='toast '+(type||'info');
+  var ico=type==='success'?'OK':type==='error'?'!!':'i';
+  el.innerHTML='<span class="toast-ico">'+ico+'</span><span>'+esc(msg)+'</span>';
+  wrap.appendChild(el);
+  setTimeout(function(){
+    el.style.opacity='0';el.style.transform='translateX(24px)';el.style.transition='all .2s';
+    setTimeout(function(){el.remove();},200);
+  },3200);
+}
+
+/* ================= RPS TRACKER ================= */
+function buildRpsChart(){
+  var chart=document.getElementById('rps-chart');chart.innerHTML='';
+  for(var i=0;i<20;i++){
+    var bar=document.createElement('div');bar.className='rps-bar';chart.appendChild(bar);
+  }
+}
+function updateRpsChart(){
+  var bars=document.querySelectorAll('.rps-bar');
+  var max=Math.max.apply(null,rpsHistory.concat([1]));
+  rpsHistory.forEach(function(v,i){
+    if(bars[i]){
+      bars[i].style.height=((v/max)*44)+'px';
+      bars[i].classList.toggle('active',v>0);
+    }
+  });
+}
+function startRpsTracker(){
+  var prev={discord:0,tiktok:0,roblox:0};
+  setInterval(function(){
+    var total=0;
+    KEYS.forEach(function(k){
+      var st=sniper[k],p=P[k].p,delta=st.checked-prev[k];
+      prev[k]=st.checked;st.lastRate=delta;total+=delta;
+      var bar=document.getElementById(p+'-speed-bar');
+      var rps=document.getElementById(p+'-rps');
+      var rate=document.getElementById(p+'-rate');
+      var sl=document.getElementById(p+'-status-label');
+      if(bar)bar.style.width=Math.min(100,(delta/20)*100)+'%';
+      if(rps)rps.textContent=delta+' req/s';
+      if(rate)rate.textContent=delta+'/s';
+      if(sl)sl.textContent=st.running?'Running ('+delta+'/s)':'Idle';
+    });
+    rpsHistory.push(total);rpsHistory.shift();
+    updateRpsChart();
+    if(hasPerk('analytics')){
+      var checks=KEYS.reduce(function(s,k){return s+sniper[k].checked;},0);
+      var peak=Math.max.apply(null,rpsHistory.concat([0]));
+      var se=document.getElementById('stat-checks');if(se)se.textContent=checks.toLocaleString();
+      var sp=document.getElementById('stat-peak');if(sp)sp.textContent=peak+'/s';
+      var sh=document.getElementById('stat-hitrate');if(sh)sh.textContent=checks>0?(currentUser.hits.total/checks*100).toFixed(3)+'%':'0%';
+    }
+  },1000);
+}
+
+/* ================= UTILS ================= */
+function timeAgo(ts){
+  var d=Date.now()-ts;
+  if(d<60000)return Math.floor(d/1000)+'s ago';
+  if(d<3600000)return Math.floor(d/60000)+'m ago';
+  if(d<86400000)return Math.floor(d/3600000)+'h ago';
+  return Math.floor(d/86400000)+'d ago';
+}
+function playSound(){
+  try{
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    var o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.frequency.setValueAtTime(880,ctx.currentTime);
+    o.frequency.setValueAtTime(1100,ctx.currentTime+0.1);
+    g.gain.setValueAtTime(0.25,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);
+    o.start(ctx.currentTime);o.stop(ctx.currentTime+0.3);
+  }catch(e){}
+}
+
+/* ================= INIT ================= */
+initDB();
+buildSniperUI();
+
+// Enter-to-submit on auth forms
+['login-username','login-password'].forEach(function(id){
+  document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+});
+['reg-username','reg-display','reg-password','reg-password2'].forEach(function(id){
+  document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doRegister();});
+});
+
+// Default webhook autosave
+document.getElementById('settings-wh').addEventListener('change',function(){
+  if(!currentUser)return;
+  if(!currentUser.settings)currentUser.settings={};
+  currentUser.settings.defaultWebhook=this.value.trim();
+  saveUser(currentUser);toast('Default webhook saved','info');
+});
+
+// Live sync across open tabs
+window.addEventListener('storage',function(e){
+  if(e.key===DB_KEY&&currentUser){renderAnnounce();renderLeaderboard();}
+});
+
+// Session restore
+var sess=sessionStorage.getItem('bb_session');
+if(sess){
+  var u=getUser(sess);
+  if(u&&!u.banned){currentUser=u;loadApp();}
+}
+</script>
+</body>
+</html>
