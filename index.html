@@ -2,1208 +2,1077 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="dark">
-<title>BeamBlade</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07080d">
+<title>BeamBlade Sniper</title>
+
 <style>
-:root{--bg:#0b0b0b;--bg2:#111111;--bg3:#171717;--bg4:#1f1f1f;--border:#262626;--text:#e8e8e8;--muted:#8a8a8a;--dim:#555;--accent:#fff;--accent2:#b3b3b3;--success:#3ba55c;--danger:#ed4245;--warning:#faa61a;--info:#818cf8;--sw:236px}
-*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inherit}
-::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.mono{font-family:'Cascadia Code',Consolas,monospace}.hidden{display:none!important}
-#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
-.auth-box{width:390px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:34px 38px}
-.auth-logo{text-align:center;margin-bottom:24px}.auth-logo h1{font-size:21px;font-weight:800;letter-spacing:5px;text-transform:uppercase}.auth-logo span{display:block;font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:5px}
-.auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
-.auth-tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
-.auth-tab.active{color:var(--text);border-bottom-color:var(--accent)}
-.auth-form{display:flex;flex-direction:column;gap:13px}
-.form-group label{display:block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.field{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:9px 12px;color:var(--text);font-size:14px;outline:none;transition:border-color .15s}
-.field:focus{border-color:var(--accent2)}textarea.field{resize:vertical;min-height:70px}
-.auth-btn{background:var(--accent);color:#000;border:none;border-radius:4px;padding:11px;font-size:14px;font-weight:700;letter-spacing:.5px;transition:opacity .15s}.auth-btn:hover{opacity:.85}
-.auth-error{background:rgba(237,66,69,.1);border:1px solid rgba(237,66,69,.3);border-radius:4px;padding:9px 12px;font-size:12.5px;color:var(--danger);display:none}
-.auth-foot{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);text-align:center;font-size:11px;color:var(--dim)}
-#app-screen{display:none;flex-direction:row;min-height:100vh}
-.sidebar{width:var(--sw);flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
-.sidebar-header{padding:14px;border-bottom:1px solid var(--border)}
-.sidebar-brand{font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase}.sidebar-brand em{font-style:normal;color:var(--muted);font-weight:500}
-.sidebar-status{display:flex;align-items:center;gap:6px;margin-top:6px}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);flex-shrink:0}.status-dot.running{background:var(--success);box-shadow:0 0 7px var(--success);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}.status-label{font-size:11px;color:var(--muted)}
-.sidebar-nav{flex:1;overflow-y:auto;padding:6px 0}
-.nav-section{padding:14px 14px 5px;font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--dim)}
-.nav-item{display:flex;align-items:center;gap:10px;padding:7px 14px;margin:1px 7px;color:var(--muted);font-size:13.5px;font-weight:600;cursor:pointer;border-radius:4px;transition:all .12s;user-select:none}
-.nav-item svg{flex-shrink:0;opacity:.65}.nav-item:hover{background:var(--bg3);color:var(--text)}.nav-item.active{background:var(--bg4);color:var(--text)}.nav-item.active svg{opacity:1}
-.nav-badge{background:var(--danger);color:#fff;font-size:9.5px;font-weight:800;border-radius:10px;padding:1px 6px;margin-left:auto}
-.sidebar-user{padding:11px 13px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px}
-.user-avatar{width:33px;height:33px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;border:2px solid var(--border)}
-.user-info{flex:1;min-width:0}.user-display{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
-.user-role{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:1px}
-.user-settings-btn{background:none;border:none;color:var(--muted);padding:4px;border-radius:3px;display:flex}.user-settings-btn:hover{color:var(--text);background:var(--bg3)}
-.main-content{margin-left:var(--sw);flex:1;min-width:0;display:flex;flex-direction:column}
-.page{display:none;padding:24px 28px;max-width:1180px;width:100%}.page.active{display:block}
-.page-header{margin-bottom:18px}.page-title{font-size:21px;font-weight:800;letter-spacing:-.3px}.page-subtitle{font-size:12.5px;color:var(--muted);margin-top:3px}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:17px}
-.card-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:13px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:14px 16px}
-.stat-label{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted)}
-.stat-value{font-size:25px;font-weight:800;margin-top:5px;letter-spacing:-1px;font-family:Consolas,monospace}.stat-sub{font-size:11px;color:var(--muted);margin-top:3px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:4px;font-size:12.5px;font-weight:700;letter-spacing:.3px;border:none;transition:all .12s}
-.btn-primary{background:var(--accent);color:#000}.btn-primary:hover{opacity:.85}
-.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg4)}
-.btn-danger{background:rgba(237,66,69,.13);color:var(--danger);border:1px solid rgba(237,66,69,.25)}.btn-danger:hover{background:rgba(237,66,69,.22)}
-.btn-success{background:rgba(59,165,92,.13);color:var(--success);border:1px solid rgba(59,165,92,.25)}.btn-success:hover{background:rgba(59,165,92,.22)}
-.btn-sm{padding:4px 9px;font-size:11px}.btn-lg{padding:10px 20px;font-size:13.5px}
-.input-group{margin-bottom:13px}
-.input-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.input-hint{font-size:11px;color:var(--dim);margin-top:4px}
-.platform-tabs{display:flex;gap:3px;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:4px;margin-bottom:16px}
-.platform-tab{flex:1;padding:8px;border-radius:4px;text-align:center;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--muted);border:none;background:none;transition:all .12s}
-.platform-tab.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
-.sniper-panel{display:none}.sniper-panel.active{display:block}
-.sniper-grid{display:grid;grid-template-columns:1fr 300px;gap:14px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}.toggle-row:last-child{border-bottom:none}
-.toggle-title{font-size:13px;font-weight:600}.toggle-desc{font-size:11.5px;color:var(--muted);margin-top:1px}
-.toggle{position:relative;width:38px;height:21px;flex-shrink:0}.toggle input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;inset:0;background:var(--bg4);border:1px solid var(--border);border-radius:21px;cursor:pointer;transition:.18s}
-.toggle-slider:before{content:'';position:absolute;width:15px;height:15px;left:2px;top:2px;background:var(--dim);border-radius:50%;transition:.18s}
-.toggle input:checked+.toggle-slider{background:var(--success);border-color:var(--success)}
-.toggle input:checked+.toggle-slider:before{transform:translateX(17px);background:#fff}
-.hits-feed{display:flex;flex-direction:column;gap:7px;max-height:460px;overflow-y:auto}
-.hit-item{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:10px 12px;display:flex;align-items:center;gap:10px}
-.hit-item.new{border-left:3px solid var(--success);animation:flash .6s ease}
-@keyframes flash{0%{background:rgba(59,165,92,.14)}100%{background:var(--bg3)}}
-.hit-platform{font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:3px 6px;border-radius:3px;flex-shrink:0}
-.hit-platform.discord{background:rgba(88,101,242,.18);color:#9aa4ff}
-.hit-platform.tiktok{background:rgba(254,44,85,.16);color:#ff7b9b}
-.hit-platform.roblox{background:rgba(0,162,255,.16);color:#66c4ff}
-.hit-name{font-size:14px;font-weight:700;font-family:Consolas,monospace;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
-.hit-time{font-size:10.5px;color:var(--muted);flex-shrink:0}
-.hit-badge{font-size:9.5px;font-weight:800;letter-spacing:.8px;background:rgba(59,165,92,.14);color:var(--success);border:1px solid rgba(59,165,92,.3);padding:2px 7px;border-radius:3px;flex-shrink:0}
-.lb-table{width:100%;border-collapse:collapse}
-.lb-table th{font-size:9.5px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border)}
-.lb-table td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px}.lb-table tr:last-child td{border-bottom:none}
-.lb-rank{font-size:11.5px;font-weight:800;font-family:Consolas,monospace;color:var(--muted)}
-.lb-rank.gold{color:#ffd700}.lb-rank.silver{color:#c0c0c0}.lb-rank.bronze{color:#cd7f32}.lb-user{font-weight:600}
-.speed-display{display:flex;align-items:center;gap:8px}
-.speed-bar-wrap{flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
-.speed-bar{height:100%;background:var(--success);border-radius:2px;transition:width .5s}
-.speed-val{font-size:11.5px;font-family:Consolas,monospace;color:var(--success);font-weight:700;width:86px;text-align:right}
-.log-terminal{background:#050505;border:1px solid var(--border);border-radius:4px;padding:12px;font-family:Consolas,monospace;font-size:11.5px;height:210px;overflow-y:auto;line-height:1.65}
-.log-line.info{color:#6b6b6b}.log-line.success{color:var(--success)}.log-line.warning{color:var(--warning)}.log-line.error{color:var(--danger)}.log-line.hit{color:#fff;font-weight:800}
-.theme-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:9px}
-.theme-swatch{position:relative;width:100%;aspect-ratio:1;border-radius:50%;cursor:pointer;transition:transform .13s;border:2px solid transparent}
-.theme-swatch:hover{transform:scale(1.18)}.theme-swatch.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--text)}
-.webhook-status{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;margin-top:7px}
-.webhook-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--dim)}.webhook-text{font-size:11.5px}
-.role-badge{font-size:9.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:2.5px 7px;border-radius:3px;white-space:nowrap}
-.role-owner{background:rgba(255,215,0,.14);color:#ffd700;border:1px solid rgba(255,215,0,.25)}
-.role-admin{background:rgba(237,66,69,.13);color:#f87171;border:1px solid rgba(237,66,69,.25)}
-.role-mod{background:rgba(59,165,92,.13);color:var(--success);border:1px solid rgba(59,165,92,.25)}
-.role-user{background:var(--bg4);color:var(--muted);border:1px solid var(--border)}
-.badge-vip{background:rgba(217,70,239,.14);color:#e879f9;border:1px solid rgba(217,70,239,.3);font-size:8.5px;font-weight:800;letter-spacing:1px;padding:1.5px 5px;border-radius:3px}
-.badge-prio{background:rgba(250,166,26,.13);color:var(--warning);border:1px solid rgba(250,166,26,.3);font-size:8.5px;font-weight:800;letter-spacing:1px;padding:1.5px 5px;border-radius:3px}
-.perks-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.perk-card{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:11px;cursor:pointer;transition:all .13s}
-.perk-card:hover{border-color:var(--accent2)}.perk-card.selected{border-color:var(--accent);background:var(--bg4)}
-.perk-name{font-size:12.5px;font-weight:700}.perk-desc{font-size:10.5px;color:var(--muted);margin-top:2px}
-.toast-wrap{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:340px}
-.toast{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:11px 14px;font-size:12.5px;box-shadow:0 8px 26px rgba(0,0,0,.45);display:flex;align-items:center;gap:9px;animation:slideIn .18s ease}
-.toast.success{border-left:3px solid var(--success)}.toast.error{border-left:3px solid var(--danger)}.toast.info{border-left:3px solid var(--info)}
-.toast-ico{font-weight:800;font-size:13px;color:var(--muted)}
-@keyframes slideIn{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:24px;width:460px;max-width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.55)}
-.modal-title{font-size:16px;font-weight:800;margin-bottom:4px}.modal-desc{font-size:12.5px;color:var(--muted);margin-bottom:16px}
-.modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:18px}
-.rps-chart{display:flex;align-items:flex-end;gap:3px;height:46px}
-.rps-bar{flex:1;background:var(--bg4);border-radius:2px 2px 0 0;min-height:3px;transition:height .4s}.rps-bar.active{background:var(--success)}
-.empty-state{text-align:center;padding:36px 16px;color:var(--muted)}
-.empty-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}.empty-desc{font-size:12px}
-.owner-table{width:100%;border-collapse:collapse}
-.owner-table th{font-size:9.5px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
-.owner-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12.5px;vertical-align:middle}.owner-table tr:last-child td{border-bottom:none}
-.owner-table select{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:3px;padding:3px 6px;font-size:11.5px;outline:none}
-.announce-banner{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--info);border-radius:4px;padding:10px 14px;margin:0 28px 16px;font-size:12.5px}
-.announce-banner b{color:var(--info);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;flex-shrink:0}
-.profile-avatar-big{width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:27px;font-weight:800;border:3px solid var(--border);background:var(--bg3);flex-shrink:0}
-.profile-header{display:flex;align-items:center;gap:18px;margin-bottom:22px}
-.profile-names{flex:1}.profile-display{font-size:21px;font-weight:800}.profile-username{font-size:13.5px;color:var(--muted);margin-top:2px}
-.perk-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:var(--bg4);color:var(--muted);border:1px solid var(--border);margin:2px 2px 0 0}
-.settings-section{margin-bottom:22px}.settings-title{font-size:15px;font-weight:800;margin-bottom:3px}.settings-desc{font-size:12px;color:var(--muted);margin-bottom:12px}
-.avatar-colors{display:flex;gap:8px;flex-wrap:wrap}
-.avatar-color{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .13s}.avatar-color:hover{transform:scale(1.15)}.avatar-color.active{border-color:#fff}
-.global-hits{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto}
-@media(max-width:960px){.grid-3,.grid-4{grid-template-columns:1fr 1fr}.sniper-grid{grid-template-columns:1fr}.sidebar{position:static;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border)}.main-content{margin-left:0}.sidebar-nav{display:flex;overflow-x:auto;padding:4px}.nav-section{display:none}.nav-item{white-space:nowrap;margin:1px 2px}}
-body.compact .page{padding:16px 18px}body.compact .stat-value{font-size:22px}body.compact .card{padding:13px}
+*{box-sizing:border-box}
+:root{
+  --bg:#06070b;
+  --panel:#0c0e15;
+  --panel2:#11141d;
+  --border:#202531;
+  --text:#f4f7fb;
+  --muted:#7f899d;
+  --blue:#5b8cff;
+  --cyan:#4de8ff;
+  --green:#42e89d;
+  --red:#ff526d;
+  --yellow:#ffc857;
+  --purple:#9d6cff;
+}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 80% -10%,#172752 0,transparent 35%),
+    radial-gradient(circle at 0% 100%,#101a34 0,transparent 30%),
+    var(--bg);
+  color:var(--text);
+  font:14px Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.app{min-height:100vh;display:flex}
+.sidebar{
+  width:245px;
+  border-right:1px solid var(--border);
+  background:rgba(8,9,14,.92);
+  backdrop-filter:blur(18px);
+  padding:22px 14px;
+  position:fixed;
+  inset:0 auto 0 0;
+  z-index:10;
+}
+.logo{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:-.7px;
+  padding:5px 10px 25px;
+}
+.logo span{color:var(--blue)}
+.nav-title{
+  color:#555f73;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin:18px 10px 8px;
+}
+.nav button{
+  width:100%;
+  text-align:left;
+  border:0;
+  color:#8791a4;
+  background:transparent;
+  padding:11px 12px;
+  border-radius:9px;
+  margin:2px 0;
+}
+.nav button:hover,.nav button.active{
+  color:white;
+  background:#151a25;
+}
+.nav button.active{box-shadow:inset 2px 0 var(--blue)}
+.userbox{
+  position:absolute;
+  bottom:18px;
+  left:14px;
+  right:14px;
+  border:1px solid var(--border);
+  background:#0d1017;
+  padding:12px;
+  border-radius:12px;
+}
+.avatar{
+  width:31px;height:31px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  display:grid;place-items:center;font-weight:800;
+}
+.userrow{display:flex;align-items:center;gap:9px}
+.username{font-weight:700}
+.owner{color:var(--yellow);font-size:10px}
+.main{margin-left:245px;width:calc(100% - 245px);padding:28px}
+.top{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:24px;
+}
+h1{font-size:27px;margin:0 0 5px;letter-spacing:-.8px}
+.subtitle{color:var(--muted)}
+.actions{display:flex;gap:8px}
+.btn{
+  border:1px solid var(--border);
+  color:white;background:#11151e;
+  padding:10px 15px;border-radius:9px;
+}
+.btn:hover{background:#181e29}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:white}
+.btn.danger{background:#35131c;border-color:#69202e;color:#ff8ca0}
+.btn.green{background:#0e3026;border-color:#1a6049;color:#6bffbd}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card{
+  background:linear-gradient(180deg,#0e1119,#0a0c12);
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:17px;
+}
+.stat-label{color:var(--muted);font-size:12px}
+.stat{font-size:27px;font-weight:850;margin-top:8px}
+.stat.good{color:var(--green)}
+.stat.blue{color:var(--cyan)}
+.section{margin-top:14px}
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.section-head h2{font-size:15px;margin:0}
+.platforms{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.platform{
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:18px;
+  background:#0c0f16;
+}
+.platform-top{display:flex;justify-content:space-between;align-items:center}
+.platform-name{font-weight:800;font-size:16px}
+.badge{
+  padding:4px 8px;border-radius:20px;font-size:10px;
+  background:#171b25;color:#8993a7;
+}
+.badge.live{background:#0d2e24;color:#4cffb0}
+.badge.unsupported{background:#292116;color:#ffd36b}
+.platform p{color:var(--muted);line-height:1.5}
+.controls{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+}
+.field label{
+  display:block;color:var(--muted);font-size:11px;margin-bottom:6px;
+}
+input,select{
+  width:100%;background:#090c12;color:white;
+  border:1px solid var(--border);border-radius:8px;
+  padding:10px;outline:none;
+}
+input:focus,select:focus{border-color:#365fb8}
+.switch{
+  display:flex;align-items:center;gap:8px;
+  color:#aab3c2;margin-top:12px;
+}
+.switch input{width:auto}
+.console{
+  background:#05070a;border:1px solid var(--border);
+  border-radius:11px;padding:12px;height:260px;
+  overflow:auto;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.log{margin:0 0 7px;color:#758095}
+.log .time{color:#3f4756}
+.log.ok{color:#5dffb4}
+.log.err{color:#ff7388}
+.log.warn{color:#ffd36b}
+.table{
+  width:100%;border-collapse:collapse;
+}
+.table th,.table td{
+  text-align:left;border-bottom:1px solid var(--border);
+  padding:12px 8px;
+}
+.table th{color:#697386;font-size:11px;text-transform:uppercase}
+.login{
+  min-height:100vh;display:grid;place-items:center;
+  padding:20px;
+}
+.loginbox{
+  width:min(410px,100%);
+  background:rgba(12,15,22,.94);
+  border:1px solid var(--border);
+  border-radius:18px;padding:30px;
+  box-shadow:0 25px 80px #0008;
+}
+.login-logo{text-align:center;font-size:29px;font-weight:950;margin-bottom:5px}
+.login-logo span{color:var(--blue)}
+.login-sub{text-align:center;color:var(--muted);margin-bottom:25px}
+.login .field{margin-bottom:13px}
+.login .btn{width:100%;margin-top:8px}
+.notice{
+  margin-top:15px;padding:10px;border-radius:8px;
+  background:#121722;color:#7f8ba0;font-size:11px;line-height:1.5;
+}
+.owner-panel{
+  border-color:#594516;
+  background:linear-gradient(135deg,#17140b,#0c0f15);
+}
+.perks{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.perk{
+  border:1px solid #292d35;border-radius:9px;padding:12px;
+}
+.perk b{display:block;margin-bottom:4px}
+.perk small{color:var(--muted)}
+.hit{
+  border-left:3px solid var(--green);
+  background:#0b1713;
+  padding:10px 12px;
+  margin-bottom:7px;
+  border-radius:5px;
+}
+.empty{color:#596376;padding:25px;text-align:center}
+.mobilebar{display:none}
+
+@media(max-width:950px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .platforms{grid-template-columns:1fr}
+  .controls{grid-template-columns:repeat(2,1fr)}
+  .perks{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+  .sidebar{display:none}
+  .main{margin:0;width:100%;padding:18px 14px 80px}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .stat{font-size:22px}
+  .mobilebar{
+    display:flex;position:fixed;z-index:20;bottom:0;left:0;right:0;
+    background:#0a0d13;border-top:1px solid var(--border);
+    padding:8px;justify-content:space-around;
+  }
+  .mobilebar button{background:transparent;color:#8a94a7;border:0;padding:8px}
+}
 </style>
 </head>
+
 <body>
 
-<!-- ===== AUTH ===== -->
-<div id="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo"><h1>BEAMBLADE</h1><span>Username Sniper</span></div>
-    <div class="auth-tabs">
-      <div class="auth-tab active" id="auth-tab-login" onclick="switchAuthTab('login')">Login</div>
-      <div class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')">Register</div>
-    </div>
-    <div id="login-form" class="auth-form">
-      <div class="auth-error" id="login-error"></div>
-      <div class="form-group"><label>Username</label><input type="text" class="field" id="login-username" placeholder="Enter username" autocomplete="username"></div>
-      <div class="form-group"><label>Password</label><input type="password" class="field" id="login-password" placeholder="Enter password" autocomplete="current-password"></div>
-      <button class="auth-btn" onclick="doLogin()">Sign In</button>
-    </div>
-    <div id="register-form" class="auth-form hidden">
-      <div class="auth-error" id="register-error"></div>
-      <div class="form-group"><label>Username</label><input type="text" class="field" id="reg-username" placeholder="Choose a username" maxlength="20"></div>
-      <div class="form-group"><label>Display Name</label><input type="text" class="field" id="reg-display" placeholder="Your display name" maxlength="30"></div>
-      <div class="form-group"><label>Password</label><input type="password" class="field" id="reg-password" placeholder="Create a password" maxlength="64"></div>
-      <div class="form-group"><label>Confirm Password</label><input type="password" class="field" id="reg-password2" placeholder="Confirm password" maxlength="64"></div>
-      <button class="auth-btn" onclick="doRegister()">Create Account</button>
-    </div>
-    <div class="auth-foot">Owner account: beamblade</div>
-  </div>
-</div>
+<div id="loginView" class="login">
+  <div class="loginbox">
+    <div class="login-logo">BEAM<span>BLADE</span></div>
+    <div class="login-sub">Username availability monitor</div>
 
-<!-- ===== APP ===== -->
-<div id="app-screen">
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-brand">BEAM<em>BLADE</em></div>
-      <div class="sidebar-status"><div class="status-dot" id="global-status-dot"></div><span class="status-label" id="global-status-label">Idle</span></div>
-    </div>
-    <div class="sidebar-nav">
-      <div class="nav-section">Main</div>
-      <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M2 2h5v5H2V2zm7 0h5v5H9V2zM2 9h5v5H2V9zm7 0h5v5H9V9z"/></svg>Dashboard</div>
-      <div class="nav-item" data-page="sniper" onclick="showPage('sniper')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M14 8a6 6 0 1 1-12 0 6 6 0 0 1 12 0z"/></svg>Sniper</div>
-      <div class="nav-item" data-page="hits" onclick="showPage('hits')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M2 2h12v12H2V2zm1 1v10h10V3H3z"/><path d="M4 7h8v1H4zm0-2h8v1H4zm0 5h8v1H4z"/></svg>My Hits<span class="nav-badge hidden" id="hits-badge">0</span></div>
-      <div class="nav-item" data-page="leaderboard" onclick="showPage('leaderboard')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M3 1v11h10V1H3zm1 1h8v9H4V2z"/><path d="M4.5 14h7v1h-7z"/></svg>Leaderboard</div>
-      <div class="nav-section">Account</div>
-      <div class="nav-item" data-page="profile" onclick="showPage('profile')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 7c-4 0-7 2.8-7 5h1c0-1.9 2.6-4 6-4s6 2.1 6 4h1c0-2.2-3-5-7-5z"/></svg>Profile</div>
-      <div class="nav-item" data-page="settings" onclick="showPage('settings')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M9.4 1.05c-.41-1.4-2.4-1.4-2.81 0l-.1.34a1.46 1.46 0 0 1-2.1.87l-.31-.17c-1.28-.7-2.69.7-1.99 1.99l.17.31a1.46 1.46 0 0 1-.87 2.1l-.34.1c-1.4.41-1.4 2.4 0 2.81l.34.1a1.46 1.46 0 0 1 .87 2.1l-.17.31c-.7 1.28.7 2.69 1.99 1.99l.31-.17a1.46 1.46 0 0 1 2.1.87l.1.34c.41 1.4 2.4 1.4 2.81 0l.1-.34a1.46 1.46 0 0 1 2.1-.87l.31.17c1.28.7 2.69-.7 1.99-1.99l-.17-.31a1.46 1.46 0 0 1 .87-2.1l.34-.1c1.4-.41 1.4-2.4 0-2.81l-.34-.1a1.46 1.46 0 0 1-.87-2.1l.17-.31c.7-1.28-.7-2.69-1.99-1.99l-.31.17a1.46 1.46 0 0 1-2.1-.87l-.1-.34z"/></svg>Settings</div>
-      <div class="nav-item hidden" id="nav-owner" data-page="owner" onclick="showPage('owner')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0L0 3v5c0 4.5 3.4 7.4 8 8 4.6-.6 8-3.5 8-8V3L8 0zm0 1.4L14.5 3.8V8c0 3.6-2.6 6-6.5 6.6C4.1 14 1.5 11.6 1.5 8V3.8L8 1.4z"/><path d="M7.2 9.9L4.8 7.5 4 8.3l3.2 3.2 5-5-.8-.8-4.2 4.2z"/></svg>Owner Panel</div>
-    </div>
-    <div class="sidebar-user">
-      <div class="user-avatar" id="sidebar-avatar">?</div>
-      <div class="user-info"><div class="user-display" id="sidebar-display">Loading...</div><div class="user-role" id="sidebar-role">user</div></div>
-      <button class="user-settings-btn" onclick="showPage('settings')" title="Settings"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M9.4 1.05c-.41-1.4-2.4-1.4-2.81 0l-.1.34a1.46 1.46 0 0 1-2.1.87l-.31-.17c-1.28-.7-2.69.7-1.99 1.99l.17.31a1.46 1.46 0 0 1-.87 2.1l-.34.1c-1.4.41-1.4 2.4 0 2.81l.34.1a1.46 1.46 0 0 1 .87 2.1l-.17.31c-.7 1.28.7 2.69 1.99 1.99l.31-.17a1.46 1.46 0 0 1 2.1.87l.1.34c.41 1.4 2.4 1.4 2.81 0l.1-.34a1.46 1.46 0 0 1 2.1-.87l.31.17c1.28.7 2.69-.7 1.99-1.99l-.17-.31a1.46 1.46 0 0 1 .87-2.1l.34-.1c1.4-.41 1.4-2.4 0-2.81l-.34-.1a1.46 1.46 0 0 1-.87-2.1l.17-.31c.7-1.28-.7-2.69-1.99-1.99l-.31.17a1.46 1.46 0 0 1-2.1-.87l-.1-.34z"/></svg></button>
-    </div>
-  </div>
-
-  <div class="main-content">
-    <div id="announce-banner" class="announce-banner hidden"><b>Announcement</b><span id="announce-text"></span><button class="btn btn-secondary btn-sm" onclick="dismissAnnounce()">Dismiss</button></div>
-
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-header"><div class="page-title">Dashboard</div><div class="page-subtitle">Overview of your sniping activity</div></div>
-      <div class="grid-4" style="margin-bottom:14px">
-        <div class="stat-card"><div class="stat-label">Total Hits</div><div class="stat-value" id="stat-total">0</div><div class="stat-sub">All time</div></div>
-        <div class="stat-card"><div class="stat-label">Discord Hits</div><div class="stat-value" id="stat-discord">0</div><div class="stat-sub">4-letter usernames</div></div>
-        <div class="stat-card"><div class="stat-label">TikTok Hits</div><div class="stat-value" id="stat-tiktok">0</div><div class="stat-sub">3-letter usernames</div></div>
-        <div class="stat-card"><div class="stat-label">Roblox Hits</div><div class="stat-value" id="stat-roblox">0</div><div class="stat-sub">4-letter usernames</div></div>
-      </div>
-      <div id="analytics-row" class="hidden" style="margin-bottom:14px"></div>
-      <div class="grid-2" style="margin-bottom:14px">
-        <div class="card">
-          <div class="card-title">Sniper Status</div>
-          <div style="display:flex;flex-direction:column;gap:13px" id="dash-statuses"></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Recent Hits</div>
-          <div class="hits-feed" id="dashboard-hits"><div class="empty-state"><div class="empty-title">No hits yet</div><div class="empty-desc">Start the sniper to begin</div></div></div>
-        </div>
-      </div>
-      <div class="card"><div class="card-title">Request Rate (last 20s)</div><div class="rps-chart" id="rps-chart"></div></div>
+    <div class="field">
+      <label>USERNAME</label>
+      <input id="loginUser" autocomplete="username" placeholder="Username">
     </div>
 
-    <!-- SNIPER -->
-    <div class="page" id="page-sniper">
-      <div class="page-header"><div class="page-title">Sniper</div><div class="page-subtitle">Configure and launch username sniping</div></div>
-      <div class="platform-tabs" id="platform-tabs"></div>
-      <div id="sniper-panels"></div>
+    <div class="field">
+      <label>PASSWORD</label>
+      <input id="loginPass" type="password" autocomplete="current-password" placeholder="Password">
     </div>
 
-    <!-- HITS -->
-    <div class="page" id="page-hits">
-      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
-        <div><div class="page-title">My Hits</div><div class="page-subtitle">All usernames you've successfully sniped</div></div>
-        <div style="display:flex;gap:8px">
-          <select class="field" style="width:auto" id="hits-filter" onchange="renderHitsPage()"><option value="all">All Platforms</option><option value="discord">Discord</option><option value="tiktok">TikTok</option><option value="roblox">Roblox</option></select>
-          <button class="btn btn-danger btn-sm" onclick="clearHits()">Clear All</button>
-        </div>
-      </div>
-      <div id="hits-list"></div>
-    </div>
+    <button class="btn primary" onclick="login()">Sign in</button>
+    <div id="loginError" class="notice hidden"></div>
 
-    <!-- LEADERBOARD -->
-    <div class="page" id="page-leaderboard">
-      <div class="page-header"><div class="page-title">Leaderboard</div><div class="page-subtitle">Top snipers ranked by total hits</div></div>
-      <div class="card"><table class="lb-table"><thead><tr><th>#</th><th>User</th><th>Total</th><th>Discord</th><th>TikTok</th><th>Roblox</th><th>Best Hit</th></tr></thead><tbody id="lb-body"></tbody></table></div>
-    </div>
-
-    <!-- PROFILE -->
-    <div class="page" id="page-profile">
-      <div class="page-header"><div class="page-title">Profile</div></div>
-      <div class="profile-header">
-        <div class="profile-avatar-big" id="profile-avatar-big">?</div>
-        <div class="profile-names">
-          <div class="profile-display" id="profile-display-name">Display Name</div>
-          <div class="profile-username" id="profile-username-display">@username</div>
-          <div style="margin-top:6px;display:flex;gap:6px;align-items:center"><span class="role-badge role-user" id="profile-role-badge">User</span><span class="badge-vip hidden" id="profile-vip">VIP</span></div>
-        </div>
-        <button class="btn btn-secondary" onclick="openEditProfile()">Edit Profile</button>
-      </div>
-      <div class="grid-3" style="margin-bottom:14px">
-        <div class="stat-card"><div class="stat-label">Total Hits</div><div class="stat-value" id="profile-total">0</div></div>
-        <div class="stat-card"><div class="stat-label">Best Hit</div><div class="stat-value" id="profile-best" style="font-size:19px">—</div></div>
-        <div class="stat-card"><div class="stat-label">Member Since</div><div class="stat-value" id="profile-since" style="font-size:15px">—</div></div>
-      </div>
-      <div class="card"><div class="card-title">Hit History</div><div id="profile-hits-list"></div></div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div class="page" id="page-settings">
-      <div class="page-header"><div class="page-title">Settings</div><div class="page-subtitle">Customize your BeamBlade experience</div></div>
-      <div class="settings-section"><div class="settings-title">Theme</div><div class="settings-desc">36 color themes, black & white by default</div><div class="card"><div class="card-title">Color Themes</div><div class="theme-grid" id="theme-grid"></div></div></div>
-      <div class="settings-section"><div class="settings-title">Account</div><div class="settings-desc">Notifications, sound and layout</div>
-        <div class="card">
-          <div class="toggle-row"><div><div class="toggle-title">Browser Notifications</div><div class="toggle-desc">Get notified even when BeamBlade is in the background</div></div><label class="toggle"><input type="checkbox" id="browser-notif" onchange="toggleBrowserNotif()"><span class="toggle-slider"></span></label></div>
-          <div class="toggle-row"><div><div class="toggle-title">Sound Alerts</div><div class="toggle-desc">Play a sound when a username is found</div></div><label class="toggle"><input type="checkbox" id="sound-alerts" onchange="toggleSound()"><span class="toggle-slider"></span></label></div>
-          <div class="toggle-row"><div><div class="toggle-title">Compact Mode</div><div class="toggle-desc">Show more information with less spacing</div></div><label class="toggle"><input type="checkbox" id="compact-mode" onchange="toggleCompact()"><span class="toggle-slider"></span></label></div>
-        </div>
-      </div>
-      <div class="settings-section"><div class="settings-title">Default Webhook</div><div class="settings-desc">Used by any platform that has no webhook set</div>
-        <div class="card"><div class="input-group"><div class="input-label">Discord Webhook URL</div><input type="text" class="field" id="settings-wh" placeholder="https://discord.com/api/webhooks/..."><div class="input-hint">Saved automatically. Per-platform webhooks in the Sniper tab override this.</div></div></div>
-      </div>
-      <div class="settings-section"><div class="settings-title">Display Name & Avatar</div><div class="settings-desc">How you appear in the app and leaderboard</div>
-        <div class="card">
-          <div class="input-group"><div class="input-label">Display Name</div><input type="text" class="field" id="settings-display" placeholder="Your display name" maxlength="30"></div>
-          <div class="input-group"><div class="input-label">Avatar Color</div><div class="avatar-colors" id="avatar-color-picker"></div></div>
-          <button class="btn btn-primary" onclick="saveDisplaySettings()">Save Changes</button>
-        </div>
-      </div>
-      <div class="settings-section"><div class="settings-title">Danger Zone</div>
-        <div class="card">
-          <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:600">Sign Out</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Sign out of your account</div></div><button class="btn btn-danger" onclick="doLogout()">Sign Out</button></div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><div><div style="font-size:13px;font-weight:600">Clear All My Data</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Delete your hits and statistics</div></div><button class="btn btn-danger" onclick="clearAllData()">Clear Data</button></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- OWNER -->
-    <div class="page" id="page-owner">
-      <div class="page-header"><div class="page-title">Owner Panel</div><div class="page-subtitle">Full control over BeamBlade</div></div>
-      <div class="grid-2" style="margin-bottom:14px">
-        <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="owner-total-users">0</div></div>
-        <div class="stat-card"><div class="stat-label">Total Hits (All Users)</div><div class="stat-value" id="owner-total-hits">0</div></div>
-      </div>
-      <div class="card" style="margin-bottom:14px">
-        <div class="card-title">Announcements</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <input type="text" class="field" id="owner-announce" placeholder="Message shown to every logged-in user" style="flex:1;min-width:220px">
-          <button class="btn btn-primary" onclick="ownerAnnounce()">Post</button>
-          <button class="btn btn-secondary" onclick="ownerClearAnnounce()">Clear</button>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:14px">
-        <div class="card-title">User Management</div>
-        <div style="overflow-x:auto"><table class="owner-table"><thead><tr><th>User</th><th>Display</th><th>Role</th><th>Hits</th><th>Perks</th><th>Joined</th><th>Actions</th></tr></thead><tbody id="owner-users"></tbody></table></div>
-      </div>
-      <div class="grid-2" style="margin-bottom:14px">
-        <div class="card">
-          <div class="card-title">Grant Role</div>
-          <div class="input-group"><div class="input-label">Username</div><input type="text" class="field" id="grant-username" placeholder="Enter username"></div>
-          <div class="input-group"><div class="input-label">Role</div><select class="field" id="grant-role"><option value="admin">Admin</option><option value="mod">Moderator</option><option value="user">User</option></select></div>
-          <button class="btn btn-primary" onclick="grantRoleByInput()">Apply Role</button>
-        </div>
-        <div class="card">
-          <div class="card-title">Grant Perk</div>
-          <div class="input-group"><div class="input-label">Username</div><input type="text" class="field" id="perk-username" placeholder="Enter username"></div>
-          <div class="perks-grid" id="perks-grid"></div>
-          <button class="btn btn-primary" style="margin-top:12px" onclick="grantPerk()">Grant Perk</button>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:14px">
-        <div class="card-title">Global Hit Log</div>
-        <div class="global-hits" id="owner-global-hits"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Danger Zone</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-secondary" onclick="ownerExport()">Export Data</button>
-          <label class="btn btn-secondary" style="cursor:pointer">Import Data<input type="file" id="owner-import-file" accept=".json" style="display:none" onchange="ownerImport(this)"></label>
-          <button class="btn btn-danger" onclick="ownerWipe()">Wipe Everything (keep owner)</button>
-        </div>
-      </div>
+    <div class="notice">
+      GitHub Pages mode: credentials are stored locally in this browser.
+      This is not suitable for protecting real secrets.
     </div>
   </div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal-edit-profile">
-  <div class="modal">
-    <div class="modal-title">Edit Profile</div>
-    <div class="modal-desc">Update your display name and avatar color</div>
-    <div class="input-group"><div class="input-label">Display Name</div><input type="text" class="field" id="modal-display-name" placeholder="Display name" maxlength="30"></div>
-    <div class="input-group"><div class="input-label">Avatar Color</div><div class="avatar-colors" id="modal-avatar-colors"></div></div>
-    <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modal-edit-profile')">Cancel</button><button class="btn btn-primary" onclick="saveProfile()">Save</button></div>
+<div id="appView" class="app hidden">
+
+<aside class="sidebar">
+  <div class="logo">BEAM<span>BLADE</span></div>
+
+  <div class="nav">
+    <div class="nav-title">Monitor</div>
+    <button class="active" onclick="page('dashboard',this)">▦ Dashboard</button>
+    <button onclick="page('sniper',this)">◉ Sniper</button>
+    <button onclick="page('hits',this)">★ Hits</button>
+
+    <div class="nav-title">System</div>
+    <button onclick="page('settings',this)">⚙ Settings</button>
+    <button id="ownerNav" onclick="page('owner',this)">♛ Owner</button>
   </div>
+
+  <div class="userbox">
+    <div class="userrow">
+      <div class="avatar" id="avatar">B</div>
+      <div>
+        <div class="username" id="sideUser">beamblade</div>
+        <div class="owner" id="sideRole">OWNER</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<section id="dashboardPage">
+
+  <div class="top">
+    <div>
+      <h1>Dashboard</h1>
+      <div class="subtitle">Fast browser-based username monitoring.</div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="clearLogs()">Clear logs</button>
+      <button class="btn primary" onclick="page('sniper')">Open Sniper</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="stat-label">CHECKED</div>
+      <div class="stat blue" id="checked">0</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">AVAILABLE</div>
+      <div class="stat good" id="available">0</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">ERRORS</div>
+      <div class="stat" id="errors">0</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">STATUS</div>
+      <div class="stat" id="status">IDLE</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <h2>Platforms</h2>
+    </div>
+
+    <div class="platforms">
+      <div class="platform">
+        <div class="platform-top">
+          <div class="platform-name">Roblox</div>
+          <span class="badge live">BROWSER API</span>
+        </div>
+        <p>Real username availability checks through Roblox's public username validation endpoint.</p>
+        <button class="btn primary" onclick="selectPlatform('roblox')">Configure</button>
+      </div>
+
+      <div class="platform">
+        <div class="platform-top">
+          <div class="platform-name">Discord</div>
+          <span class="badge unsupported">API REQUIRED</span>
+        </div>
+        <p>Discord does not provide a suitable public availability endpoint for a GitHub Pages-only scanner.</p>
+        <button class="btn" onclick="showInfo('Discord checking requires an approved server-side integration.')">Info</button>
+      </div>
+
+      <div class="platform">
+        <div class="platform-top">
+          <div class="platform-name">TikTok</div>
+          <span class="badge unsupported">API REQUIRED</span>
+        </div>
+        <p>TikTok username availability cannot be reliably read from a static browser page without a supported API.</p>
+        <button class="btn" onclick="showInfo('TikTok checking requires an approved server-side integration.')">Info</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section card">
+    <div class="section-head">
+      <h2>Live terminal</h2>
+      <span class="badge" id="terminalState">STOPPED</span>
+    </div>
+    <div id="console" class="console"></div>
+  </div>
+
+</section>
+
+<section id="sniperPage" class="hidden">
+  <div class="top">
+    <div>
+      <h1>Sniper</h1>
+      <div class="subtitle">Generate and monitor usernames without auto-claiming them.</div>
+    </div>
+    <div class="actions">
+      <button class="btn danger" onclick="stopScanner()">Stop</button>
+      <button class="btn green" onclick="startScanner()">Start</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-head"><h2>Configuration</h2></div>
+
+    <div class="controls">
+      <div class="field">
+        <label>PLATFORM</label>
+        <select id="platform">
+          <option value="roblox">Roblox</option>
+          <option value="discord" disabled>Discord — API required</option>
+          <option value="tiktok" disabled>TikTok — API required</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>USERNAME LENGTH</label>
+        <select id="length">
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+          <option>9</option>
+          <option>10</option>
+          <option>11</option>
+          <option>12</option>
+          <option>13</option>
+          <option>14</option>
+          <option>15</option>
+          <option>16</option>
+          <option>17</option>
+          <option>18</option>
+          <option>19</option>
+          <option>20</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>CHECK INTERVAL (MS)</label>
+        <input id="interval" type="number" min="1000" value="1500">
+      </div>
+
+      <div class="field">
+        <label>GENERATION MODE</label>
+        <select id="mode">
+          <option value="random">Random</option>
+          <option value="prefix">Prefix</option>
+          <option value="suffix">Suffix</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="controls" style="margin-top:10px">
+      <div class="field">
+        <label>CHARACTER SET</label>
+        <input id="charset" value="abcdefghijklmnopqrstuvwxyz0123456789">
+      </div>
+
+      <div class="field">
+        <label>PREFIX</label>
+        <input id="prefix" placeholder="beam">
+      </div>
+
+      <div class="field">
+        <label>SUFFIX</label>
+        <input id="suffix" placeholder="x">
+      </div>
+
+      <div class="field">
+        <label>WEBHOOK</label>
+        <input id="webhook" type="password" placeholder="Discord webhook URL">
+      </div>
+    </div>
+
+    <label class="switch">
+      <input id="keepAwake" type="checkbox">
+      Try to keep this page awake while monitoring
+    </label>
+
+    <label class="switch">
+      <input id="notify" type="checkbox" checked>
+      Browser notification on hit
+    </label>
+  </div>
+
+  <div class="section grid">
+    <div class="card">
+      <div class="stat-label">CHECKED</div>
+      <div class="stat blue" id="checked2">0</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">HITS</div>
+      <div class="stat good" id="available2">0</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">RATE</div>
+      <div class="stat" id="rate">0/min</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">RUNNING</div>
+      <div class="stat" id="running">NO</div>
+    </div>
+  </div>
+</section>
+
+<section id="hitsPage" class="hidden">
+  <div class="top">
+    <div>
+      <h1>Hits</h1>
+      <div class="subtitle">Previously detected available usernames.</div>
+    </div>
+    <button class="btn danger" onclick="clearHits()">Clear hits</button>
+  </div>
+
+  <div class="card">
+    <div id="hitsList"></div>
+  </div>
+</section>
+
+<section id="settingsPage" class="hidden">
+  <div class="top">
+    <div>
+      <h1>Settings</h1>
+      <div class="subtitle">Local browser configuration.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label>DISPLAY NAME</label>
+      <input id="displayName">
+    </div>
+
+    <label class="switch">
+      <input id="sound" type="checkbox" checked>
+      Hit sound
+    </label>
+
+    <label class="switch">
+      <input id="dark" type="checkbox" checked disabled>
+      Dark interface
+    </label>
+
+    <br>
+    <button class="btn primary" onclick="saveSettings()">Save settings</button>
+  </div>
+
+  <div class="section card">
+    <h2>GitHub Pages limitation</h2>
+    <p style="color:var(--muted);line-height:1.6">
+      A browser page cannot guarantee continuous execution after iPadOS suspends
+      Safari. The keep-awake option reduces ordinary screen-sleep interruptions,
+      but it cannot override iPadOS background suspension. For true 24/7
+      monitoring, a server-side worker is required.
+    </p>
+  </div>
+</section>
+
+<section id="ownerPage" class="hidden">
+  <div class="top">
+    <div>
+      <h1>Owner Control</h1>
+      <div class="subtitle">BeamBlade owner features.</div>
+    </div>
+  </div>
+
+  <div class="card owner-panel">
+    <div class="section-head">
+      <h2>OWNER ACCESS</h2>
+      <span class="badge" style="color:#ffd36b">BEAMBLADE</span>
+    </div>
+
+    <div class="perks">
+      <div class="perk"><b>Priority Queue</b><small>Preferred local scan scheduling.</small></div>
+      <div class="perk"><b>Speed Controls</b><small>Custom interval configuration.</small></div>
+      <div class="perk"><b>Custom Charset</b><small>Use your own character set.</small></div>
+      <div class="perk"><b>Webhook Alerts</b><small>Instant hit notifications.</small></div>
+      <div class="perk"><b>Analytics+</b><small>Extended local statistics.</small></div>
+      <div class="perk"><b>Hit History</b><small>Persistent browser history.</small></div>
+    </div>
+  </div>
+
+  <div class="section card">
+    <h2>Owner statistics</h2>
+    <br>
+    <div class="grid">
+      <div><div class="stat-label">TOTAL CHECKS</div><div class="stat" id="ownerChecks">0</div></div>
+      <div><div class="stat-label">TOTAL HITS</div><div class="stat good" id="ownerHits">0</div></div>
+      <div><div class="stat-label">SESSION</div><div class="stat blue" id="sessionTime">0m</div></div>
+      <div><div class="stat-label">MODE</div><div class="stat">LOCAL</div></div>
+    </div>
+  </div>
+</section>
+
+</main>
 </div>
 
-<div class="toast-wrap" id="toast-wrap"></div>
+<div id="mobilebar" class="mobilebar hidden">
+  <button onclick="page('dashboard')">⌂</button>
+  <button onclick="page('sniper')">◉</button>
+  <button onclick="page('hits')">★</button>
+  <button onclick="page('settings')">⚙</button>
+</div>
 
 <script>
-/* ================= DATA ================= */
-var DB_KEY='bb_data_v3';
-function getDB(){try{return JSON.parse(localStorage.getItem(DB_KEY))||{};}catch(e){return{};}}
-function setDB(d){localStorage.setItem(DB_KEY,JSON.stringify(d));}
-function initDB(){
-  var db=getDB();
-  if(!db.users)db.users={};
-  if(!db.globalHits)db.globalHits=[];
-  if(!db.announcement)db.announcement=null;
-  if(!db.users['beamblade']){
-    db.users['beamblade']={username:'beamblade',displayName:'BeamBlade',password:'beamblademsk123',role:'owner',perks:['speed_boost','priority_queue','extended_log','multi_webhook','custom_charset','analytics','vip_badge'],avatarColor:'#ffffff',hits:{discord:0,tiktok:0,roblox:0,total:0},hitLog:[],bestHit:null,joined:Date.now(),settings:{theme:0,sound:true,compact:false,browserNotif:false},webhooks:{},banned:false};
-  }
-  setDB(db);
-}
-function getUser(u){return getDB().users[u]||null;}
-function saveUser(user){var db=getDB();db.users[user.username]=user;setDB(db);}
+/*
+  ============================================================
+  GITHUB PAGES CONFIGURATION
+  ============================================================
 
-/* ================= PLATFORM CONFIG ================= */
-var P={discord:{p:'ds',name:'Discord',defLen:4,min:3,max:10,cs:'alphanum'},tiktok:{p:'tt',name:'TikTok',defLen:3,min:2,max:8,cs:'alphanum'},roblox:{p:'rb',name:'Roblox',defLen:4,min:3,max:10,cs:'alpha'}};
-var KEYS=['discord','tiktok','roblox'];
-var CHARSETS={alphanum:'abcdefghijklmnopqrstuvwxyz0123456789',alpha:'abcdefghijklmnopqrstuvwxyz',num:'0123456789'};
-var SPEED_LABELS=['Very Slow','Slow','Medium','Fast','Blazing'];
-var SPEED_DELAYS=[900,450,200,80,25];
+  IMPORTANT:
+  Anything in this file is publicly readable after deployment.
 
-var sniper={};
-KEYS.forEach(function(k){sniper[k]={running:false,checked:0,hits:0,lastRate:0,logTick:0};});
+  Do NOT put a valuable/private password in this file.
 
-var currentUser=null,selectedPerk=null,rpsHistory=new Array(20).fill(0);
-var avatarColors=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#a855f7','#ec4899','#ffffff','#888888'];
+  Set this only if you accept that limitation.
+*/
+const OWNER_USERNAME = "beamblade";
 
-function hasPerk(name){return currentUser&&currentUser.perks&&currentUser.perks.indexOf(name)>-1;}
-function roleLevel(r){return r==='owner'?3:r==='admin'?2:r==='mod'?1:0;}
+/*
+  For a GitHub Pages-only demo, the owner password is intentionally
+  NOT embedded here. Replace the empty string with your own password
+  if you understand that visitors can inspect it.
+*/
+const OWNER_PASSWORD = "";
 
-/* ================= THEMES (36) ================= */
-var THEMES=[
-{n:'Classic',a:'#ffffff',b:'#0b0b0b',b2:'#111111',t:'#e8e8e8'},
-{n:'Crimson',a:'#ef4444',b:'#0f0a0a',b2:'#1a0a0a',t:'#f5e0e0'},{n:'Ocean',a:'#3b82f6',b:'#0a0d14',b2:'#0d1220',t:'#dce8f5'},
-{n:'Forest',a:'#22c55e',b:'#080f0a',b2:'#0d1a10',t:'#d8f0df'},{n:'Violet',a:'#a855f7',b:'#0c0a12',b2:'#130d1a',t:'#e8d8f5'},
-{n:'Amber',a:'#f59e0b',b:'#0f0d08',b2:'#1a1508',t:'#f5edd8'},{n:'Rose',a:'#f43f5e',b:'#0f080a',b2:'#1a0d10',t:'#f5d8df'},
-{n:'Cyan',a:'#06b6d4',b:'#080e10',b2:'#0d1518',t:'#d8f0f5'},{n:'Lime',a:'#84cc16',b:'#0a0e08',b2:'#111808',t:'#e5f0d0'},
-{n:'Pink',a:'#ec4899',b:'#0f080e',b2:'#1a0d18',t:'#f5d8f0'},{n:'Indigo',a:'#6366f1',b:'#090a14',b2:'#0d1020',t:'#dcdff5'},
-{n:'Teal',a:'#14b8a6',b:'#081010',b2:'#0d1818',t:'#d0f0ed'},{n:'Orange',a:'#f97316',b:'#0f0d09',b2:'#1a1408',t:'#f5ead8'},
-{n:'Sky',a:'#0ea5e9',b:'#080c10',b2:'#0d1218',t:'#d5e8f5'},{n:'Emerald',a:'#10b981',b:'#080f0c',b2:'#0d1810',t:'#d0f0e5'},
-{n:'Yellow',a:'#eab308',b:'#0e0d08',b2:'#181508',t:'#f5eed0'},{n:'Fuchsia',a:'#d946ef',b:'#0e080e',b2:'#180d18',t:'#f0d8f5'},
-{n:'Slate',a:'#94a3b8',b:'#0a0c0f',b2:'#121620',t:'#dce3ed'},{n:'Red Orange',a:'#ff4500',b:'#0f0a08',b2:'#1a1008',t:'#f5e0d5'},
-{n:'Electric',a:'#00ffff',b:'#020809',b2:'#050e10',t:'#ccf5f5'},{n:'Neon Green',a:'#39ff14',b:'#040a04',b2:'#081008',t:'#d0f5cc'},
-{n:'Hot Pink',a:'#ff69b4',b:'#0f080d',b2:'#1a0d18',t:'#f5d5e8'},{n:'Gold',a:'#ffd700',b:'#0e0c07',b2:'#181407',t:'#f5f0cc'},
-{n:'Coral',a:'#ff7f50',b:'#0f0c08',b2:'#1a1208',t:'#f5e5d8'},{n:'Lavender',a:'#e6e6fa',b:'#0c0c0f',b2:'#141418',t:'#f0f0f5'},
-{n:'Mint',a:'#98ff98',b:'#090f09',b2:'#101810',t:'#d8f5d8'},{n:'Peach',a:'#ffcba4',b:'#0f0d0c',b2:'#1a1614',t:'#f5ece5'},
-{n:'Steel',a:'#b0c4de',b:'#0a0c0e',b2:'#121618',t:'#dde5ed'},{n:'Neon Purple',a:'#bf00ff',b:'#0a0510',b2:'#120a1a',t:'#e8d0f5'},
-{n:'Sunset',a:'#ff6b35',b:'#0f0a08',b2:'#1a1208',t:'#f5e0d5'},{n:'Arctic',a:'#e0f8ff',b:'#090d0f',b2:'#101618',t:'#e5f2f5'},
-{n:'Copper',a:'#b87333',b:'#0e0c09',b2:'#181408',t:'#f0e5d5'},{n:'Aqua',a:'#00ffee',b:'#040a09',b2:'#081412',t:'#ccf5f3'},
-{n:'Blood',a:'#8b0000',b:'#080404',b2:'#100808',t:'#f0d8d8'},{n:'Matrix',a:'#00ff41',b:'#020602',b2:'#040d04',t:'#c8f0d0'},
-{n:'Chrome',a:'#d4d4d8',b:'#0a0a0c',b2:'#101014',t:'#e8e8ea'}
-];
-function adjustColor(hex,amt){var n=parseInt(hex.replace('#',''),16);var r=Math.max(0,Math.min(255,(n>>16)+amt));var g=Math.max(0,Math.min(255,((n>>8)&255)+amt));var b=Math.max(0,Math.min(255,(n&255)+amt));return '#'+[r,g,b].map(function(x){return x.toString(16).padStart(2,'0');}).join('');}
-function applyTheme(idx){
-  var t=THEMES[idx];if(!t)return;
-  var s=document.documentElement.style;
-  s.setProperty('--bg',t.b);s.setProperty('--bg2',t.b2);s.setProperty('--bg3',adjustColor(t.b2,8));s.setProperty('--bg4',adjustColor(t.b2,14));
-  s.setProperty('--border',adjustColor(t.b2,22));s.setProperty('--text',t.t);s.setProperty('--accent',t.a);s.setProperty('--accent2',adjustColor(t.a,-35));
-  document.querySelectorAll('.theme-swatch').forEach(function(el,i){el.classList.toggle('active',i===idx);});
-  if(currentUser){if(!currentUser.settings)currentUser.settings={};currentUser.settings.theme=idx;saveUser(currentUser);}
+const state = {
+  user:null,
+  running:false,
+  timer:null,
+  checked:0,
+  available:0,
+  errors:0,
+  hits:JSON.parse(localStorage.getItem("bb_hits") || "[]"),
+  sessionStart:Date.now(),
+  checksAtStart:0
+};
+
+const $ = id => document.getElementById(id);
+
+function log(message,type=""){
+  const el=$("console");
+  const line=document.createElement("div");
+  line.className="log "+type;
+  const t=new Date().toLocaleTimeString();
+  line.innerHTML='<span class="time">['+t+']</span> '+escapeHtml(message);
+  el.appendChild(line);
+  el.scrollTop=el.scrollHeight;
 }
 
-/* ================= AUTH ================= */
-function switchAuthTab(tab){
-  document.getElementById('auth-tab-login').classList.toggle('active',tab==='login');
-  document.getElementById('auth-tab-register').classList.toggle('active',tab==='register');
-  document.getElementById('login-form').classList.toggle('hidden',tab!=='login');
-  document.getElementById('register-form').classList.toggle('hidden',tab!=='register');
-}
-function showAuthError(el,msg){el.textContent=msg;el.style.display='block';}
-function doLogin(){
-  var u=document.getElementById('login-username').value.trim().toLowerCase();
-  var p=document.getElementById('login-password').value;
-  var err=document.getElementById('login-error');err.style.display='none';
-  if(!u||!p){showAuthError(err,'Please fill in all fields.');return;}
-  var user=getUser(u);
-  if(!user||user.password!==p){showAuthError(err,'Invalid username or password.');return;}
-  if(user.banned){showAuthError(err,'This account has been banned.');return;}
-  currentUser=user;sessionStorage.setItem('bb_session',u);loadApp();
-}
-function doRegister(){
-  var u=document.getElementById('reg-username').value.trim().toLowerCase();
-  var d=document.getElementById('reg-display').value.trim();
-  var p=document.getElementById('reg-password').value;
-  var p2=document.getElementById('reg-password2').value;
-  var err=document.getElementById('register-error');err.style.display='none';
-  if(!u||!d||!p||!p2){showAuthError(err,'Please fill in all fields.');return;}
-  if(u.length<3){showAuthError(err,'Username must be at least 3 characters.');return;}
-  if(!/^[a-z0-9_]+$/.test(u)){showAuthError(err,'Username can only contain letters, numbers, underscores.');return;}
-  if(p!==p2){showAuthError(err,'Passwords do not match.');return;}
-  if(p.length<6){showAuthError(err,'Password must be at least 6 characters.');return;}
-  if(getUser(u)){showAuthError(err,'Username already taken.');return;}
-  var nu={username:u,displayName:d,password:p,role:'user',perks:[],avatarColor:avatarColors[Math.floor(Math.random()*avatarColors.length)],hits:{discord:0,tiktok:0,roblox:0,total:0},hitLog:[],bestHit:null,joined:Date.now(),settings:{theme:0,sound:true,compact:false,browserNotif:false},webhooks:{},banned:false};
-  saveUser(nu);currentUser=nu;sessionStorage.setItem('bb_session',u);loadApp();
-}
-function doLogout(){
-  stopAllSnipers();currentUser=null;sessionStorage.removeItem('bb_session');
-  document.getElementById('app-screen').style.display='none';
-  document.getElementById('auth-screen').style.display='flex';
-  document.getElementById('login-username').value='';document.getElementById('login-password').value='';
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
 }
 
-/* ================= APP LOAD ================= */
-function loadApp(){
-  document.getElementById('auth-screen').style.display='none';
-  document.getElementById('app-screen').style.display='flex';
-  updateSidebarUser();updateOwnerNav();buildThemeGrid();buildAvatarPickers();buildRpsChart();buildPerksGrid();
-  buildDashStatuses();loadSettings();renderLeaderboard();renderHitsPage();renderProfilePage();renderOwnerPanel();renderAnnounce();
-  startRpsTracker();updateDashboardStats();updateHitBadge();
-  document.getElementById('settings-wh').value=currentUser.settings&&currentUser.settings.defaultWebhook||'';
-  showPage('dashboard');
-  toast('Welcome back, '+currentUser.displayName,'info');
-}
-function updateSidebarUser(){
-  document.getElementById('sidebar-display').textContent=currentUser.displayName;
-  document.getElementById('sidebar-role').textContent=currentUser.role;
-  var av=document.getElementById('sidebar-avatar');av.textContent=currentUser.displayName[0].toUpperCase();
-  av.style.background=currentUser.avatarColor;av.style.color=getContrast(currentUser.avatarColor);
-}
-function updateOwnerNav(){document.getElementById('nav-owner').classList.toggle('hidden',currentUser.role!=='owner');}
-function getContrast(hex){var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(r*299+g*587+b*114)/1000>128?'#000':'#fff';}
-function showPage(name){
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.toggle('active',n.getAttribute('data-page')===name);});
-  var page=document.getElementById('page-'+name);if(page)page.classList.add('active');
-  if(name==='leaderboard')renderLeaderboard();
-  if(name==='hits')renderHitsPage();
-  if(name==='profile')renderProfilePage();
-  if(name==='owner')renderOwnerPanel();
-  if(name==='settings')document.getElementById('settings-display').value=currentUser.displayName;
-}
+function login(){
+  const u=$("loginUser").value.trim();
+  const p=$("loginPass").value;
 
-/* ================= THEME GRID ================= */
-function buildThemeGrid(){
-  var grid=document.getElementById('theme-grid');grid.innerHTML='';
-  var saved=(currentUser.settings&&currentUser.settings.theme)||0;
-  THEMES.forEach(function(t,i){
-    var sw=document.createElement('div');
-    sw.className='theme-swatch'+(i===saved?' active':'');sw.style.background=t.a;sw.title=t.n;
-    sw.onclick=function(){applyTheme(i);};
-    grid.appendChild(sw);
-  });
-}
-function buildAvatarPickers(){
-  ['avatar-color-picker','modal-avatar-colors'].forEach(function(id){
-    var wrap=document.getElementById(id);if(!wrap)return;wrap.innerHTML='';
-    avatarColors.forEach(function(c){
-      var b=document.createElement('div');
-      b.className='avatar-color'+(c===currentUser.avatarColor?' active':'');
-      b.style.background=c;
-      b.onclick=function(){
-        wrap.querySelectorAll('.avatar-color').forEach(function(d){d.classList.remove('active');});
-        b.classList.add('active');currentUser.avatarColor=c;
-      };
-      wrap.appendChild(b);
-    });
-  });
-}
-function loadSettings(){
-  var s=currentUser.settings||{};
-  if(s.theme!==undefined)applyTheme(s.theme);
-  document.body.classList.toggle('compact',!!s.compact);
-  document.getElementById('compact-mode').checked=!!s.compact;
-  document.getElementById('sound-alerts').checked=s.sound!==false;
-  document.getElementById('browser-notif').checked=!!s.browserNotif;
-  var aRow=document.getElementById('analytics-row');
-  if(hasPerk('analytics'))aRow.classList.remove('hidden');
-}
-
-/* ================= DASHBOARD ================= */
-function buildDashStatuses(){
-  var wrap=document.getElementById('dash-statuses');wrap.innerHTML='';
-  KEYS.forEach(function(k){
-    var cfg=P[k];
-    wrap.insertAdjacentHTML('beforeend',
-      '<div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><span style="font-size:13px;font-weight:600">'+cfg.name+'</span><span class="status-label" id="'+cfg.p+'-status-label" style="font-size:11px">Idle</span></div>'+
-      '<div class="speed-display"><div class="speed-bar-wrap"><div class="speed-bar" id="'+cfg.p+'-speed-bar" style="width:0%"></div></div><div class="speed-val" id="'+cfg.p+'-rps">0 req/s</div></div></div>');
-  });
-  var aRow=document.getElementById('analytics-row');
-  aRow.innerHTML='<div class="grid-3">'+
-    '<div class="stat-card"><div class="stat-label">Total Checks</div><div class="stat-value" id="stat-checks">0</div></div>'+
-    '<div class="stat-card"><div class="stat-label">Peak Rate</div><div class="stat-value" id="stat-peak">0/s</div></div>'+
-    '<div class="stat-card"><div class="stat-label">Hit Rate</div><div class="stat-value" id="stat-hitrate">0%</div></div></div>';
-}
-function updateDashboardStats(){
-  document.getElementById('stat-total').textContent=currentUser.hits.total;
-  document.getElementById('stat-discord').textContent=currentUser.hits.discord;
-  document.getElementById('stat-tiktok').textContent=currentUser.hits.tiktok;
-  document.getElementById('stat-roblox').textContent=currentUser.hits.roblox;
-}
-function addDashboardHit(hit){
-  var feed=document.getElementById('dashboard-hits');
-  var empty=feed.querySelector('.empty-state');if(empty)feed.innerHTML='';
-  var el=document.createElement('div');el.className='hit-item new';
-  el.innerHTML='<span class="hit-platform '+hit.platform+'">'+hit.platform+'</span><span class="hit-name">@'+hit.username+'</span><span class="hit-time">'+timeAgo(hit.time)+'</span><span class="hit-badge">Available</span>';
-  feed.insertBefore(el,feed.firstChild);
-  while(feed.children.length>10)feed.removeChild(feed.lastChild);
-}
-
-/* ================= SNIPER UI BUILD ================= */
-function buildSniperUI(){
-  var tabs=document.getElementById('platform-tabs');tabs.innerHTML='';
-  KEYS.forEach(function(k,idx){
-    var b=document.createElement('button');
-    b.className='platform-tab'+(idx===0?' active':'');
-    b.textContent=P[k].name;
-    b.onclick=function(){switchPlatformTab(k);};
-    tabs.appendChild(b);
-  });
-  var panels=document.getElementById('sniper-panels');panels.innerHTML='';
-  KEYS.forEach(function(k){
-    var cfg=P[k],p=cfg.p;
-    panels.insertAdjacentHTML('beforeend',
-      '<div class="sniper-panel'+(k==='discord'?' active':'')+'" id="panel-'+k+'">'+
-      '<div class="sniper-grid">'+
-      '<div>'+
-      '<div class="card" style="margin-bottom:12px">'+
-        '<div class="card-title">Configuration</div>'+
-        '<div class="input-group"><div class="input-label">Discord Webhook URL</div><input type="text" class="field" id="'+p+'-webhook" placeholder="https://discord.com/api/webhooks/..."><div id="'+p+'-wh-status" class="webhook-status hidden"><div class="webhook-dot" id="'+p+'-wh-dot"></div><span class="webhook-text" id="'+p+'-wh-text"></span></div><div class="input-hint">Paste your Discord webhook to receive hit notifications</div></div>'+
-        '<div class="input-group"><div class="input-label">Character Set</div><select class="field" id="'+p+'-cs" onchange="charsetChanged(\''+k+'\')">'+
-          '<option value="alphanum">Alphanumeric</option><option value="alpha">Letters Only</option><option value="num">Numbers Only</option><option value="custom">Custom</option></select>'+
-          '<input type="text" class="field hidden" id="'+p+'-custom" placeholder="abcdefghijklmnopqrstuvwxyz0123456789" style="margin-top:6px"></div>'+
-        '<div class="input-group"><div class="input-label">Username Length <span class="mono" style="color:var(--dim)">min '+cfg.min+' max '+cfg.max+'</span></div><input type="number" class="field" id="'+p+'-len" min="'+cfg.min+'" max="'+cfg.max+'" value="'+cfg.defLen+'"><div class="input-hint">Characters per username</div></div>'+
-        '<div class="input-group"><div class="input-label">Request Speed <span style="color:var(--success);font-size:11px" id="'+p+'-speed-label">Fast</span></div><input type="range" id="'+p+'-speed" min="1" max="5" value="4" style="width:100%;accent-color:var(--accent)" oninput="updateSpeedLabel(\''+p+'\')"></div>'+
-        '<div style="display:flex;gap:10px"><button class="btn btn-primary btn-lg" id="'+p+'-start-btn" onclick="toggleSniper(\''+k+'\')">Start Sniping</button><button class="btn btn-secondary btn-lg" onclick="testWebhook(\''+k+'\')">Test Webhook</button></div>'+
-      '</div>'+
-      '<div class="card"><div class="card-title">Options</div>'+
-        '<div class="toggle-row"><div><div class="toggle-title">Notify on hit</div><div class="toggle-desc">Send webhook notification for each hit</div></div><label class="toggle"><input type="checkbox" id="'+p+'-notify" checked><span class="toggle-slider"></span></label></div>'+
-        '<div class="toggle-row"><div><div class="toggle-title">Auto-stop after first hit</div><div class="toggle-desc">Stop when the first username is found</div></div><label class="toggle"><input type="checkbox" id="'+p+'-autostop"><span class="toggle-slider"></span></label></div>'+
-        '<div class="input-group hidden" id="'+p+'-extra-wh-wrap" style="margin-top:10px;margin-bottom:0"><div class="input-label">Extra Webhooks <span class="perk-tag">Multi-Webhook</span></div><textarea class="field" id="'+p+'-extra-wh" placeholder="One webhook URL per line"></textarea></div>'+
-      '</div></div>'+
-      '<div>'+
-      '<div class="card" style="margin-bottom:12px"><div class="card-title">Live Stats</div><div style="display:flex;flex-direction:column;gap:11px">'+
-        '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Checked</div><div style="font-size:23px;font-weight:800;font-family:Consolas,monospace" id="'+p+'-checked">0</div></div>'+
-        '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Hits Found</div><div style="font-size:23px;font-weight:800;font-family:Consolas,monospace;color:var(--success)" id="'+p+'-hits">0</div></div>'+
-        '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Rate</div><div style="font-size:17px;font-weight:700;font-family:Consolas,monospace" id="'+p+'-rate">0/s</div></div>'+
-        '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Status</div><div style="font-size:13px;font-weight:600" id="'+p+'-live-status">Idle</div></div>'+
-      '</div></div>'+
-      '<div class="card"><div class="card-title">Terminal Log</div><div class="log-terminal" id="'+p+'-log"></div></div>'+
-      '</div></div></div>');
-  });
-}
-function switchPlatformTab(k){
-  document.querySelectorAll('.platform-tab').forEach(function(t,i){t.classList.toggle('active',KEYS[i]===k);});
-  document.querySelectorAll('.sniper-panel').forEach(function(pn){pn.classList.remove('active');});
-  document.getElementById('panel-'+k).classList.add('active');
-}
-function updateSpeedLabel(p){document.getElementById(p+'-speed-label').textContent=SPEED_LABELS[parseInt(document.getElementById(p+'-speed').value)-1];}
-function charsetChanged(k){
-  var cfg=P[k],p=cfg.p,sel=document.getElementById(p+'-cs').value;
-  document.getElementById(p+'-custom').classList.toggle('hidden',sel!=='custom');
-  if(sel==='custom'&&!hasPerk('custom_charset')){
-    toast('Custom charset requires the Custom Charset perk','error');
-    document.getElementById(p+'-cs').value='alphanum';
-    document.getElementById(p+'-custom').classList.add('hidden');
-  }
-}
-
-/* ================= SNIPER ENGINE ================= */
-function genName(k){
-  var cfg=P[k],p=cfg.p,sel=document.getElementById(p+'-cs').value;
-  var cs=sel==='custom'?(document.getElementById(p+'-custom').value.trim()||CHARSETS.alphanum):CHARSETS[sel]||CHARSETS.alphanum;
-  var len=parseInt(document.getElementById(p+'-len').value)||cfg.defLen;
-  len=Math.max(cfg.min,Math.min(cfg.max,len));
-  var out='';for(var i=0;i<len;i++)out+=cs[Math.floor(Math.random()*cs.length)];
-  return out;
-}
-var RELAYS=['https://api.allorigins.win/raw?url=','https://corsproxy.io/?url='];
-async function apiFetch(u,o){
-  var opts=o||{};
-  opts.signal=AbortSignal.timeout(6000);
-  try{var r=await fetch(u,opts);if(r&&!r.type)return r;}catch(e){}
-  for(var i=0;i<RELAYS.length;i++){
-    try{var r2=await fetch(RELAYS[i]+encodeURIComponent(u),opts);if(r2&&r2.ok)return r2;}catch(e){}
-  }
-  return null;
-}
-async function checkDiscord(name){
-  var body=JSON.stringify({username:name});
-  var endpoints=[
-    {u:'https://discord.com/api/v9/unique-username/username-attempt-unauthed-v2',o:{method:'POST',headers:{'Content-Type':'application/json'},body:body}},
-    {u:'https://discord.com/api/v9/unique-username/username-attempt-unauthed?username='+name,o:{method:'GET'}}
-  ];
-  for(var i=0;i<endpoints.length;i++){
-    var r=await apiFetch(endpoints[i].u,endpoints[i].o);if(!r)continue;
-    if(r.status===429)return 'ratelimit';
-    if(r.status===400||r.status===200){
-      try{var d=await r.json();if(d&&typeof d.taken==='boolean')return d.taken?'taken':'available';}catch(e){}
-    }
-  }
-  return 'unknown';
-}
-async function checkTikTok(name){
-  var urls=['https://www.tiktok.com/node/share/user/@'+name,'https://www.tiktok.com/api/user/detail/?uniqueId='+name+'&aid=1988'];
-  for(var i=0;i<urls.length;i++){
-    var r=await apiFetch(urls[i],{method:'GET'});if(!r)continue;
-    if(r.status===404)return 'available';
-    if(r.status===429)return 'ratelimit';
-    if(r.ok){
-      try{var d=await r.json();var ui=d&&(d.userInfo||d.userInfo__0);if(ui&&ui.user)return 'taken';if(ui&&ui.user===null)return 'available';}catch(e){}
-    }
-  }
-  return 'unknown';
-}
-async function checkRoblox(name){
-  var r=await apiFetch('https://auth.roblox.com/v1/usernames/validate?username='+name+'&birthday=2000-01-01',{method:'GET'});
-  if(r){
-    if(r.status===429)return 'ratelimit';
-    if(r.ok){try{var d=await r.json();if(d&&typeof d.code==='number'){if(d.code===0)return 'available';if(d.code===1)return 'taken';}}catch(e){}}
-  }
-  var r2=await apiFetch('https://api.roblox.com/users/get-by-username?username='+name,{method:'GET'});
-  if(r2){
-    if(r2.ok){try{var d2=await r2.json();if(d2&&d2.Id)return 'taken';if(d2&&(d2.errorCode===4||Object.keys(d2).length===0))return 'available';}catch(e){}}
-  }
-  return 'unknown';
-}
-function checkName(k,name){return k==='discord'?checkDiscord(name):k==='tiktok'?checkTikTok(name):checkRoblox(name);}
-function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
-function logCap(k){return hasPerk('extended_log')?2000:500;}
-function addLog(p,msg,type){
-  var term=document.getElementById(p+'-log');if(!term)return;
-  var line=document.createElement('div');line.className='log-line '+(type||'info');
-  line.textContent='['+new Date().toTimeString().slice(0,8)+'] '+msg;
-  term.appendChild(line);
-  while(term.children.length>logCap(p))term.removeChild(term.firstChild);
-  term.scrollTop=term.scrollHeight;
-}
-function webhookURL(k){
-  var cfg=P[k],p=cfg.p;
-  var el=document.getElementById(p+'-webhook');
-  if(el.value.trim())return el.value.trim();
-  if(currentUser.webhooks&&currentUser.webhooks[k])return currentUser.webhooks[k];
-  if(currentUser.settings&&currentUser.settings.defaultWebhook)return currentUser.settings.defaultWebhook;
-  return '';
-}
-function workerCount(k){
-  var sp=parseInt(document.getElementById(P[k].p+'-speed').value);
-  var w=sp*2;
-  if(hasPerk('speed_boost'))w+=2;
-  if(hasPerk('priority_queue'))w+=1;
-  return Math.min(14,w);
-}
-async function sniperLoop(k){
-  var st=sniper[k],cfg=P[k],p=cfg.p;
-  while(st.running){
-    var name=genName(k);
-    st.checked++;
-    document.getElementById(p+'-checked').textContent=st.checked.toLocaleString();
-    st.logTick++;
-    if(st.logTick%8===1)addLog(p,'Checking @'+name+'...','info');
-    var res=await checkName(k,name);
-    if(!st.running)break;
-    if(res==='available'){
-      st.hits++;
-      document.getElementById(p+'-hits').textContent=st.hits;
-      addLog(p,'HIT: @'+name+' is AVAILABLE!','hit');
-      recordHit(k,name);
-      if(document.getElementById(p+'-notify').checked)sendHooks(k,name);
-      if(document.getElementById(p+'-autostop').checked){stopSniper(k);break;}
-    }else if(res==='ratelimit'){
-      addLog(p,'Rate limited, cooling down...','warning');
-      await sleep(1500);
-    }else if(res==='unknown'&&st.logTick%8===1){
-      addLog(p,'Could not verify @'+name+' (network blocked)','warning');
-    }
-    await sleep(SPEED_DELAYS[parseInt(document.getElementById(p+'-speed').value)-1]);
-  }
-}
-function startSniper(k){
-  var cfg=P[k],p=cfg.p;
-  if(!webhookURL(k)){toast('Enter a webhook URL or set a default in Settings','error');return;}
-  var st=sniper[k];if(st.running)return;
-  var len=parseInt(document.getElementById(p+'-len').value)||cfg.defLen;
-  if(len<cfg.min||len>cfg.max){toast('Length must be between '+cfg.min+' and '+cfg.max+' for '+cfg.name,'error');return;}
-  if(document.getElementById(p+'-cs').value==='custom'&&!hasPerk('custom_charset')){toast('Custom charset requires the Custom Charset perk','error');return;}
-  if(currentUser.webhooks[k]!==document.getElementById(p+'-webhook').value.trim()){
-    currentUser.webhooks[k]=document.getElementById(p+'-webhook').value.trim();
-    saveUser(currentUser);
-  }
-  st.running=true;st.checked=0;st.hits=0;st.logTick=0;
-  document.getElementById(p+'-checked').textContent='0';document.getElementById(p+'-hits').textContent='0';
-  var btn=document.getElementById(p+'-start-btn');
-  btn.textContent='Stop Sniping';btn.classList.remove('btn-primary');btn.classList.add('btn-danger');
-  document.getElementById(p+'-live-status').textContent='Running';document.getElementById(p+'-live-status').style.color='var(--success)';
-  addLog(p,'Starting '+cfg.name+' sniper - length '+len+', '+SPEED_LABELS[parseInt(document.getElementById(p+'-speed').value)-1]+' speed','success');
-  var w=workerCount(k);
-  var runningTotal=0;KEYS.forEach(function(x){if(sniper[x].running&&x!==k)runningTotal+=sniper[x].workers;});
-  var maxAvail=Math.max(1,24-runningTotal);
-  if(w>maxAvail){w=maxAvail;addLog(p,'Global worker cap reached, using '+w+' workers','warning');}
-  st.workers=w;
-  addLog(p,'Spawning '+w+' workers','info');
-  for(var i=0;i<w;i++)sniperLoop(k);
-  updateGlobalStatus();
-}
-function stopSniper(k){
-  var cfg=P[k],p=cfg.p,st=sniper[k];
-  st.running=false;st.workers=0;
-  var btn=document.getElementById(p+'-start-btn');
-  if(btn){btn.textContent='Start Sniping';btn.classList.remove('btn-danger');btn.classList.add('btn-primary');}
-  document.getElementById(p+'-live-status').textContent='Stopped';document.getElementById(p+'-live-status').style.color='';
-  addLog(p,'Sniper stopped. Checked: '+st.checked.toLocaleString()+', Hits: '+st.hits,'warning');
-  updateGlobalStatus();
-}
-function toggleSniper(k){sniper[k].running?stopSniper(k):startSniper(k);}
-function stopAllSnipers(){KEYS.forEach(function(k){if(sniper[k].running)stopSniper(k);});}
-function updateGlobalStatus(){
-  var any=KEYS.some(function(k){return sniper[k].running;});
-  document.getElementById('global-status-dot').classList.toggle('running',any);
-  document.getElementById('global-status-label').textContent=any?'Running':'Idle';
-}
-
-/* ================= WEBHOOKS ================= */
-async function sendHooks(k,name){
-  var cfg=P[k],p=cfg.p;
-  var urls=[webhookURL(k)];
-  if(hasPerk('multi_webhook')){
-    var extra=document.getElementById(p+'-extra-wh').value.split('\n').map(function(s){return s.trim();}).filter(function(s){return s.indexOf('https://')===0;});
-    urls=urls.concat(extra);
-  }
-  var colors={discord:5793266,tiktok:16711680,roblox:16744448};
-  var payload={embeds:[{title:'Username Hit',description:'**@'+name+'** is available on **'+cfg.name+'**',color:colors[k],fields:[
-    {name:'Platform',value:cfg.name,inline:true},{name:'Username',value:'@'+name,inline:true},{name:'Length',value:name.length+' chars',inline:true},
-    {name:'Sniped by',value:currentUser.displayName,inline:true},{name:'Time',value:new Date().toUTCString(),inline:false}],
-    footer:{text:'BeamBlade Sniper'},timestamp:new Date().toISOString()}]};
-  for(var i=0;i<urls.length;i++){
-    if(!urls[i])continue;
-    try{await fetch(urls[i],{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
-    catch(e){addLog(p,'Webhook send failed for one URL','error');}
-  }
-}
-async function testWebhook(k){
-  var cfg=P[k],p=cfg.p,url=webhookURL(k);
-  var status=document.getElementById(p+'-wh-status'),dot=document.getElementById(p+'-wh-dot'),text=document.getElementById(p+'-wh-text');
-  status.classList.remove('hidden');dot.style.background='var(--warning)';text.textContent='Testing...';
-  if(url.indexOf('https://discord.com/api/webhooks/')!==0){dot.style.background='var(--danger)';text.textContent='Invalid webhook URL';return;}
-  try{
-    var r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'[BeamBlade] Webhook test successful - '+cfg.name+' sniper'})});
-    if(r.ok||r.status===204){dot.style.background='var(--success)';text.textContent='Webhook connected and working';toast('Webhook test successful','success');}
-    else{dot.style.background='var(--danger)';text.textContent='Error '+r.status+' - check your webhook';}
-  }catch(e){dot.style.background='var(--danger)';text.textContent='Connection failed - check your webhook';}
-}
-
-/* ================= HITS ================= */
-function recordHit(k,name){
-  var hit={platform:k,username:name,time:Date.now(),user:currentUser.username};
-  currentUser.hits[k]++;currentUser.hits.total++;
-  if(!currentUser.bestHit||name.length<currentUser.bestHit.length)currentUser.bestHit=name;
-  if(!currentUser.hitLog)currentUser.hitLog=[];
-  currentUser.hitLog.unshift(hit);
-  saveUser(currentUser);
-  var db=getDB();db.globalHits.unshift(hit);if(db.globalHits.length>500)db.globalHits.length=500;setDB(db);
-  updateHitBadge();updateDashboardStats();addDashboardHit(hit);
-  if(currentUser.settings.sound!==false)playSound();
-  if(currentUser.settings.browserNotif&&'Notification'in window&&Notification.permission==='granted')new Notification('BeamBlade Hit',{body:'@'+name+' is available on '+P[k].name});
-  toast('Hit! @'+name+' on '+P[k].name,'success');
-}
-function updateHitBadge(){
-  var b=document.getElementById('hits-badge'),t=currentUser.hits.total;
-  b.textContent=t>99?'99+':t;b.classList.toggle('hidden',t===0);
-}
-function renderHitsPage(){
-  var filter=document.getElementById('hits-filter').value;
-  var hits=(currentUser.hitLog||[]).filter(function(h){return filter==='all'||h.platform===filter;});
-  var list=document.getElementById('hits-list');
-  if(!hits.length){list.innerHTML='<div class="empty-state"><div class="empty-title">No hits yet</div><div class="empty-desc">Start the sniper and come back here</div</div>';
+  if(u===OWNER_USERNAME && OWNER_PASSWORD && p===OWNER_PASSWORD){
+    state.user=u;
+    sessionStorage.setItem("bb_user",u);
+    enterApp();
     return;
   }
-  list.innerHTML = '<div class="card"><div class="hits-feed">' + hits.slice(0,200).map(function(h){
-    return '<div class="hit-item"><span class="hit-platform ' + h.platform + '">' + h.platform + '</span><span class="hit-name">@' + h.username + '</span><span class="hit-time">' + new Date(h.time).toLocaleString() + '</span><span class="hit-badge">Sniped</span></div>';
-  }).join('') + '</div></div>';
-}
-function clearHits(){
-  if(!confirm('Clear all your hits? This cannot be undone.'))return;
-  currentUser.hitLog=[];currentUser.hits={discord:0,tiktok:0,roblox:0,total:0};currentUser.bestHit=null;
-  saveUser(currentUser);renderHitsPage();updateDashboardStats();updateHitBadge();renderLeaderboard();
-  toast('Hits cleared','info');
-}
-function clearAllData(){
-  if(!confirm('Clear all your data permanently?'))return;
-  clearHits();
+
+  /*
+    If you don't want to embed a password, you can still use a local
+    demo login by changing this branch to your preferred local auth.
+  */
+  $("loginError").textContent =
+    "Owner password is not configured in this static build. Set OWNER_PASSWORD in index.html.";
+  $("loginError").classList.remove("hidden");
 }
 
-/* ================= LEADERBOARD ================= */
-function renderLeaderboard(){
-  var db=getDB();
-  var users=Object.values(db.users||{}).filter(function(u){return !u.banned;}).sort(function(a,b){return (b.hits&&b.hits.total||0)-(a.hits&&a.hits.total||0);});
-  var body=document.getElementById('lb-body');
-  if(!users.length){body.innerHTML='<tr><td colspan="7" class="empty-state">No data yet</td></tr>';return;}
-  body.innerHTML=users.map(function(u,i){
-    var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    return '<tr><td><span class="lb-rank '+rc+'">'+(i===0?'#1':i===1?'#2':i===2?'#3':'#'+(i+1))+'</span></td>'+
-      '<td><div style="display:flex;align-items:center;gap:8px"><div style="width:26px;height:26px;border-radius:50%;background:'+(u.avatarColor||'#333')+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:'+getContrast(u.avatarColor||'#333')+'">'+(u.displayName||u.username)[0].toUpperCase()+'</div>'+
-      '<div><div class="lb-user">'+esc(u.displayName||u.username)+'</div><div style="font-size:11px;color:var(--muted)">@'+u.username+(u.role==='owner'||u.role==='admin'||u.role==='mod'?' <span class="role-badge role-'+u.role+'" style="font-size:8px">'+u.role+'</span>':'')+'</div></div></div></td>'+
-      '<td style="font-family:Consolas,monospace;font-weight:700">'+(u.hits&&u.hits.total||0).toLocaleString()+'</td>'+
-      '<td>'+(u.hits&&u.hits.discord||0)+'</td><td>'+(u.hits&&u.hits.tiktok||0)+'</td><td>'+(u.hits&&u.hits.roblox||0)+'</td>'+
-      '<td style="font-family:Consolas,monospace;font-weight:600">'+(u.bestHit?'@'+u.bestHit:'—')+'</td></tr>';
-  }).join('');
-}
-function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function enterApp(){
+  $("loginView").classList.add("hidden");
+  $("appView").classList.remove("hidden");
+  $("mobilebar").classList.remove("hidden");
 
-/* ================= PROFILE ================= */
-function renderProfilePage(){
-  document.getElementById('profile-display-name').textContent=currentUser.displayName;
-  document.getElementById('profile-username-display').textContent='@'+currentUser.username;
-  document.getElementById('profile-total').textContent=currentUser.hits.total;
-  document.getElementById('profile-best').textContent=currentUser.bestHit?'@'+currentUser.bestHit:'—';
-  document.getElementById('profile-since').textContent=new Date(currentUser.joined).toLocaleDateString();
-  var rb=document.getElementById('profile-role-badge');rb.textContent=currentUser.role.charAt(0).toUpperCase()+currentUser.role.slice(1);rb.className='role-badge role-'+currentUser.role;
-  document.getElementById('profile-vip').classList.toggle('hidden',!hasPerk('vip_badge'));
-  var av=document.getElementById('profile-avatar-big');av.textContent=currentUser.displayName[0].toUpperCase();av.style.background=currentUser.avatarColor;av.style.color=getContrast(currentUser.avatarColor);
-  var list=document.getElementById('profile-hits-list'),hits=currentUser.hitLog||[];
-  if(!hits.length){list.innerHTML='<div class="empty-state"><div class="empty-title">No hits recorded</div><div class="empty-desc">Start sniping to see your hits here</div></div>';return;}
-  list.innerHTML='<div class="hits-feed">'+hits.slice(0,50).map(function(h){return '<div class="hit-item"><span class="hit-platform '+h.platform+'">'+h.platform+'</span><span class="hit-name">@'+h.username+'</span><span class="hit-time">'+timeAgo(h.time)+'</span></div>';}).join('')+'</div>';
-}
-function openEditProfile(){
-  document.getElementById('modal-display-name').value=currentUser.displayName;
-  document.getElementById('modal-edit-profile').classList.add('open');
-}
-function saveProfile(){
-  var n=document.getElementById('modal-display-name').value.trim();
-  if(!n){toast('Display name cannot be empty','error');return;}
-  currentUser.displayName=n;saveUser(currentUser);closeModal('modal-edit-profile');
-  renderProfilePage();updateSidebarUser();toast('Profile updated','success');
+  $("sideUser").textContent=state.user;
+  $("avatar").textContent=state.user.charAt(0).toUpperCase();
+
+  renderHits();
+  updateStats();
+  log("BeamBlade dashboard initialized.","ok");
+  log("Roblox browser checker ready.","ok");
+  log("Discord/TikTok require supported API integrations.","warn");
+
+  loadSettings();
 }
 
-  /* ================= SETTINGS ================= */
-function saveDisplaySettings(){
-  var n=document.getElementById('settings-display').value.trim();
-  if(!n){toast('Display name cannot be empty','error');return;}
-  currentUser.displayName=n;saveUser(currentUser);updateSidebarUser();renderProfilePage();
-  toast('Display name updated','success');
-}
-function toggleBrowserNotif(){
-  var en=document.getElementById('browser-notif').checked;
-  if(en&&'Notification'in window){
-    Notification.requestPermission().then(function(p){if(p!=='granted')document.getElementById('browser-notif').checked=false;});
+function page(name,button){
+  ["dashboard","sniper","hits","settings","owner"].forEach(x=>{
+    $(x+"Page").classList.add("hidden");
+  });
+
+  if(name==="owner" && state.user!==OWNER_USERNAME){
+    showInfo("Owner access only.");
+    return;
   }
-  if(!currentUser.settings)currentUser.settings={};
-  currentUser.settings.browserNotif=en;saveUser(currentUser);
-}
-function toggleSound(){
-  if(!currentUser.settings)currentUser.settings={};
-  currentUser.settings.sound=document.getElementById('sound-alerts').checked;saveUser(currentUser);
-}
-function toggleCompact(){
-  var c=document.getElementById('compact-mode').checked;
-  document.body.classList.toggle('compact',c);
-  if(!currentUser.settings)currentUser.settings={};
-  currentUser.settings.compact=c;saveUser(currentUser);
+
+  $(name+"Page").classList.remove("hidden");
+
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  if(button)button.classList.add("active");
+
+  if(name==="hits")renderHits();
+  if(name==="owner")updateOwner();
 }
 
-/* ================= PERKS ================= */
-var PERKS=[
-  {id:'speed_boost',name:'Speed Boost',desc:'Extra workers, higher request rate'},
-  {id:'priority_queue',name:'Priority Queue',desc:'Extra worker, usernames checked first'},
-  {id:'extended_log',name:'Extended Log',desc:'2,000-line terminal log'},
-  {id:'multi_webhook',name:'Multi-Webhook',desc:'Send hits to up to 5 webhooks per platform'},
-  {id:'custom_charset',name:'Custom Charset',desc:'Define any character set'},
-  {id:'analytics',name:'Analytics+',desc:'Checks, peak rate and hit-rate stats'},
-  {id:'vip_badge',name:'VIP Badge',desc:'VIP badge on your profile'}
-];
-function buildPerksGrid(){
-  var g=document.getElementById('perks-grid');if(!g)return;g.innerHTML='';
-  PERKS.forEach(function(pk){
-    var c=document.createElement('div');c.className='perk-card';
-    c.innerHTML='<div class="perk-name">'+pk.name+'</div><div class="perk-desc">'+pk.desc+'</div>';
-    c.onclick=function(){selectPerk(c,pk.id);};
-    g.appendChild(c);
-  });
-}
-function selectPerk(el,perk){
-  document.querySelectorAll('.perk-card').forEach(function(c){c.classList.remove('selected');});
-  el.classList.add('selected');selectedPerk=perk;
-}
-function syncPerkUI(){
-  KEYS.forEach(function(k){
-    var wrap=document.getElementById(P[k].p+'-extra-wh-wrap');
-    if(wrap)wrap.classList.toggle('hidden',!hasPerk('multi_webhook'));
-  });
+function selectPlatform(platform){
+  $("platform").value=platform;
+  page("sniper");
 }
 
-/* ================= OWNER PANEL ================= */
-function renderOwnerPanel(){
-  syncPerkUI();
-  if(currentUser.role!=='owner')return;
-  var db=getDB(),users=Object.values(db.users||{});
-  document.getElementById('owner-total-users').textContent=users.length;
-  document.getElementById('owner-total-hits').textContent=users.reduce(function(s,u){return s+(u.hits&&u.hits.total||0);},0).toLocaleString();
-  var body=document.getElementById('owner-users');
-  body.innerHTML=users.map(function(u){
-    var banned=!!u.banned;
-    var roleOpts=['user','mod','admin'].map(function(r){
-      return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+r.charAt(0).toUpperCase()+r.slice(1)+'</option>';
-    }).join('');
-    var perkTags=(u.perks||[]).slice(0,3).map(function(pk){return '<span class="perk-tag">'+pk.replace(/_/g,' ')+'</span>';}).join('');
-    var actions;
-    if(u.username!=='beamblade'){
-      actions='<select onchange="ownerSetRole(\''+u.username+'\',this.value)">'+roleOpts+'</select> '+
-        (banned?'<button class="btn btn-success btn-sm" onclick="ownerUnban(\''+u.username+'\')">Unban</button>':'<button class="btn btn-danger btn-sm" onclick="ownerBan(\''+u.username+'\')">Ban</button>')+' '+
-        '<button class="btn btn-secondary btn-sm" onclick="ownerResetPass(\''+u.username+'\')">Pass</button> '+
-        '<button class="btn btn-secondary btn-sm" onclick="ownerClearUserHits(\''+u.username+'\')">Clear</button> '+
-        '<button class="btn btn-danger btn-sm" onclick="ownerDeleteUser(\''+u.username+'\')">Del</button>';
-    }else{
-      actions='<span style="color:#ffd700;font-weight:800">Owner</span>';
+function showInfo(text){
+  alert(text);
+}
+
+function randomChar(set){
+  return set[Math.floor(Math.random()*set.length)];
+}
+
+function generateUsername(){
+  let len=parseInt($("length").value,10);
+  let set=$("charset").value || "abcdefghijklmnopqrstuvwxyz0123456789";
+  let mode=$("mode").value;
+  let prefix=$("prefix").value;
+  let suffix=$("suffix").value;
+
+  set=set.replace(/[\s]/g,"");
+  if(!set) set="abcdefghijklmnopqrstuvwxyz";
+
+  if(mode==="prefix"){
+    let room=Math.max(0,len-prefix.length);
+    let result=prefix.slice(0,len);
+    while(result.length<len) result+=randomChar(set);
+    return result.slice(0,len);
+  }
+
+  if(mode==="suffix"){
+    let room=Math.max(0,len-suffix.length);
+    let result="";
+    while(result.length<room)result+=randomChar(set);
+    return (result+suffix).slice(-len);
+  }
+
+  let result="";
+  while(result.length<len)result+=randomChar(set);
+  return result;
+}
+
+async function checkRoblox(username){
+  const response=await fetch(
+    "https://users.roblox.com/v1/usernames/users",
+    {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        usernames:[username],
+        excludeBannedUsers:false
+      })
     }
-    return '<tr>'+
-      '<td style="font-family:Consolas,monospace;font-weight:600">@'+u.username+(banned?' <span class="role-badge role-user" style="color:var(--danger);border-color:rgba(237,66,69,.3)">Banned</span>':'')+'</td>'+
-      '<td>'+esc(u.displayName||u.username)+'</td>'+
-      '<td><span class="role-badge role-'+u.role+'">'+u.role+'</span></td>'+
-      '<td>'+(u.hits&&u.hits.total||0)+'</td>'+
-      '<td>'+perkTags+'</td>'+
-      '<td>'+new Date(u.joined).toLocaleDateString()+'</td>'+
-      '<td style="white-space:nowrap">'+actions+'</td></tr>';
-  }).join('');
-  renderOwnerGlobalHits();
-}
-function ownerSetRole(u,r){
-  var user=getUser(u);if(!user){toast('User not found','error');return;}
-  if(u==='beamblade'||r==='owner'){toast('Owner role cannot be changed','error');return;}
-  user.role=r;saveUser(user);renderOwnerPanel();toast('@'+u+' is now '+r,'success');
-}
-function ownerBan(u){var user=getUser(u);if(!user)return;user.banned=true;saveUser(user);renderOwnerPanel();toast('@'+u+' banned','success');}
-function ownerUnban(u){var user=getUser(u);if(!user)return;user.banned=false;saveUser(user);renderOwnerPanel();toast('@'+u+' unbanned','success');}
-function ownerResetPass(u){
-  var user=getUser(u);if(!user)return;
-  var np=prompt('New password for @'+u+' (min 6 characters)');
-  if(!np)return;
-  if(np.length<6){toast('Password must be at least 6 characters','error');return;}
-  user.password=np;saveUser(user);renderOwnerPanel();toast('Password updated for @'+u,'success');
-}
-function ownerClearUserHits(u){
-  var user=getUser(u);if(!user)return;
-  if(!confirm('Clear all hits for @'+u+'?'))return;
-  user.hits={discord:0,tiktok:0,roblox:0,total:0};user.hitLog=[];user.bestHit=null;
-  saveUser(user);
-  var db=getDB();db.globalHits=(db.globalHits||[]).filter(function(h){return h.user!==u;});setDB(db);
-  renderOwnerPanel();renderLeaderboard();toast('Hits cleared for @'+u,'success');
-}
-function ownerDeleteUser(u){
-  if(u==='beamblade'){toast('Cannot delete the owner account','error');return;}
-  if(!confirm('Delete @'+u+' permanently? This cannot be undone.'))return;
-  var db=getDB();delete db.users[u];
-  db.globalHits=(db.globalHits||[]).filter(function(h){return h.user!==u;});
-  setDB(db);renderOwnerPanel();renderLeaderboard();toast('@'+u+' deleted','success');
-}
-function grantRoleByInput(){
-  var u=document.getElementById('grant-username').value.trim().toLowerCase();
-  var r=document.getElementById('grant-role').value;
-  if(!u){toast('Enter a username','error');return;}
-  ownerSetRole(u,r);
-}
-function grantPerk(){
-  var u=document.getElementById('perk-username').value.trim().toLowerCase();
-  if(!u){toast('Enter a username','error');return;}
-  if(!selectedPerk){toast('Select a perk first','error');return;}
-  var user=getUser(u);if(!user){toast('User not found','error');return;}
-  if(!user.perks)user.perks=[];
-  if(user.perks.indexOf(selectedPerk)>-1){toast('@'+u+' already has this perk','info');return;}
-  user.perks.push(selectedPerk);saveUser(user);renderOwnerPanel();
-  toast('Perk "'+selectedPerk.replace(/_/g,' ')+'" granted to @'+u,'success');
-}
-function ownerAnnounce(){
-  var t=document.getElementById('owner-announce').value.trim();
-  if(!t){toast('Enter an announcement message','error');return;}
-  var db=getDB();db.announcement={text:t,id:Date.now()};setDB(db);
-  document.getElementById('owner-announce').value='';
-  renderAnnounce();toast('Announcement posted','success');
-}
-function ownerClearAnnounce(){
-  var db=getDB();db.announcement=null;setDB(db);
-  renderAnnounce();toast('Announcement cleared','success');
-}
-function dismissAnnounce(){
-  var db=getDB(),a=db.announcement;if(!a)return;
-  if(!currentUser.settings)currentUser.settings={};
-  currentUser.settings.dismissedAnnounce=a.id;saveUser(currentUser);
-  document.getElementById('announce-banner').classList.add('hidden');
-}
-function renderAnnounce(){
-  syncPerkUI();
-  var banner=document.getElementById('announce-banner');
-  var db=getDB(),a=db.announcement;
-  if(!a||!currentUser){banner.classList.add('hidden');return;}
-  if(currentUser.role!=='owner'&&currentUser.settings&&currentUser.settings.dismissedAnnounce===a.id){banner.classList.add('hidden');return;}
-  banner.classList.remove('hidden');
-  document.getElementById('announce-text').textContent=a.text;
-}
-function renderOwnerGlobalHits(){
-  var wrap=document.getElementById('owner-global-hits');if(!wrap)return;
-  var db=getDB(),hits=(db.globalHits||[]).slice(0,50);
-  if(!hits.length){wrap.innerHTML='<div class="empty-state" style="padding:14px 0"><div class="empty-title">No global hits yet</div></div>';return;}
-  wrap.innerHTML=hits.map(function(h){
-    var who=getUser(h.user);
-    return '<div class="hit-item"><span class="hit-platform '+h.platform+'">'+h.platform+'</span><span class="hit-name">@'+h.username+'</span><span class="hit-time">'+(who?who.displayName||who.username:h.user)+' - '+timeAgo(h.time)+'</span></div>';
-  }).join('');
-}
-function ownerExport(){
-  var db=getDB();
-  var blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);a.download='beamblade-backup.json';
-  document.body.appendChild(a);a.click();a.remove();
-  toast('Backup downloaded','success');
-}
-function ownerImport(inp){
-  var f=inp.files&&inp.files[0];if(!f)return;
-  var reader=new FileReader();
-  reader.onload=function(){
-    try{
-      var d=JSON.parse(reader.result);
-      if(!d||!d.users||!d.users['beamblade'])throw 0;
-      var owner=d.users['beamblade'];
-      owner.role='owner';owner.password='beamblademsk123';owner.banned=false;
-      if(!d.globalHits)d.globalHits=[];
-      setDB(d);
-      toast('Data imported - reloading...','success');
-      setTimeout(function(){location.reload();},800);
-    }catch(e){toast('Invalid backup file','error');}
+  );
+
+  if(!response.ok){
+    throw new Error("Roblox HTTP "+response.status);
+  }
+
+  const data=await response.json();
+  const found=Array.isArray(data.data) && data.data.length>0;
+
+  return {
+    available:!found,
+    platform:"Roblox",
+    username
   };
-  reader.readAsText(f);
-}
-function ownerWipe(){
-  if(!confirm('Wipe ALL data? This deletes every user, hit and setting.'))return;
-  if(!confirm('Are you absolutely sure? This cannot be undone.'))return;
-  var db={users:{},globalHits:[],announcement:null};
-  db.users['beamblade']={username:'beamblade',displayName:'BeamBlade',password:'beamblademsk123',role:'owner',perks:['speed_boost','priority_queue','extended_log','multi_webhook','custom_charset','analytics','vip_badge'],avatarColor:'#ffffff',hits:{discord:0,tiktok:0,roblox:0,total:0},hitLog:[],bestHit:null,joined:Date.now(),settings:{theme:0,sound:true,compact:false,browserNotif:false},webhooks:{},banned:false};
-  setDB(db);renderOwnerPanel();renderLeaderboard();toast('All data wiped','success');
 }
 
-/* ================= MODALS ================= */
-function closeModal(id){document.getElementById(id).classList.remove('open');}
+async function checkCurrent(){
+  const platform=$("platform").value;
+  const username=generateUsername();
 
-/* ================= TOASTS ================= */
-function toast(msg,type){
-  var wrap=document.getElementById('toast-wrap');
-  var el=document.createElement('div');
-  el.className='toast '+(type||'info');
-  var ico=type==='success'?'OK':type==='error'?'!!':'i';
-  el.innerHTML='<span class="toast-ico">'+ico+'</span><span>'+esc(msg)+'</span>';
-  wrap.appendChild(el);
-  setTimeout(function(){
-    el.style.opacity='0';el.style.transform='translateX(24px)';el.style.transition='all .2s';
-    setTimeout(function(){el.remove();},200);
-  },3200);
+  if(platform!=="roblox"){
+    throw new Error("This platform needs an approved API integration.");
+  }
+
+  return checkRoblox(username);
 }
 
-/* ================= RPS TRACKER ================= */
-function buildRpsChart(){
-  var chart=document.getElementById('rps-chart');chart.innerHTML='';
-  for(var i=0;i<20;i++){
-    var bar=document.createElement('div');bar.className='rps-bar';chart.appendChild(bar);
+async function startScanner(){
+  if(state.running)return;
+
+  state.running=true;
+  state.sessionStart=Date.now();
+  state.checksAtStart=state.checked;
+
+  $("running").textContent="YES";
+  $("status").textContent="RUNNING";
+  $("terminalState").textContent="RUNNING";
+
+  log("Scanner started.","ok");
+
+  if($("notify").checked && "Notification" in window){
+    if(Notification.permission==="default"){
+      try{await Notification.requestPermission()}catch(e){}
+    }
+  }
+
+  if($("keepAwake").checked){
+    requestWakeLock();
+  }
+
+  scheduleNext();
+}
+
+function scheduleNext(){
+  if(!state.running)return;
+
+  const delay=Math.max(
+    1000,
+    Number($("interval").value)||1500
+  );
+
+  state.timer=setTimeout(async()=>{
+    await performCheck();
+    scheduleNext();
+  },delay);
+}
+
+async function performCheck(){
+  if(!state.running)return;
+
+  try{
+    const result=await checkCurrent();
+
+    state.checked++;
+
+    if(result.available){
+      state.available++;
+
+      const hit={
+        username:result.username,
+        platform:result.platform,
+        time:new Date().toISOString()
+      };
+
+      state.hits.unshift(hit);
+      state.hits=state.hits.slice(0,200);
+      localStorage.setItem("bb_hits",JSON.stringify(state.hits));
+
+      log(
+        "HIT: "+result.platform+" / "+result.username,
+        "ok"
+      );
+
+      notifyHit(hit);
+      renderHits();
+    }else{
+      log(
+        "Taken: "+result.platform+" / "+result.username
+      );
+    }
+
+  }catch(err){
+    state.checked++;
+    state.errors++;
+    log("Check error: "+err.message,"err");
+  }
+
+  updateStats();
+}
+
+function notifyHit(hit){
+  if($("notify").checked && "Notification" in window){
+    if(Notification.permission==="granted"){
+      new Notification("Username available",{
+        body:hit.platform+" • "+hit.username
+      });
+    }
+  }
+
+  const webhook=$("webhook").value.trim();
+
+  if(webhook){
+    /*
+      Discord webhooks are intentionally user-configured rather
+      than hardcoded. Treat webhook URLs as secrets.
+    */
+    sendDiscordWebhook(webhook,hit);
+  }
+
+  if($("sound").checked){
+    playBeep();
   }
 }
-function updateRpsChart(){
-  var bars=document.querySelectorAll('.rps-bar');
-  var max=Math.max.apply(null,rpsHistory.concat([1]));
-  rpsHistory.forEach(function(v,i){
-    if(bars[i]){
-      bars[i].style.height=((v/max)*44)+'px';
-      bars[i].classList.toggle('active',v>0);
-    }
-  });
-}
-function startRpsTracker(){
-  var prev={discord:0,tiktok:0,roblox:0};
-  setInterval(function(){
-    var total=0;
-    KEYS.forEach(function(k){
-      var st=sniper[k],p=P[k].p,delta=st.checked-prev[k];
-      prev[k]=st.checked;st.lastRate=delta;total+=delta;
-      var bar=document.getElementById(p+'-speed-bar');
-      var rps=document.getElementById(p+'-rps');
-      var rate=document.getElementById(p+'-rate');
-      var sl=document.getElementById(p+'-status-label');
-      if(bar)bar.style.width=Math.min(100,(delta/20)*100)+'%';
-      if(rps)rps.textContent=delta+' req/s';
-      if(rate)rate.textContent=delta+'/s';
-      if(sl)sl.textContent=st.running?'Running ('+delta+'/s)':'Idle';
+
+async function sendDiscordWebhook(url,hit){
+  if(!/^https:\/\/discord(?:app)?\.com\/api\/webhooks\//i.test(url)){
+    log("Webhook ignored: URL does not look like a Discord webhook.","warn");
+    return;
+  }
+
+  try{
+    const response=await fetch(url,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        username:"BeamBlade Sniper",
+        embeds:[{
+          title:"Username Hit",
+          color:0x42e89d,
+          fields:[
+            {name:"Username",value:"`"+hit.username+"`",inline:true},
+            {name:"Platform",value:hit.platform,inline:true},
+            {name:"Detected",value:new Date(hit.time).toLocaleString(),inline:false}
+          ],
+          footer:{text:"BeamBlade • Browser Monitor"}
+        }]
+      })
     });
-    rpsHistory.push(total);rpsHistory.shift();
-    updateRpsChart();
-    if(hasPerk('analytics')){
-      var checks=KEYS.reduce(function(s,k){return s+sniper[k].checked;},0);
-      var peak=Math.max.apply(null,rpsHistory.concat([0]));
-      var se=document.getElementById('stat-checks');if(se)se.textContent=checks.toLocaleString();
-      var sp=document.getElementById('stat-peak');if(sp)sp.textContent=peak+'/s';
-      var sh=document.getElementById('stat-hitrate');if(sh)sh.textContent=checks>0?(currentUser.hits.total/checks*100).toFixed(3)+'%':'0%';
+
+    if(response.ok){
+      log("Discord notification sent.","ok");
+    }else{
+      log("Discord webhook returned HTTP "+response.status,"err");
     }
-  },1000);
+  }catch(e){
+    log("Discord webhook error: "+e.message,"err");
+  }
 }
 
-/* ================= UTILS ================= */
-function timeAgo(ts){
-  var d=Date.now()-ts;
-  if(d<60000)return Math.floor(d/1000)+'s ago';
-  if(d<3600000)return Math.floor(d/60000)+'m ago';
-  if(d<86400000)return Math.floor(d/3600000)+'h ago';
-  return Math.floor(d/86400000)+'d ago';
+function stopScanner(){
+  state.running=false;
+
+  if(state.timer){
+    clearTimeout(state.timer);
+    state.timer=null;
+  }
+
+  $("running").textContent="NO";
+  $("status").textContent="IDLE";
+  $("terminalState").textContent="STOPPED";
+
+  releaseWakeLock();
+  log("Scanner stopped.","warn");
+  updateStats();
 }
-function playSound(){
+
+let wakeLock=null;
+
+async function requestWakeLock(){
+  if(!("wakeLock" in navigator)){
+    log("Wake Lock API is unavailable in this browser.","warn");
+    return;
+  }
+
   try{
-    var ctx=new(window.AudioContext||window.webkitAudioContext)();
-    var o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.frequency.setValueAtTime(880,ctx.currentTime);
-    o.frequency.setValueAtTime(1100,ctx.currentTime+0.1);
-    g.gain.setValueAtTime(0.25,ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);
-    o.start(ctx.currentTime);o.stop(ctx.currentTime+0.3);
+    wakeLock=await navigator.wakeLock.request("screen");
+    log("Screen wake lock enabled.","ok");
+
+    wakeLock.addEventListener("release",()=>{
+      log("Screen wake lock released.","warn");
+    });
+  }catch(e){
+    log("Could not acquire wake lock.","warn");
+  }
+}
+
+function releaseWakeLock(){
+  if(wakeLock){
+    wakeLock.release().catch(()=>{});
+    wakeLock=null;
+  }
+}
+
+function playBeep(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+
+    osc.frequency.value=880;
+    gain.gain.value=.07;
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime+.15);
   }catch(e){}
 }
 
-/* ================= INIT ================= */
-initDB();
-buildSniperUI();
+function updateStats(){
+  $("checked").textContent=state.checked.toLocaleString();
+  $("available").textContent=state.available.toLocaleString();
+  $("errors").textContent=state.errors.toLocaleString();
 
-// Enter-to-submit on auth forms
-['login-username','login-password'].forEach(function(id){
-  document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
-});
-['reg-username','reg-display','reg-password','reg-password2'].forEach(function(id){
-  document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')doRegister();});
-});
+  $("checked2").textContent=state.checked.toLocaleString();
+  $("available2").textContent=state.available.toLocaleString();
 
-// Default webhook autosave
-document.getElementById('settings-wh').addEventListener('change',function(){
-  if(!currentUser)return;
-  if(!currentUser.settings)currentUser.settings={};
-  currentUser.settings.defaultWebhook=this.value.trim();
-  saveUser(currentUser);toast('Default webhook saved','info');
-});
+  const mins=Math.max(
+    1,
+    (Date.now()-state.sessionStart)/60000
+  );
 
-// Live sync across open tabs
-window.addEventListener('storage',function(e){
-  if(e.key===DB_KEY&&currentUser){renderAnnounce();renderLeaderboard();}
-});
+  $("rate").textContent=
+    Math.round((state.checked-state.checksAtStart)/mins)+"/min";
 
-// Session restore
-var sess=sessionStorage.getItem('bb_session');
-if(sess){
-  var u=getUser(sess);
-  if(u&&!u.banned){currentUser=u;loadApp();}
+  updateOwner();
 }
+
+function updateOwner(){
+  if(!$("ownerChecks"))return;
+
+  $("ownerChecks").textContent=state.checked.toLocaleString();
+  $("ownerHits").textContent=state.available.toLocaleString();
+
+  const mins=Math.floor((Date.now()-state.sessionStart)/60000);
+  $("sessionTime").textContent=mins+"m";
+}
+
+function renderHits(){
+  const list=$("hitsList");
+
+  if(!state.hits.length){
+    list.innerHTML='<div class="empty">No hits detected yet.</div>';
+    return;
+  }
+
+  list.innerHTML=state.hits.map(h=>`
+    <div class="hit">
+      <b>${escapeHtml(h.username)}</b>
+      <span style="color:#6f7b90"> • ${escapeHtml(h.platform)}</span>
+      <div style="color:#647084;font-size:11px;margin-top:4px">
+        ${new Date(h.time).toLocaleString()}
+      </div>
+    </div>
+  `).join("");
+}
+
+function clearHits(){
+  if(!confirm("Delete local hit history?"))return;
+  state.hits=[];
+  localStorage.removeItem("bb_hits");
+  renderHits();
+}
+
+function clearLogs(){
+  $("console").innerHTML="";
+}
+
+function saveSettings(){
+  localStorage.setItem("bb_display",$("displayName").value);
+  localStorage.setItem("bb_sound",$("sound").checked?"1":"0");
+  alert("Settings saved locally.");
+}
+
+function loadSettings(){
+  $("displayName").value=
+    localStorage.getItem("bb_display")||state.user;
+
+  $("sound").checked=
+    localStorage.getItem("bb_sound")!=="0";
+}
+
+/*
+  If Safari/iPad suspends the page, attempt to reacquire the wake lock
+  when visibility returns.
+*/
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible" && state.running &&
+     $("keepAwake").checked){
+    requestWakeLock();
+  }
+});
+
+setInterval(updateStats,1000);
+
+(function boot(){
+  const u=sessionStorage.getItem("bb_user");
+
+  if(u===OWNER_USERNAME && OWNER_PASSWORD){
+    state.user=u;
+    enterApp();
+  }
+})();
 </script>
+
 </body>
 </html>
