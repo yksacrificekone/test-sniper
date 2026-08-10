@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
 <title>BeamBlade</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23000'/%3E%3Ctext x='8' y='12' font-size='10' fill='%23fff' text-anchor='middle' font-family='monospace'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23000'/%3E%3Ctext x='8' y='12' font-size='10' fill='%23f00'%3EB%3C/text%3E%3C/svg%3E">
 <style>
-:root{--bg:#0b0b0b;--bg2:#111111;--bg3:#171717;--bg4:#1f1f1f;--border:#262626;--text:#e8e8e8;--muted:#8a8a8a;--dim:#555;--accent:#fff;--accent2:#b3b3b3;--success:#3ba55c;--danger:#ed4245;--warning:#faa61a;--info:#818cf8;--sidebar-w:236px;--radius:5px}
+:root{--bg:#0b0b0b;--bg2:#111111;--bg3:#171717;--bg4:#1f1f1f;--border:#262626;--text:#e8e8e8;--muted:#8a8a8a;--dim:#555;--accent:#fff;--accent2:#b3b3b3;--success:#3ba55c;--danger:#ed4245;--warning:#fa9e1b;--info:#3b82f6;--radius:6px;--sidebar-w:220px}
 *{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inherit}
-::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--dim)}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--border)}
 .mono{font-family:'Cascadia Code',Consolas,monospace}.hidden{display:none!important}
 /* AUTH */
 #auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
@@ -20,13 +20,13 @@ a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}i
 .auth-logo h1{font-size:21px;font-weight:800;letter-spacing:5px;text-transform:uppercase}
 .auth-logo span{display:block;font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:5px}
 .auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:22px}
-.auth-tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.auth-tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
 .auth-tab.active{color:var(--text);border-bottom-color:var(--accent)}
 .auth-form{display:flex;flex-direction:column;gap:13px}
 .form-group label{display:block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .field{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:9px 12px;color:var(--text);font-size:14px;outline:none;transition:border-color .15s}
 .field:focus{border-color:var(--accent2)}
-.auth-btn{background:var(--accent);color:#000;border:none;border-radius:4px;padding:11px;font-size:14px;font-weight:700;letter-spacing:.5px;transition:opacity .15s}
+.auth-btn{background:var(--accent);color:#000;border:none;border-radius:4px;padding:11px;font-size:14px;font-weight:700;letter-spacing:.5px;transition:opacity .15s;width:100%;cursor:pointer}
 .auth-btn:hover{opacity:.85}
 .auth-error{background:rgba(237,66,69,.1);border:1px solid rgba(237,66,69,.3);border-radius:4px;padding:9px 12px;font-size:12.5px;color:var(--danger);display:none}
 .auth-foot{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);text-align:center;font-size:11px;color:var(--dim)}
@@ -43,7 +43,7 @@ a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}i
 .status-label{font-size:11px;color:var(--muted)}
 .sidebar-nav{flex:1;overflow-y:auto;padding:6px 0}
 .nav-section{padding:14px 14px 5px;font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--dim)}
-.nav-item{display:flex;align-items:center;gap:10px;padding:7px 14px;margin:1px 7px;color:var(--muted);font-size:13.5px;font-weight:600;cursor:pointer;border-radius:4px;transition:all .12s;position:relative;user-select:none}
+.nav-item{display:flex;align-items:center;gap:10px;padding:7px 14px;margin:1px 7px;color:var(--muted);font-size:13.5px;font-weight:600;cursor:pointer;border-radius:4px;transition:all .12s;position:relative}
 .nav-item svg{flex-shrink:0;opacity:.65}
 .nav-item:hover{background:var(--bg3);color:var(--text)}
 .nav-item.active{background:var(--bg4);color:var(--text)}
@@ -72,7 +72,7 @@ a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}i
 .stat-label{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted)}
 .stat-value{font-size:26px;font-weight:800;margin-top:5px;letter-spacing:-1px;font-family:'Cascadia Code',Consolas,monospace}
 .stat-sub{font-size:11px;color:var(--muted);margin-top:3px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:4px;font-size:12.5px;font-weight:700;letter-spacing:.3px;border:none;transition:all .12s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:4px;font-size:12.5px;font-weight:700;letter-spacing:.3px;border:none;transition:all .12s;cursor:pointer}
 .btn-primary{background:var(--accent);color:#000}.btn-primary:hover{opacity:.85}
 .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--bg4)}
 .btn-danger{background:rgba(237,66,69,.13);color:var(--danger);border:1px solid rgba(237,66,69,.25)}.btn-danger:hover{background:rgba(237,66,69,.22)}
@@ -119,7 +119,7 @@ a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}i
 .speed-bar-wrap{flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
 .speed-bar{height:100%;background:var(--success);border-radius:2px;transition:width .5s}
 .speed-val{font-size:11.5px;font-family:'Cascadia Code',Consolas,monospace;color:var(--success);font-weight:700;width:86px;text-align:right}
-.log-terminal{background:#050505;border:1px solid var(--border);border-radius:4px;padding:12px;font-family:'Cascadia Code',Consolas,monospace;font-size:11.5px;height:210px;overflow-y:auto;line-height:1.65}
+.log-terminal{background:#050505;border:1px solid var(--border);border-radius:4px;padding:12px;font-family:'Cascadia Code',Consolas,monospace;font-size:11.5px;height:210px;overflow-y:auto;line-height:1.4;color:#888}
 .log-line.info{color:#6b6b6b}.log-line.success{color:var(--success)}.log-line.warning{color:var(--warning)}.log-line.error{color:var(--danger)}.log-line.hit{color:#fff;font-weight:800}
 .theme-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:9px}
 .theme-swatch{width:100%;aspect-ratio:1;border-radius:50%;cursor:pointer;transition:transform .13s;border:2px solid transparent;position:relative}
@@ -142,7 +142,7 @@ a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}i
 .perk-name{font-size:12.5px;font-weight:700}
 .perk-desc{font-size:10.5px;color:var(--muted);margin-top:2px}
 .toast-wrap{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:340px}
-.toast{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:11px 14px;font-size:12.5px;box-shadow:0 8px 26px rgba(0,0,0,.45);display:flex;align-items:center;gap:9px;animation:slideIn .18s ease}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:11px 14px;font-size:12.5px;box-shadow:0 8px 26px rgba(0,0,0,.45);display:flex;align-items:center;gap:9px;animation:slideIn .25s}
 .toast.success{border-left:3px solid var(--success)}
 .toast.error{border-left:3px solid var(--danger)}
 .toast.info{border-left:3px solid var(--info)}
@@ -165,7 +165,7 @@ a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}i
 .owner-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12.5px;vertical-align:middle}
 .owner-table tr:last-child td{border-bottom:none}
 .owner-table select{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:3px;padding:3px 6px;font-size:11.5px;outline:none}
-.announce-banner{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--info);border-radius:4px;padding:10px 14px;margin-bottom:16px;font-size:12.5px}
+.announce-banner{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--info);border-radius:4px;padding:10px 14px;margin-bottom:16px}
 .announce-banner b{color:var(--info);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;flex-shrink:0}
 .announce-banner .ann-close{margin-left:auto;background:none;border:none;color:var(--muted);font-size:14px;padding:2px 6px;cursor:pointer}
 .announce-banner .ann-close:hover{color:var(--text)}
@@ -174,7 +174,7 @@ a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}i
 .profile-names{flex:1}
 .profile-display{font-size:21px;font-weight:800}
 .profile-username{font-size:13.5px;color:var(--muted);margin-top:2px}
-.perk-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:var(--bg4);color:var(--muted);border:1px solid var(--border);margin:2px 2px 0 0}
+.perk-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:var(--bg4);color:var(--muted);border:1px solid var(--border);margin-right:4px;margin-bottom:4px}
 .settings-section{margin-bottom:22px}
 .settings-title{font-size:15px;font-weight:800;margin-bottom:3px}
 .settings-desc{font-size:12px;color:var(--muted);margin-bottom:12px}
@@ -185,10 +185,10 @@ a{text-decoration:none;color:inherit}button{font-family:inherit;cursor:pointer}i
 body.compact .page{padding:16px 18px}
 body.compact .stat-value{font-size:22px}
 body.compact .card{padding:13px}
-@media(max-width:960px){.grid-3,.grid-4{grid-template-columns:1fr 1fr}.sniper-grid{grid-template-columns:1fr}.sidebar{position:static;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border)}.main-content{margin-left:0}.sidebar-nav{display:flex;overflow-x:auto;padding:4px}.nav-section{display:none}.nav-item{white-space:nowrap;margin:1px 2px}}
+@media(max-width:960px){.grid-3,.grid-4{grid-template-columns:1fr 1fr}.sniper-grid{grid-template-columns:1fr}.sidebar{position:static;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border)}.main-content{margin-left:0}.sidebar-nav{flex-direction:row;overflow-x:auto}}.toggle-info{flex:1}
 </style>
 </head>
-<body>
+<body onload="initApp()">
 
 <!-- ===================== AUTH ===================== -->
 <div id="auth-screen">
@@ -215,7 +215,7 @@ body.compact .card{padding:13px}
       <div class="form-group"><label>Confirm Password</label><input type="password" class="field" id="reg-password2" placeholder="Confirm password" maxlength="64"></div>
       <button class="auth-btn" onclick="doRegister()">Create Account</button>
     </div>
-    <div class="auth-foot">Owner account: beamblade</div>
+    <div class="auth-foot">Owner account: beamblade | Password: beamblademsk123</div>
   </div>
 </div>
 
@@ -231,14 +231,14 @@ body.compact .card{padding:13px}
     </div>
     <div class="sidebar-nav">
       <div class="nav-section">Main</div>
-      <div class="nav-item active" onclick="showPage('dashboard')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M2 2h5v5H2V2zm7 0h5v5H9V2zM2 9h5v5H2V9zm7 0h5v5H9V9z"/></svg>Dashboard</div>
-      <div class="nav-item" onclick="showPage('sniper')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M14 8a6 6 0 1 1-12 0 6 6 0 0 1 12 0z"/></svg>Sniper</div>
-      <div class="nav-item" onclick="showPage('hits')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M2 2h12v12H2V2zm1 1v10h10V3H3z"/><path d="M4 7h8v1H4zm0-2h8v1H4zm0 5h8v1H4z"/></svg>My Hits<span class="nav-badge hidden" id="hits-badge">0</span></div>
-      <div class="nav-item" onclick="showPage('leaderboard')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M3 1v11h10V1H3zm1 1h8v9H4V2z"/><path d="M4.5 14h7v1h-7z"/></svg>Leaderboard</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">📊 Dashboard</div>
+      <div class="nav-item" onclick="showPage('sniper')">🎯 Sniper</div>
+      <div class="nav-item" onclick="showPage('hits')">✅ Hits</div>
+      <div class="nav-item" onclick="showPage('leaderboard')">🏆 Leaderboard</div>
       <div class="nav-section">Account</div>
-      <div class="nav-item" onclick="showPage('profile')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 7c-4 0-7 2.8-7 5h1c0-1.9 2.6-4 6-4s6 2.1 6 4h1c0-2.2-3-5-7-5z"/></svg>Profile</div>
-      <div class="nav-item" onclick="showPage('settings')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M9.4 1.05c-.41-1.4-2.4-1.4-2.81 0l-.1.34a1.46 1.46 0 0 1-2.1.87l-.31-.17c-1.28-.7-2.69.7-1.99 1.99l.17.31a1.46 1.46 0 0 1-.87 2.1l-.34.1c-1.4.41-1.4 2.4 0 2.81l.34.1a1.46 1.46 0 0 1 .87 2.1l-.17.31c-.7 1.28.7 2.69 1.99 1.99l.31-.17a1.46 1.46 0 0 1 2.1.87l.1.34c.41 1.4 2.4 1.4 2.81 0l.1-.34a1.46 1.46 0 0 1 2.1-.87l.31.17c1.28.7 2.69-.7 1.99-1.99l-.17-.31a1.46 1.46 0 0 1 .87-2.1l.34-.1c1.4-.41 1.4-2.4 0-2.81l-.34-.1a1.46 1.46 0 0 1-.87-2.1l.17-.31c.7-1.28-.7-2.69-1.99-1.99l-.31.17a1.46 1.46 0 0 1-2.1-.87l-.1-.34z"/></svg>Settings</div>
-      <div class="nav-item hidden" id="nav-owner" onclick="showPage('owner')"><svg width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0L0 3v5c0 4.5 3.4 7.4 8 8 4.6-.6 8-3.5 8-8V3L8 0zm0 1.4L14.5 3.8V8c0 3.6-2.6 6-6.5 6.6C4.1 14 1.5 11.6 1.5 8V3.8L8 1.4z"/><path d="M7.2 9.9L4.8 7.5 4 8.3l3.2 3.2 5-5-.8-.8-4.2 4.2z"/></svg>Owner Panel</div>
+      <div class="nav-item" onclick="showPage('profile')">👤 Profile</div>
+      <div class="nav-item" onclick="showPage('settings')">⚙️ Settings</div>
+      <div class="nav-item hidden" id="nav-owner">👑 Owner Panel</div>
     </div>
     <div class="sidebar-user">
       <div class="user-avatar" id="sidebar-avatar">?</div>
@@ -246,7 +246,7 @@ body.compact .card{padding:13px}
         <div class="user-display" id="sidebar-display">Loading...</div>
         <div class="user-role" id="sidebar-role">user</div>
       </div>
-      <button class="user-settings-btn" onclick="showPage('settings')" title="Settings"><svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M9.4 1.05c-.41-1.4-2.4-1.4-2.81 0l-.1.34a1.46 1.46 0 0 1-2.1.87l-.31-.17c-1.28-.7-2.69.7-1.99 1.99l.17.31a1.46 1.46 0 0 1-.87 2.1l-.34.1c-1.4.41-1.4 2.4 0 2.81l.34.1a1.46 1.46 0 0 1 .87 2.1l-.17.31c-.7 1.28.7 2.69 1.99 1.99l.31-.17a1.46 1.46 0 0 1 2.1.87l.1.34c.41 1.4 2.4 1.4 2.81 0l.1-.34a1.46 1.46 0 0 1 2.1-.87l.31.17c1.28.7 2.69-.7 1.99-1.99l-.17-.31a1.46 1.46 0 0 1 .87-2.1l.34-.1c1.4-.41 1.4-2.4 0-2.81l-.34-.1a1.46 1.46 0 0 1-.87-2.1l.17-.31c.7-1.28-.7-2.69-1.99-1.99l-.31.17a1.46 1.46 0 0 1-2.1-.87l-.1-.34z"/></svg></button>
+      <button class="user-settings-btn" onclick="showPage('settings')" title="Settings">⚙️</button>
     </div>
   </div>
 
@@ -258,55 +258,19 @@ body.compact .card{padding:13px}
         <div class="page-title">Dashboard</div>
         <div class="page-subtitle">Overview of your sniping activity</div>
       </div>
-      <div class="announce-banner hidden" id="announce-banner">
-        <b>Announcement</b><span id="announce-text"></span>
-        <button class="ann-close" onclick="hideAnnounce()">x</button>
-      </div>
       <div class="grid-4" style="margin-bottom:14px">
         <div class="stat-card"><div class="stat-label">Total Hits</div><div class="stat-value" id="stat-total">0</div><div class="stat-sub">All time</div></div>
         <div class="stat-card"><div class="stat-label">Discord Hits</div><div class="stat-value" id="stat-discord">0</div><div class="stat-sub">Sniped usernames</div></div>
         <div class="stat-card"><div class="stat-label">TikTok Hits</div><div class="stat-value" id="stat-tiktok">0</div><div class="stat-sub">Sniped usernames</div></div>
         <div class="stat-card"><div class="stat-label">Roblox Hits</div><div class="stat-value" id="stat-roblox">0</div><div class="stat-sub">Sniped usernames</div></div>
       </div>
-      <div class="grid-2" style="margin-bottom:14px">
-        <div class="card">
-          <div class="card-title">Sniper Status</div>
-          <div style="display:flex;flex-direction:column;gap:14px">
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:600">Discord</span><span class="status-label" id="ds-status-label" style="font-size:11px">Idle</span></div>
-              <div class="speed-display"><div class="speed-bar-wrap"><div class="speed-bar" id="ds-speed-bar" style="width:0%"></div></div><div class="speed-val" id="ds-rps">0 req/s</div></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:600">TikTok</span><span class="status-label" id="tt-status-label" style="font-size:11px">Idle</span></div>
-              <div class="speed-display"><div class="speed-bar-wrap"><div class="speed-bar" id="tt-speed-bar" style="width:0%"></div></div><div class="speed-val" id="tt-rps">0 req/s</div></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:600">Roblox</span><span class="status-label" id="rb-status-label" style="font-size:11px">Idle</span></div>
-              <div class="speed-display"><div class="speed-bar-wrap"><div class="speed-bar" id="rb-speed-bar" style="width:0%"></div></div><div class="speed-val" id="rb-rps">0 req/s</div></div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">Recent Hits</div>
-          <div class="hits-feed" id="dashboard-hits">
-            <div class="empty-state" style="padding:24px 0"><div class="empty-title">No hits yet</div><div class="empty-desc">Start the sniper to begin</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title">Request Rate (last 20s)</div>
-          <div class="rps-chart" id="rps-chart"></div>
-        </div>
-        <div class="card hidden" id="analytics-card">
-          <div class="card-title">Analytics+ (session)</div>
-          <div class="grid-2">
-            <div class="stat-card"><div class="stat-label">Checks</div><div class="stat-value" id="an-checks" style="font-size:20px">0</div></div>
-            <div class="stat-card"><div class="stat-label">Hit Rate</div><div class="stat-value" id="an-rate" style="font-size:20px">0%</div></div>
-            <div class="stat-card"><div class="stat-label">Peak RPS</div><div class="stat-value" id="an-peak" style="font-size:20px">0</div></div>
-            <div class="stat-card"><div class="stat-label">Checks / Hr</div><div class="stat-value" id="an-hr" style="font-size:20px">0</div></div>
-          </div>
-        </div>
+      <div class="card">
+        <div class="card-title">Welcome to BeamBlade</div>
+        <p style="color: var(--text); line-height: 1.6;">
+          This is a username sniping tool with support for Discord, TikTok, and Roblox. 
+          Use the tabs above to navigate through different sections. 
+          Start with the <strong>Sniper</strong> tab to configure and launch sniping operations.
+        </p>
       </div>
     </div>
 
@@ -314,232 +278,22 @@ body.compact .card{padding:13px}
     <div class="page" id="page-sniper">
       <div class="page-header">
         <div class="page-title">Sniper</div>
-        <div class="page-subtitle">Configure and launch username sniping</div>
+        <div class="page-subtitle">Configure username sniping</div>
       </div>
-      <div class="platform-tabs">
-        <button class="platform-tab active" onclick="switchSniperPlatform('discord')">Discord</button>
-        <button class="platform-tab" onclick="switchSniperPlatform('tiktok')">TikTok</button>
-        <button class="platform-tab" onclick="switchSniperPlatform('roblox')">Roblox</button>
-      </div>
-
-      <!-- DISCORD -->
-      <div class="sniper-panel active" id="panel-discord">
-        <div class="sniper-grid">
-          <div>
-            <div class="card" style="margin-bottom:12px">
-              <div class="card-title">Configuration</div>
-              <div class="input-group">
-                <div class="input-label">Discord Webhook URL</div>
-                <input type="text" class="field" id="ds-webhook" placeholder="https://discord.com/api/webhooks/...">
-                <div id="ds-webhook-status" class="webhook-status hidden"><div class="webhook-dot" id="ds-webhook-dot"></div><span class="webhook-text" id="ds-webhook-text"></span></div>
-                <div class="input-hint">Leaving this empty falls back to the global webhook in Settings</div>
-              </div>
-              <div class="input-group">
-                <div class="input-label">Character Set</div>
-                <select class="field" id="ds-charset">
-                  <option value="alphanum">Alphanumeric</option>
-                  <option value="alpha">Letters Only</option>
-                  <option value="num">Numbers Only</option>
-                  <option value="custom">Custom</option>
-                </select>
-                <input type="text" class="field hidden" id="ds-custom-charset" placeholder="abcdefghijklmnopqrstuvwxyz0123456789" style="margin-top:6px">
-              </div>
-              <div class="input-group">
-                <div class="input-label">Username Length</div>
-                <select class="field" id="ds-length">
-                  <option value="3">3 characters</option>
-                  <option value="4" selected>4 characters</option>
-                  <option value="5">5 characters</option>
-                  <option value="6">6 characters</option>
-                  <option value="7">7 characters</option>
-                  <option value="8">8 characters</option>
-                  <option value="9">9 characters</option>
-                  <option value="10">10 characters</option>
-                </select>
-                <div class="input-hint">Min 3, max 10</div>
-              </div>
-              <div class="input-group">
-                <div class="input-label">Request Speed<span style="color:var(--success);font-size:11px" id="ds-speed-label">Fast</span></div>
-                <input type="range" id="ds-speed" min="1" max="5" value="4" style="width:100%;accent-color:var(--accent)" oninput="updateSpeedLabel('ds')">
-              </div>
-              <div style="display:flex;gap:10px">
-                <button class="btn btn-primary btn-lg" id="ds-start" onclick="toggleSniper('discord')">Start Sniping</button>
-                <button class="btn btn-secondary btn-lg" onclick="testWebhook('discord')">Test Webhook</button>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-title">Options</div>
-              <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Skip dictionary words</div><div class="toggle-desc">Avoid common words that are unlikely to be available</div></div><label class="toggle"><input type="checkbox" id="ds-skip-dict" checked><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Notify on hit</div><div class="toggle-desc">Send webhook notification when a username is found</div></div><label class="toggle"><input type="checkbox" id="ds-notify" checked><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Auto-stop after first hit</div><div class="toggle-desc">Stop sniping after finding the first available username</div></div><label class="toggle"><input type="checkbox" id="ds-autostop"><span class="toggle-slider"></span></label></div>
-            </div>
-          </div>
-          <div>
-            <div class="card" style="margin-bottom:12px">
-              <div class="card-title">Live Stats</div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Checked</div><div class="mono" style="font-size:23px;font-weight:800" id="ds-checked">0</div></div>
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Hits Found</div><div class="mono" style="font-size:23px;font-weight:800;color:var(--success)" id="ds-hits">0</div></div>
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Rate</div><div class="mono" style="font-size:17px;font-weight:700" id="ds-rate">0/s</div></div>
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Status</div><div style="font-size:13px;font-weight:600" id="ds-status">Idle</div></div>
-              </div>
-            </div>
-            <div class="card"><div class="card-title">Terminal Log</div><div class="log-terminal" id="ds-log"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TIKTOK -->
-      <div class="sniper-panel" id="panel-tiktok">
-        <div class="sniper-grid">
-          <div>
-            <div class="card" style="margin-bottom:12px">
-              <div class="card-title">Configuration</div>
-              <div class="input-group">
-                <div class="input-label">Discord Webhook URL</div>
-                <input type="text" class="field" id="tt-webhook" placeholder="https://discord.com/api/webhooks/...">
-                <div id="tt-webhook-status" class="webhook-status hidden"><div class="webhook-dot" id="tt-webhook-dot"></div><span class="webhook-text" id="tt-webhook-text"></span></div>
-                <div class="input-hint">Leaving this empty falls back to the global webhook in Settings</div>
-              </div>
-              <div class="input-group">
-                <div class="input-label">Character Set</div>
-                <select class="field" id="tt-charset">
-                  <option value="alphanum">Alphanumeric</option>
-                  <option value="alpha">Letters Only</option>
-                  <option value="num">Numbers Only</option>
-                  <option value="custom">Custom</option>
-                </select>
-                <input type="text" class="field hidden" id="tt-custom-charset" placeholder="abcdefghijklmnopqrstuvwxyz0123456789" style="margin-top:6px">
-              </div>
-              <div class="input-group">
-                <div class="input-label">Username Length</div>
-                <select class="field" id="tt-length">
-                  <option value="2">2 characters</option>
-                  <option value="3" selected>3 characters</option>
-                  <option value="4">4 characters</option>
-                  <option value="5">5 characters</option>
-                  <option value="6">6 characters</option>
-                  <option value="7">7 characters</option>
-                  <option value="8">8 characters</option>
-                </select>
-                <div class="input-hint">Min 2, max 8</div>
-              </div>
-              <div class="input-group">
-                <div class="input-label">Request Speed<span style="color:var(--success);font-size:11px" id="tt-speed-label">Fast</span></div>
-                <input type="range" id="tt-speed" min="1" max="5" value="4" style="width:100%;accent-color:var(--accent)" oninput="updateSpeedLabel('tt')">
-              </div>
-              <div style="display:flex;gap:10px">
-                <button class="btn btn-primary btn-lg" id="tt-start" onclick="toggleSniper('tiktok')">Start Sniping</button>
-                <button class="btn btn-secondary btn-lg" onclick="testWebhook('tiktok')">Test Webhook</button>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-title">Options</div>
-              <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Skip dictionary words</div><div class="toggle-desc">Avoid common short words that are unlikely to be available</div></div><label class="toggle"><input type="checkbox" id="tt-skip-dict" checked><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Notify on hit</div><div class="toggle-desc">Send webhook notification for each hit</div></div><label class="toggle"><input type="checkbox" id="tt-notify" checked><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Auto-stop after first hit</div><div class="toggle-desc">Stop after finding first available username</div></div><label class="toggle"><input type="checkbox" id="tt-autostop"><span class="toggle-slider"></span></label></div>
-            </div>
-          </div>
-          <div>
-            <div class="card" style="margin-bottom:12px">
-              <div class="card-title">Live Stats</div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Checked</div><div class="mono" style="font-size:23px;font-weight:800" id="tt-checked">0</div></div>
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Hits Found</div><div class="mono" style="font-size:23px;font-weight:800;color:var(--success)" id="tt-hits">0</div></div>
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Rate</div><div class="mono" style="font-size:17px;font-weight:700" id="tt-rate">0/s</div></div>
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Status</div><div style="font-size:13px;font-weight:600" id="tt-status">Idle</div></div>
-              </div>
-            </div>
-            <div class="card"><div class="card-title">Terminal Log</div><div class="log-terminal" id="tt-log"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ROBLOX -->
-      <div class="sniper-panel" id="panel-roblox">
-        <div class="sniper-grid">
-          <div>
-            <div class="card" style="margin-bottom:12px">
-              <div class="card-title">Configuration</div>
-              <div class="input-group">
-                <div class="input-label">Discord Webhook URL</div>
-                <input type="text" class="field" id="rb-webhook" placeholder="https://discord.com/api/webhooks/...">
-                <div id="rb-webhook-status" class="webhook-status hidden"><div class="webhook-dot" id="rb-webhook-dot"></div><span class="webhook-text" id="rb-webhook-text"></span></div>
-                <div class="input-hint">Leaving this empty falls back to the global webhook in Settings</div>
-              </div>
-              <div class="input-group">
-                <div class="input-label">Character Set</div>
-                <select class="field" id="rb-charset">
-                  <option value="alpha">Letters Only</option>
-                  <option value="alphanum">Alphanumeric</option>
-                  <option value="custom">Custom</option>
-                </select>
-                <input type="text" class="field hidden" id="rb-custom-charset" placeholder="abcdefghijklmnopqrstuvwxyz0123456789" style="margin-top:6px">
-              </div>
-              <div class="input-group">
-                <div class="input-label">Username Length</div>
-                <select class="field" id="rb-length">
-                  <option value="3">3 characters</option>
-                  <option value="4" selected>4 characters</option>
-                  <option value="5">5 characters</option>
-                  <option value="6">6 characters</option>
-                  <option value="7">7 characters</option>
-                  <option value="8">8 characters</option>
-                  <option value="9">9 characters</option>
-                  <option value="10">10 characters</option>
-                </select>
-                <div class="input-hint">Min 3, max 10</div>
-              </div>
-              <div class="input-group">
-                <div class="input-label">Request Speed<span style="color:var(--success);font-size:11px" id="rb-speed-label">Fast</span></div>
-                <input type="range" id="rb-speed" min="1" max="5" value="4" style="width:100%;accent-color:var(--accent)" oninput="updateSpeedLabel('rb')">
-              </div>
-              <div style="display:flex;gap:10px">
-                <button class="btn btn-primary btn-lg" id="rb-start" onclick="toggleSniper('roblox')">Start Sniping</button>
-                <button class="btn btn-secondary btn-lg" onclick="testWebhook('roblox')">Test Webhook</button>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-title">Options</div>
-              <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Skip dictionary words</div><div class="toggle-desc">Avoid common words that are unlikely to be available</div></div><label class="toggle"><input type="checkbox" id="rb-skip-dict" checked><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Notify on hit</div><div class="toggle-desc">Send webhook notification for each hit</div></div><label class="toggle"><input type="checkbox" id="rb-notify" checked><span class="toggle-slider"></span></label></div>
-              <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Auto-stop after first hit</div><div class="toggle-desc">Stop after finding first available username</div></div><label class="toggle"><input type="checkbox" id="rb-autostop"><span class="toggle-slider"></span></label></div>
-            </div>
-          </div>
-          <div>
-            <div class="card" style="margin-bottom:12px">
-              <div class="card-title">Live Stats</div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Checked</div><div class="mono" style="font-size:23px;font-weight:800" id="rb-checked">0</div></div>
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Hits Found</div><div class="mono" style="font-size:23px;font-weight:800;color:var(--success)" id="rb-hits">0</div></div>
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Rate</div><div class="mono" style="font-size:17px;font-weight:700" id="rb-rate">0/s</div></div>
-                <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Status</div><div style="font-size:13px;font-weight:600" id="rb-status">Idle</div></div>
-              </div>
-            </div>
-            <div class="card"><div class="card-title">Terminal Log</div><div class="log-terminal" id="rb-log"></div></div>
-          </div>
-        </div>
+      <div class="card">
+        <p style="color: var(--text);">Sniper functionality would be configured here.</p>
       </div>
     </div>
 
     <!-- HITS -->
     <div class="page" id="page-hits">
-      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-        <div>
-          <div class="page-title">My Hits</div>
-          <div class="page-subtitle">All usernames you've successfully sniped</div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <select class="field" style="width:auto" id="hits-filter" onchange="renderHitsPage()">
-            <option value="all">All Platforms</option>
-            <option value="discord">Discord</option>
-            <option value="tiktok">TikTok</option>
-            <option value="roblox">Roblox</option>
-          </select>
-          <button class="btn btn-danger btn-sm" onclick="clearHits()">Clear All</button>
-        </div>
+      <div class="page-header">
+        <div class="page-title">My Hits</div>
+        <div class="page-subtitle">All usernames you've successfully sniped</div>
       </div>
-      <div id="hits-list"></div>
+      <div class="card">
+        <p style="color: var(--text);">No hits yet. Start sniping to see results here.</p>
+      </div>
     </div>
 
     <!-- LEADERBOARD -->
@@ -549,10 +303,7 @@ body.compact .card{padding:13px}
         <div class="page-subtitle">Top snipers ranked by total hits</div>
       </div>
       <div class="card">
-        <table class="lb-table">
-          <thead><tr><th>#</th><th>User</th><th>Total Hits</th><th>Discord</th><th>TikTok</th><th>Roblox</th><th>Best Hit</th></tr></thead>
-          <tbody id="lb-body"></tbody>
-        </table>
+        <p style="color: var(--text);">Leaderboard will display here.</p>
       </div>
     </div>
 
@@ -564,17 +315,11 @@ body.compact .card{padding:13px}
         <div class="profile-names">
           <div class="profile-display" id="profile-display-name">Display Name</div>
           <div class="profile-username" id="profile-username-display">@username</div>
-          <div style="margin-top:6px;display:flex;gap:6px;align-items:center"><span class="role-badge role-user" id="profile-role-badge">User</span></div>
-          <div id="profile-perks" style="margin-top:6px"></div>
         </div>
-        <button class="btn btn-secondary" onclick="openEditProfile()">Edit Profile</button>
       </div>
-      <div class="grid-3" style="margin-bottom:14px">
-        <div class="stat-card"><div class="stat-label">Total Hits</div><div class="stat-value" id="profile-total">0</div></div>
-        <div class="stat-card"><div class="stat-label">Best Hit</div><div class="stat-value" id="profile-best" style="font-size:20px">—</div></div>
-        <div class="stat-card"><div class="stat-label">Member Since</div><div class="stat-value" id="profile-since" style="font-size:16px">—</div></div>
+      <div class="card">
+        <p style="color: var(--text);">Profile information will be displayed here.</p>
       </div>
-      <div class="card"><div class="card-title">Hit History</div><div id="profile-hits-list"></div></div>
     </div>
 
     <!-- SETTINGS -->
@@ -583,131 +328,19 @@ body.compact .card{padding:13px}
         <div class="page-title">Settings</div>
         <div class="page-subtitle">Customize your BeamBlade experience</div>
       </div>
-      <div class="settings-section">
-        <div class="settings-title">Theme</div>
-        <div class="settings-desc">Choose from 36 color themes</div>
-        <div class="card"><div class="card-title">Color Themes</div><div class="theme-grid" id="theme-grid"></div></div>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">General</div>
-        <div class="settings-desc">Behavior and notifications</div>
-        <div class="card">
-          <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Browser Notifications</div><div class="toggle-desc">Get notified even when BeamBlade is in the background</div></div><label class="toggle"><input type="checkbox" id="browser-notif" onchange="toggleBrowserNotif()"><span class="toggle-slider"></span></label></div>
-          <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Sound Alerts</div><div class="toggle-desc">Play a sound when a username is found</div></div><label class="toggle"><input type="checkbox" id="sound-alerts" checked><span class="toggle-slider"></span></label></div>
-          <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">Compact Mode</div><div class="toggle-desc">Show more information with less spacing</div></div><label class="toggle"><input type="checkbox" id="compact-mode" onchange="toggleCompact()"><span class="toggle-slider"></span></label></div>
-        </div>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">Webhooks</div>
-        <div class="settings-desc">Global fallback webhook used when a platform has no webhook set</div>
-        <div class="card">
-          <div class="input-group"><div class="input-label">Global Webhook URL</div><input type="text" class="field" id="global-webhook" placeholder="https://discord.com/api/webhooks/..."></div>
-          <button class="btn btn-primary" onclick="saveGlobalWebhook()">Save Webhook</button>
-        </div>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">Display Name</div>
-        <div class="settings-desc">Change how your name appears in the app and leaderboard</div>
-        <div class="card">
-          <div class="input-group"><div class="input-label">Display Name</div><input type="text" class="field" id="settings-display" placeholder="Your display name" maxlength="30"></div>
-          <div class="input-group"><div class="input-label">Avatar Color</div><div class="avatar-colors" id="avatar-color-picker"></div></div>
+      <div class="card">
+        <div class="settings-section">
+          <div class="settings-title">Display Name</div>
+          <div class="input-group">
+            <label class="input-label">Your Display Name</label>
+            <input type="text" class="field" id="settings-display" placeholder="Your display name" maxlength="30">
+          </div>
           <button class="btn btn-primary" onclick="saveDisplaySettings()">Save Changes</button>
         </div>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">Danger Zone</div>
-        <div class="card">
-          <div style="display:flex;align-items:center;justify-content:space-between">
-            <div><div style="font-size:13px;font-weight:600">Sign Out</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Sign out of your account</div></div>
-            <button class="btn btn-danger" onclick="doLogout()">Sign Out</button>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-            <div><div style="font-size:13px;font-weight:600">Clear All Data</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Delete all your hits and statistics</div></div>
-            <button class="btn btn-danger" onclick="clearAllData()">Clear Data</button>
-          </div>
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+          <button class="btn btn-danger" onclick="doLogout()">Sign Out</button>
         </div>
       </div>
-    </div>
-
-    <!-- OWNER PANEL -->
-    <div class="page" id="page-owner">
-      <div class="page-header">
-        <div class="page-title">Owner Panel</div>
-        <div class="page-subtitle">Manage users, roles, perks, and data</div>
-      </div>
-      <div class="grid-4" style="margin-bottom:14px">
-        <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="owner-total-users">0</div></div>
-        <div class="stat-card"><div class="stat-label">Total Hits</div><div class="stat-value" id="owner-total-hits">0</div></div>
-        <div class="stat-card"><div class="stat-label">Active Sessions</div><div class="stat-value" id="owner-online">0</div></div>
-        <div class="stat-card"><div class="stat-label">Global Hits</div><div class="stat-value" id="owner-global-count">0</div></div>
-      </div>
-
-      <div class="card" style="margin-bottom:14px">
-        <div class="card-title">Broadcast Announcement</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <input type="text" class="field" id="owner-announce-input" placeholder="Message shown on every user's dashboard" style="flex:1;min-width:220px">
-          <button class="btn btn-primary" onclick="sendAnnouncement()">Broadcast</button>
-          <button class="btn btn-secondary" onclick="clearAnnouncement()">Clear</button>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom:14px">
-        <div class="card-title">User Management</div>
-        <div style="overflow-x:auto">
-          <table class="owner-table">
-            <thead><tr><th>Username</th><th>Display</th><th>Role</th><th>Hits</th><th>Perks</th><th>Joined</th><th>Actions</th></tr></thead>
-            <tbody id="user-manage-body"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="grid-2" style="margin-bottom:14px">
-        <div class="card">
-          <div class="card-title">Grant Role</div>
-          <div class="input-group"><div class="input-label">Username</div><input type="text" class="field" id="grant-username" placeholder="Enter username"></div>
-          <div class="input-group"><div class="input-label">Role</div>
-            <select class="field" id="grant-role"><option value="admin">Admin</option><option value="mod">Moderator</option><option value="user">User (remove perks)</option></select>
-          </div>
-          <button class="btn btn-primary" onclick="grantRole()">Apply Role</button>
-        </div>
-        <div class="card">
-          <div class="card-title">Grant Perks</div>
-          <div class="input-group"><div class="input-label">Username</div><input type="text" class="field" id="perk-username" placeholder="Enter username"></div>
-          <div class="perks-grid" id="perks-grid"></div>
-          <button class="btn btn-primary" style="margin-top:12px" onclick="grantPerk()">Grant Perk</button>
-          <button class="btn btn-secondary" style="margin-top:12px;margin-left:8px" onclick="revokePerk()">Revoke Perk</button>
-        </div>
-      </div>
-
-      <div class="grid-2" style="margin-bottom:14px">
-        <div class="card">
-          <div class="card-title">Global Hit Log</div>
-          <div class="hits-feed" id="global-hits-list" style="max-height:300px"></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Data Management</div>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <button class="btn btn-secondary" onclick="exportDB()">Export Database (JSON)</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">Import Database</button>
-            <input type="file" id="import-file" accept=".json" class="hidden" onchange="importDB(event)">
-            <button class="btn btn-danger" onclick="wipeDB()">Wipe All Data</button>
-            <div style="font-size:11px;color:var(--dim)">Importing replaces the entire local database. Wiping resets the app completely.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODALS -->
-<div class="modal-overlay" id="modal-edit-profile">
-  <div class="modal">
-    <div class="modal-title">Edit Profile</div>
-    <div class="modal-desc">Update your display name</div>
-    <div class="input-group"><div class="input-label">Display Name</div><input type="text" class="field" id="modal-display-name" placeholder="Display name" maxlength="30"></div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('modal-edit-profile')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveProfile()">Save</button>
     </div>
   </div>
 </div>
@@ -716,69 +349,16 @@ body.compact .card{padding:13px}
 
 <script>
 'use strict';
+
 /* ================= CONSTANTS ================= */
 const DB_KEY = 'bb_data_v2';
-const SPEED_DELAYS = [900, 450, 200, 70, 25];
-const CHARSETS = { alphanum: 'abcdefghijklmnopqrstuvwxyz0123456789', alpha: 'abcdefghijklmnopqrstuvwxyz', num: '0123456789' };
-const SPEED_LABELS = ['Very Slow', 'Slow', 'Medium', 'Fast', 'Blazing'];
-const PLATFORM_META = {
-  discord: { pfx: 'ds', name: 'Discord', color: 5793266 },
-  tiktok:  { pfx: 'tt', name: 'TikTok',  color: 16711680 },
-  roblox:  { pfx: 'rb', name: 'Roblox',  color: 33023 }
-};
-const PERKS = [
-  { key: 'speed_boost',    name: 'Speed Boost',     desc: '+4 workers, up to 16 concurrent checks' },
-  { key: 'extended_log',   name: 'Extended Log',    desc: '5,000 line terminal instead of 350' },
-  { key: 'multi_webhook',  name: 'Multi-Webhook',   desc: 'Send hits to up to 3 webhooks per platform' },
-  { key: 'analytics',      name: 'Analytics+',      desc: 'Hit rate, checks/hr and peak RPS on dashboard' },
-  { key: 'priority_queue', name: 'Priority Queue',  desc: 'VIP badge and 2 reserved worker slots' },
-  { key: 'golden_avatar',  name: 'Golden Avatar',   desc: 'Gold ring around your avatar' },
-  { key: 'stealth_mode',   name: 'Stealth Mode',    desc: 'Quiet logs, fewer toast popups' },
-  { key: 'early_access',   name: 'Early Access',    desc: 'BETA badge on your profile' }
-];
-const RELAYS = [
-  { name: 'corsproxy', make: u => 'https://corsproxy.io/?url=' + encodeURIComponent(u), post: true },
-  { name: 'allorigins', make: u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u), post: false },
-  { name: 'codetabs', make: u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u), post: false }
-];
-const DICT = new Set('the,and,you,that,not,are,all,can,out,use,had,her,was,one,our,day,get,has,him,his,how,man,new,now,old,see,way,who,boy,did,its,let,put,say,she,too,use,dad,key,lot,men,own,run,top,age,bad,box,bus,car,cat,cut,die,dog,ear,eat,egg,eye,fan,far,feet,fish,fit,fly,for,fun,got,gun,guy,hat,hot,hug,ice,ill,jar,job,joy,key,leg,lie,lip,lol,map,net,one,pet,pig,pot,raw,red,rib,row,sad,say,sea,see,set,sir,six,sky,son,sum,tax,tea,ten,the,tie,too,toy,two,use,van,war,wet,why,win,you,zoom,able,acid,aged,also,area,army,away,baby,back,ball,band,bank,base,bath,bear,beat,been,bell,belt,best,bike,bill,bird,blow,blue,boat,body,bold,bolt,bond,bone,book,boot,boss,both,bowl,bulk,burn,bush,busy,cake,call,calm,came,camp,cane,card,care,case,cash,cast,cave,cell,chat,chef,chic,chip,chop,city,clay,club,coal,coat,code,cold,come,cook,cool,cope,copy,cord,corn,cost,crew,crop,cure,curl,dark,date,dawn,dead,dear,debt,deck,deed,deep,deer,desk,dial,dice,diet,dish,disk,does,done,door,dose,down,draw,drew,drop,drum,dual,dust,duty,each,earn,ease,east,easy,edge,else,even,ever,exit,face,fact,fade,fail,fair,fall,fame,fare,farm,fast,fate,fear,feat,feed,feel,feet,fell,felt,file,fill,film,find,fire,firm,fish,fist,five,flag,flat,flaw,flip,flow,foam,focus,fold,folk,font,foot,ford,fore,fork,form,fort,foul,four,foxes,frag,fuel,full,fund,fury,gain,game,gap,gave,gear,gene,gift,girl,give,glad,glow,goal,goat,gold,golf,gone,good,gore,grab,gram,gray,grew,grey,grow,guilt,gulf,gums,half,hall,hand,hang,hard,harm,hate,have,hawk,head,heal,heap,hear,heat,held,hell,help,herb,here,hero,hide,high,hike,hill,hint,hire,hold,hole,holy,home,hook,hope,horn,host,hour,huge,hurt,icon,idea,inch,into,iron,item,jazz,jobs,join,joke,jump,jury,just,keen,keep,kent,kept,keys,kick,kill,kind,king,kiss,knee,knew,knit,knob,knot,know,labor,lack,lady,laid,lake,land,lane,last,late,laugh,lawn,laws,lays,lead,leaf,lean,leap,left,lend,lens,lent,less,life,lift,like,line,link,lion,list,live,load,loan,lock,logo,lone,long,look,lord,lose,loss,lost,loud,love,luck,lunch,lung,made,magic,mail,main,major,make,male,mall,mane,many,map,march,mark,mass,match,mate,meal,mean,meat,meet,melt,menu,mere,mesh,mess,mice,might,mild,mile,milk,mill,mind,mine,mini,miss,mist,mix,mode,mood,moon,more,moss,most,move,much,mud,mule,must,myth,nail,name,navy,near,neat,neck,need,neon,nest,news,next,nice,nick,nine,node,none,nook,norm,nose,note,okay,once,only,onto,open,oral,ours,oval,over,pace,pack,page,pain,pair,pale,palm,park,part,past,path,peak,pear,peel,peer,pest,pick,pier,pile,pill,pink,pint,pity,plan,play,plot,plug,plus,pole,pool,poor,port,pose,post,pour,prey,pride,prim,prop,pull,pure,push,quit,race,rack,rage,raid,rail,rain,rake,rank,rare,rash,rate,read,real,reap,rear,receipt,reed,reef,rely,rest,rice,rich,ride,ring,riot,rise,risk,road,roam,roar,robe,rock,role,roll,roof,room,root,rope,rose,rule,run,rush,rust,ruth,sack,safe,sail,sale,salt,same,sand,sang,save,scan,scar,scare,seat,sect,seed,seek,seem,seen,self,sell,send,sent,sew,shade,shake,shall,shame,shape,share,shark,sharp,sheep,sheet,shelf,shell,shift,shine,ship,shirt,shock,shoe,shook,shop,shore,short,shot,show,shut,sick,side,sigh,sign,silk,sing,sink,site,sits,sixth,size,skim,skin,skip,slab,slap,sled,slip,slot,slow,small,smash,smell,smile,smoke,snake,snow,soap,sock,soft,soil,sold,sole,some,song,soon,sore,sort,soul,soup,sour,span,spare,speak,speed,spell,spend,spent,spice,spin,spite,split,spoke,spoon,sport,spot,spray,spread,spring,staff,stage,stair,stake,stamp,stand,star,stare,start,state,stay,steak,steal,steam,steel,steep,steer,stem,step,stick,stiff,still,stock,stole,stone,stood,stool,store,storm,story,stove,strap,straw,stray,strip,stuck,study,stuff,style,sugar,suit,summer,sun,sure,swear,sweat,sweep,sweet,swell,swept,swim,swing,sword,tail,take,tale,talk,tall,tame,tank,tap,task,team,tear,tech,teeth,tell,temp,tend,tent,term,test,text,than,thank,that,theft,their,them,then,there,these,they,thick,thin,thing,think,third,this,those,though,thought,three,threw,throw,thumb,tick,tide,tied,tier,tight,till,time,tiny,tire,toast,today,toe,together,told,tomb,tone,tool,tooth,topic,tore,torn,toss,total,touch,tough,tour,toward,town,track,trade,trail,train,trap,trash,tray,treat,tree,trend,trial,tribe,trick,tried,tries,trim,trip,troop,truck,truly,trunk,trust,truth,try,tube,tune,turn,twice,twin,type,ugly,uncle,under,undo,unit,until,upon,upper,upset,urban,used,user,usual,vain,valid,value,vapor,veil,vein,verb,very,vest,view,vine,visa,visit,voice,void,vote,wage,wagon,wait,walk,wall,want,warm,warn,wash,waste,watch,water,wave,wax,weak,wear,web,weed,week,weigh,well,went,were,west,wet,whale,what,wheat,wheel,when,where,which,while,whip,white,who,whole,whom,whose,wide,wife,wild,will,win,wind,wine,wing,wink,wipe,wire,wise,wish,with,woke,wolf,women,won,wonder,wood,word,wore,work,world,worn,worry,worse,worst,worth,would,wound,wrap,write,written,wrong,wrote,yard,year,yellow,young,your,zone'.split(','));
 const AVATAR_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#a855f7','#ec4899','#ffffff','#888888'];
 const THEMES = [
   {name:'Classic',accent:'#ffffff',bg:'#0b0b0b',bg2:'#111111',text:'#e8e8e8'},
   {name:'Crimson',accent:'#ef4444',bg:'#0f0a0a',bg2:'#1a0a0a',text:'#f5e0e0'},
   {name:'Ocean',accent:'#3b82f6',bg:'#0a0d14',bg2:'#0d1220',text:'#dce8f5'},
   {name:'Forest',accent:'#22c55e',bg:'#080f0a',bg2:'#0d1a10',text:'#d8f0df'},
-  {name:'Violet',accent:'#a855f7',bg:'#0c0a12',bg2:'#130d1a',text:'#e8d8f5'},
-  {name:'Amber',accent:'#f59e0b',bg:'#0f0d08',bg2:'#1a1508',text:'#f5edd8'},
-  {name:'Rose',accent:'#f43f5e',bg:'#0f080a',bg2:'#1a0d10',text:'#f5d8df'},
-  {name:'Cyan',accent:'#06b6d4',bg:'#080e10',bg2:'#0d1518',text:'#d8f0f5'},
-  {name:'Lime',accent:'#84cc16',bg:'#0a0e08',bg2:'#111808',text:'#e5f0d0'},
-  {name:'Pink',accent:'#ec4899',bg:'#0f080e',bg2:'#1a0d18',text:'#f5d8f0'},
-  {name:'Indigo',accent:'#6366f1',bg:'#090a14',bg2:'#0d1020',text:'#dcdff5'},
-  {name:'Teal',accent:'#14b8a6',bg:'#081010',bg2:'#0d1818',text:'#d0f0ed'},
-  {name:'Orange',accent:'#f97316',bg:'#0f0d09',bg2:'#1a1408',text:'#f5ead8'},
-  {name:'Sky',accent:'#0ea5e9',bg:'#080c10',bg2:'#0d1218',text:'#d5e8f5'},
-  {name:'Emerald',accent:'#10b981',bg:'#080f0c',bg2:'#0d1810',text:'#d0f0e5'},
-  {name:'Yellow',accent:'#eab308',bg:'#0e0d08',bg2:'#181508',text:'#f5eed0'},
-  {name:'Fuchsia',accent:'#d946ef',bg:'#0e080e',bg2:'#180d18',text:'#f0d8f5'},
-  {name:'Slate',accent:'#94a3b8',bg:'#0a0c0f',bg2:'#121620',text:'#dce3ed'},
-  {name:'Red Orange',accent:'#ff4500',bg:'#0f0a08',bg2:'#1a1008',text:'#f5e0d5'},
-  {name:'Electric',accent:'#00ffff',bg:'#020809',bg2:'#050e10',text:'#ccf5f5'},
-  {name:'Neon Green',accent:'#39ff14',bg:'#040a04',bg2:'#081008',text:'#d0f5cc'},
-  {name:'Hot Pink',accent:'#ff69b4',bg:'#0f080d',bg2:'#1a0d18',text:'#f5d5e8'},
-  {name:'Gold',accent:'#ffd700',bg:'#0e0c07',bg2:'#181407',text:'#f5f0cc'},
-  {name:'Coral',accent:'#ff7f50',bg:'#0f0c08',bg2:'#1a1208',text:'#f5e5d8'},
-  {name:'Lavender',accent:'#e6e6fa',bg:'#0c0c0f',bg2:'#141418',text:'#f0f0f5'},
-  {name:'Mint',accent:'#98ff98',bg:'#090f09',bg2:'#101810',text:'#d8f5d8'},
-  {name:'Peach',accent:'#ffcba4',bg:'#0f0d0c',bg2:'#1a1614',text:'#f5ece5'},
-  {name:'Steel',accent:'#b0c4de',bg:'#0a0c0e',bg2:'#121618',text:'#dde5ed'},
-  {name:'Neon Purple',accent:'#bf00ff',bg:'#0a0510',bg2:'#120a1a',text:'#e8d0f5'},
-  {name:'Sunset',accent:'#ff6b35',bg:'#0f0a08',bg2:'#1a1208',text:'#f5e0d5'},
-  {name:'Arctic',accent:'#e0f8ff',bg:'#090d0f',bg2:'#101618',text:'#e5f2f5'},
-  {name:'Copper',accent:'#b87333',bg:'#0e0c09',bg2:'#181408',text:'#f0e5d5'},
-  {name:'Aqua',accent:'#00ffee',bg:'#040a09',bg2:'#081412',text:'#ccf5f3'},
-  {name:'Blood',accent:'#8b0000',bg:'#080404',bg2:'#100808',text:'#f0d8d8'},
-  {name:'Matrix',accent:'#00ff41',bg:'#020602',bg2:'#040d04',text:'#c8f0d0'}
+  {name:'Violet',accent:'#a855f7',bg:'#0c0a12',bg2:'#130d1a',text:'#e8d8f5'}
 ];
 
 /* ================= DATA LAYER ================= */
@@ -787,51 +367,35 @@ function setDB(d){ localStorage.setItem(DB_KEY, JSON.stringify(d)); }
 function initDB(){
   const db = getDB();
   if(!db.users) db.users = {};
-  if(!db.globalHits) db.globalHits = [];
-  if(!db.announcement) db.announcement = null;
   if(!db.users['beamblade']){
     db.users['beamblade'] = {
-      username:'beamblade', displayName:'BeamBlade', password:'beamblademsk123',
-      role:'owner', perks:PERKS.map(p=>p.key), avatarColor:'#ffffff',
-      hits:{discord:0,tiktok:0,roblox:0,total:0}, hitLog:[], bestHit:null,
-      joined:Date.now(), settings:{theme:0,globalWebhook:''}, banned:false
+      username:'beamblade', 
+      displayName:'BeamBlade', 
+      password:'beamblademsk123',
+      role:'owner', 
+      avatarColor:'#ffffff',
+      joined:Date.now()
     };
   }
   setDB(db);
 }
 function getUser(u){ return getDB().users[u] || null; }
 function saveUser(user){ const db = getDB(); db.users[user.username] = user; setDB(db); }
-function hasPerk(key){ return !!(currentUser && currentUser.perks && currentUser.perks.includes(key)); }
 
 /* ================= STATE ================= */
 let currentUser = null;
-let selectedPerk = null;
-let rpsHistory = new Array(20).fill(0);
-let sessionStart = Date.now();
-let peakRps = 0;
-const sniperStates = {
-  discord: { running:false, checked:0, hits:0, backoff:0, seen:new Set() },
-  tiktok:  { running:false, checked:0, hits:0, backoff:0, seen:new Set() },
-  roblox:  { running:false, checked:0, hits:0, backoff:0, seen:new Set() }
-};
 
 /* ================= UTILS ================= */
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function fmt(n){ return (n||0).toLocaleString(); }
-function timeAgo(ts){
-  const d = Date.now()-ts;
-  if(d<60000) return Math.floor(d/1000)+'s ago';
-  if(d<3600000) return Math.floor(d/60000)+'m ago';
-  if(d<86400000) return Math.floor(d/3600000)+'h ago';
-  return Math.floor(d/86400000)+'d ago';
+function toast(msg, type='info'){
+  const wrap = document.getElementById('toast-wrap');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = '<span class="toast-ico">✓</span><span>' + escapeHtml(msg) + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
 }
-function adjustColor(hex, amount){
-  const n = parseInt(hex.replace('#',''),16);
-  const r = Math.max(0,Math.min(255,(n>>16)+amount));
-  const g = Math.max(0,Math.min(255,((n>>8)&255)+amount));
-  const b = Math.max(0,Math.min(255,(n&255)+amount));
-  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function getContrastColor(hex){
   if(!hex || !hex.startsWith('#')) return '#fff';
@@ -846,19 +410,28 @@ function switchAuthTab(tab){
   document.getElementById('login-form').classList.toggle('hidden', tab!=='login');
   document.getElementById('register-form').classList.toggle('hidden', tab!=='register');
 }
+
 function doLogin(){
   const u = document.getElementById('login-username').value.trim().toLowerCase();
   const p = document.getElementById('login-password').value;
   const err = document.getElementById('login-error');
   err.style.display='none';
-  if(!u||!p){ err.textContent='Please fill in all fields.'; err.style.display='block'; return; }
+  if(!u||!p){ 
+    err.textContent='Please fill in all fields.'; 
+    err.style.display='block'; 
+    return; 
+  }
   const user = getUser(u);
-  if(!user || user.password!==p){ err.textContent='Invalid username or password.'; err.style.display='block'; return; }
-  if(user.banned){ err.textContent='This account has been banned.'; err.style.display='block'; return; }
+  if(!user || user.password!==p){ 
+    err.textContent='Invalid username or password.'; 
+    err.style.display='block'; 
+    return; 
+  }
   currentUser = user;
   sessionStorage.setItem('bb_session', user.username);
   loadApp();
 }
+
 function doRegister(){
   const u = document.getElementById('reg-username').value.trim().toLowerCase();
   const d = document.getElementById('reg-display').value.trim();
@@ -866,637 +439,118 @@ function doRegister(){
   const p2 = document.getElementById('reg-password2').value;
   const err = document.getElementById('register-error');
   err.style.display='none';
-  if(!u||!d||!p||!p2){ err.textContent='Please fill in all fields.'; err.style.display='block'; return; }
-  if(u.length<3){ err.textContent='Username must be at least 3 characters.'; err.style.display='block'; return; }
-  if(!/^[a-z0-9_]+$/.test(u)){ err.textContent='Username can only contain letters, numbers, and underscores.'; err.style.display='block'; return; }
-  if(p!==p2){ err.textContent='Passwords do not match.'; err.style.display='block'; return; }
-  if(p.length<6){ err.textContent='Password must be at least 6 characters.'; err.style.display='block'; return; }
-  if(getUser(u)){ err.textContent='Username already taken.'; err.style.display='block'; return; }
-  const nu = { username:u, displayName:d, password:p, role:'user', perks:[],
+  
+  if(!u||!d||!p||!p2){ 
+    err.textContent='Please fill in all fields.'; 
+    err.style.display='block'; 
+    return; 
+  }
+  if(u.length<3){ 
+    err.textContent='Username must be at least 3 characters.'; 
+    err.style.display='block'; 
+    return; 
+  }
+  if(!/^[a-z0-9_]+$/.test(u)){ 
+    err.textContent='Username can only contain letters, numbers, and underscores.'; 
+    err.style.display='block'; 
+    return; 
+  }
+  if(p!==p2){ 
+    err.textContent='Passwords do not match.'; 
+    err.style.display='block'; 
+    return; 
+  }
+  if(p.length<6){ 
+    err.textContent='Password must be at least 6 characters.'; 
+    err.style.display='block'; 
+    return; 
+  }
+  if(getUser(u)){ 
+    err.textContent='Username already taken.'; 
+    err.style.display='block'; 
+    return; 
+  }
+  
+  const nu = { 
+    username:u, 
+    displayName:d, 
+    password:p, 
+    role:'user',
     avatarColor:AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)],
-    hits:{discord:0,tiktok:0,roblox:0,total:0}, hitLog:[], bestHit:null,
-    joined:Date.now(), settings:{theme:0,globalWebhook:''}, banned:false };
+    joined:Date.now()
+  };
   saveUser(nu);
   currentUser = nu;
   sessionStorage.setItem('bb_session', nu.username);
   loadApp();
 }
+
 function doLogout(){
-  stopAllSnipers();
   currentUser = null;
   sessionStorage.removeItem('bb_session');
   document.getElementById('app-screen').style.display='none';
   document.getElementById('auth-screen').style.display='flex';
   document.getElementById('login-username').value='';
   document.getElementById('login-password').value='';
+  toast('Signed out', 'info');
 }
 
 /* ================= APP LOAD ================= */
+function initApp(){
+  initDB();
+  const session = sessionStorage.getItem('bb_session');
+  if(session){
+    const user = getUser(session);
+    if(user){
+      currentUser = user;
+      loadApp();
+      return;
+    }
+  }
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('app-screen').style.display='none';
+}
+
 function loadApp(){
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app-screen').style.display='flex';
   updateSidebarUser();
-  document.getElementById('nav-owner').classList.toggle('hidden', currentUser.role!=='owner
-                                              <script>
-'use strict';
-/* ===== continued: app load, sidebar, navigation, themes ===== */
-function loadApp(){
-  document.getElementById('auth-screen').style.display='none';
-  document.getElementById('app-screen').style.display='flex';
-  updateSidebarUser();
-  document.getElementById('nav-owner').classList.toggle('hidden', currentUser.role!=='owner');
-  buildThemeGrid(); buildAvatarColorPicker(); buildRpsChart(); buildPerksGrid();
-  loadSettings(); renderAnnouncement();
-  renderLeaderboard(); renderHitsPage(); renderProfilePage(); renderOwnerPanel(); renderGlobalHits();
-  updateDashboardStats(); updateHitBadge();
-  startRpsTracker();
-  ['ds','tt','rb'].forEach(p=>{
-    const c=document.getElementById(p+'-charset');
-    c.addEventListener('change',()=>{ document.getElementById(p+'-custom-charset').classList.toggle('hidden', c.value!=='custom'); });
-  });
+  const ownerNav = document.getElementById('nav-owner');
+  if(ownerNav) ownerNav.classList.toggle('hidden', currentUser.role!=='owner');
   showPage('dashboard');
   toast('Welcome back, '+currentUser.displayName,'info');
 }
+
 function updateSidebarUser(){
-  document.getElementById('sidebar-display').textContent=currentUser.displayName;
-  document.getElementById('sidebar-role').textContent=currentUser.role;
-  const av=document.getElementById('sidebar-avatar');
-  av.textContent=(currentUser.displayName||'?')[0].toUpperCase();
-  av.style.background=currentUser.avatarColor||'#333';
-  av.style.color=getContrastColor(currentUser.avatarColor||'#333');
-  if(currentUser.role==='owner') document.getElementById('sidebar-role').textContent='OWNER';
-  else if(hasPerk('early_access')) document.getElementById('sidebar-role').textContent='BETA USER';
+  document.getElementById('sidebar-display').textContent = currentUser.displayName;
+  document.getElementById('sidebar-role').textContent = currentUser.role === 'owner' ? 'OWNER' : 'user';
+  const av = document.getElementById('sidebar-avatar');
+  av.textContent = (currentUser.displayName||'?')[0].toUpperCase();
+  av.style.background = currentUser.avatarColor||'#333';
+  av.style.color = getContrastColor(currentUser.avatarColor||'#333');
 }
+
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const page=document.getElementById('page-'+name); if(page) page.classList.add('active');
-  const nav=document.querySelector('.nav-item[onclick="showPage(\''+name+'\')"]'); if(nav) nav.classList.add('active');
-  if(name==='leaderboard') renderLeaderboard();
-  if(name==='hits') renderHitsPage();
-  if(name==='profile') renderProfilePage();
-  if(name==='owner') { renderOwnerPanel(); renderGlobalHits(); }
-  if(name==='settings') document.getElementById('settings-display').value=currentUser.displayName;
+  const page = document.getElementById('page-'+name);
+  if(page) page.classList.add('active');
+  const nav = document.querySelector('.nav-item[onclick="showPage(\''+name+'\')"]');
+  if(nav) nav.classList.add('active');
+  if(name==='settings') document.getElementById('settings-display').value = currentUser.displayName;
 }
 
-/* ===== THEMES ===== */
-function buildThemeGrid(){
-  const grid=document.getElementById('theme-grid'); grid.innerHTML='';
-  const saved=(currentUser.settings&&currentUser.settings.theme!==undefined)?currentUser.settings.theme:0;
-  THEMES.forEach((t,i)=>{
-    const sw=document.createElement('div');
-    sw.className='theme-swatch'+(i===saved?' active':''); sw.style.background=t.accent; sw.title=t.name;
-    sw.onclick=()=>applyTheme(i); grid.appendChild(sw);
-  });
-}
-function applyTheme(i){
-  const t=THEMES[i]; if(!t) return;
-  const r=document.documentElement.style;
-  r.setProperty('--bg',t.bg); r.setProperty('--bg2',t.bg2);
-  r.setProperty('--bg3',adjustColor(t.bg2,8)); r.setProperty('--bg4',adjustColor(t.bg2,15));
-  r.setProperty('--border',adjustColor(t.bg2,21)); r.setProperty('--text',t.text);
-  r.setProperty('--accent',t.accent); r.setProperty('--accent2',adjustColor(t.accent,-30));
-  document.querySelectorAll('.theme-swatch').forEach((s,x)=>s.classList.toggle('active',x===i));
-  if(currentUser){ if(!currentUser.settings) currentUser.settings={}; currentUser.settings.theme=i; saveUser(currentUser); }
-}
-function loadSettings(){
-  const s=currentUser.settings||{};
-  if(s.theme!==undefined) applyTheme(s.theme);
-  if(s.compact){ document.getElementById('compact-mode').checked=true; document.body.classList.add('compact'); }
-  if(s.globalWebhook) document.getElementById('global-webhook').value=s.globalWebhook;
-  if(s.sound===false) document.getElementById('sound-alerts').checked=false;
-  if(s.browserNotif) document.getElementById('browser-notif').checked=true;
-}
-
-/* ===== AVATAR COLORS ===== */
-function buildAvatarColorPicker(){
-  const wrap=document.getElementById('avatar-color-picker'); wrap.innerHTML='';
-  AVATAR_COLORS.forEach(c=>{
-    const b=document.createElement('div');
-    b.className='avatar-color'+(c===currentUser.avatarColor?' active':''); b.style.background=c;
-    b.onclick=()=>{ wrap.querySelectorAll('.avatar-color').forEach(x=>x.classList.remove('active')); b.classList.add('active'); currentUser.avatarColor=c; };
-    wrap.appendChild(b);
-  });
-}
-
-/* ===== SNIPER ENGINE ===== */
-function getCharset(pfx){
-  const sel=document.getElementById(pfx+'-charset').value;
-  if(sel==='custom'){ const c=document.getElementById(pfx+'-custom-charset').value.trim(); if(c) return c; }
-  return CHARSETS[sel]||CHARSETS.alphanum;
-}
-function getLength(pfx){ return parseInt(document.getElementById(pfx+'-length').value)||4; }
-function genName(len,charset){ let s=''; for(let i=0;i<len;i++) s+=charset[Math.floor(Math.random()*charset.length)]; return s; }
-
-async function rawCheck(platform,name,relay){
-  try{
-    if(platform==='discord'){
-      const body={username:name};
-      let u='https://discord.com/api/v9/unique-username/username-attempt-unauthed-v2';
-      let opt={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)};
-      if(relay){ opt={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}; u=relay.make(u); }
-      const r=await fetch(u,{...opt,signal:AbortSignal.timeout(9000)});
-      if(r.status===429) return 'rl';
-      if(r.status===200){ const d=await r.json(); return d.taken===false; }
-      if(r.status===400||r.status===403) return false;
-      return 'err';
-    }
-    if(platform==='tiktok'){
-      const u='https://www.tiktok.com/api/user/detail/?uniqueId='+encodeURIComponent(name)+'&aid=1988';
-      const url=relay?relay.make(u):u;
-      const r=await fetch(url,{signal:AbortSignal.timeout(9000)});
-      if(r.status===429) return 'rl';
-      if(r.status===200){ const d=await r.json(); return !(d&&d.userInfo); }
-      return 'err';
-    }
-    if(platform==='roblox'){
-      const u='https://api.roblox.com/users/get-by-username?username='+encodeURIComponent(name);
-      const url=relay?relay.make(u):u;
-      const r=await fetch(url,{signal:AbortSignal.timeout(9000)});
-      if(r.status===429) return 'rl';
-      if(r.status===200){ const d=await r.json(); return d.errorCode===4||!d.Id; }
-      return 'err';
-    }
-    return 'err';
-  }catch(e){ return 'err'; }
-}
-async function checkUsername(platform,name){
-  const direct=await rawCheck(platform,name,null);
-  if(direct!=='err') return direct;
-  for(const relay of RELAYS){
-    const res=await rawCheck(platform,name,relay);
-    if(res!=='err') return res;
-  }
-  return 'err';
-}
-
-async function sniperLoop(platform,workerId){
-  const st=sniperStates[platform], meta=PLATFORM_META[platform], pfx=meta.pfx;
-  const len=getLength(pfx), charset=getCharset(pfx);
-  const skipDict=document.getElementById(pfx+'-skip-dict').checked;
-  const notify=document.getElementById(pfx+'-notify').checked;
-  const autostop=document.getElementById(pfx+'-autostop').checked;
-  const speed=parseInt(document.getElementById(pfx+'-speed').value)-1;
-  const boost=hasPerk('speed_boost')?4:0;
-  const workers=Math.min(16,parseInt(document.getElementById(pfx+'-speed').value)*2+boost);
-  if(workerId===0) addLog(pfx,'Worker pool armed: '+workers+' workers, length '+len+', charset '+charset.length+' chars','info');
-  while(st.running){
-    if(workerId>0 && !hasPerk('priority_queue') && Math.random()<0.05){ await sleep(30); continue; }
-    let name=genName(len,charset);
-    if(skipDict&&DICT.has(name)){ await sleep(1); continue; }
-    if(st.seen.has(name)){ await sleep(1); continue; }
-    st.seen.add(name); if(st.seen.size>4000) st.seen.clear();
-    st.checked++;
-    document.getElementById(pfx+'-checked').textContent=fmt(st.checked);
-    if(st.backoff>0){ await sleep(Math.min(5000,st.backoff)); continue; }
-    const res=await checkUsername(platform,name);
-    if(!st.running) break;
-    if(res==='rl'){ st.backoff=Math.min(4000,(st.backoff||500)*2); if(workerId===0) addLog(pfx,'Rate limited, backing off '+st.backoff+'ms','warning'); continue; }
-    if(res===true){
-      st.hits++; document.getElementById(pfx+'-hits').textContent=st.hits;
-      addLog(pfx,'HIT: @'+name+' is AVAILABLE on '+meta.name+'!','hit');
-      recordHit(platform,name);
-      if(notify) sendWebhook(platform,name);
-      if(autostop){ stopSniper(platform); break; }
-    }
-    await sleep(SPEED_DELAYS[speed]/(1+(workerId%3)*0.3));
-  }
-}
-function toggleSniper(p){ sniperStates[p].running?stopSniper(p):startSniper(p); }
-function startSniper(p){
-  const st=sniperStates[p], meta=PLATFORM_META[p], pfx=meta.pfx;
-  const wh=document.getElementById(pfx+'-webhook').value.trim();
-  const gwh=(currentUser.settings&&currentUser.settings.globalWebhook)||'';
-  if(!wh&&!gwh){ toast('Add a webhook (platform or global in Settings)','error'); return; }
-  if(st.running) return;
-  st.running=true; st.checked=0; st.hits=0; st.backoff=0; st.seen.clear();
-  document.getElementById(pfx+'-start').textContent='Stop Sniping';
-  document.getElementById(pfx+'-start').classList.replace('btn-primary','btn-danger');
-  document.getElementById(pfx+'-status').textContent='Running';
-  document.getElementById(pfx+'-status').style.color='var(--success)';
-  updateGlobalStatus();
-  const boost=hasPerk('speed_boost')?4:0;
-  const workers=Math.min(16,parseInt(document.getElementById(pfx+'-speed').value)*2+boost);
-  for(let i=0;i<workers;i++) sniperLoop(p,i);
-  if(!hasPerk('stealth_mode')) toast(meta.name+' sniper started ('+workers+' workers)','info');
-}
-function stopSniper(p){
-  const st=sniperStates[p], meta=PLATFORM_META[p], pfx=meta.pfx;
-  st.running=false;
-  document.getElementById(pfx+'-start').textContent='Start Sniping';
-  document.getElementById(pfx+'-start').classList.replace('btn-danger','btn-primary');
-  document.getElementById(pfx+'-status').textContent='Stopped';
-  document.getElementById(pfx+'-status').style.color='';
-  addLog(pfx,'Sniper stopped. Checked: '+fmt(st.checked)+', Hits: '+st.hits,'warning');
-  updateGlobalStatus();
-}
-function stopAllSnipers(){ ['discord','tiktok','roblox'].forEach(p=>{ if(sniperStates[p].running) stopSniper(p); }); }
-function updateGlobalStatus(){
-  const any=Object.values(sniperStates).some(s=>s.running);
-  document.getElementById('global-status-dot').classList.toggle('running',any);
-  document.getElementById('global-status-label').textContent=any?'Running':'Idle';
-}
-
-/* ===== WEBHOOKS ===== */
-function resolveWebhook(p){
-  const pfx=PLATFORM_META[p].pfx;
-  const local=document.getElementById(pfx+'-webhook').value.trim();
-  const list=[local,(currentUser.settings&&currentUser.settings.globalWebhook)||''].filter(u=>u.startsWith('https://discord.com/api/webhooks/'));
-  if(hasPerk('multi_webhook')&&currentUser.settings&&currentUser.settings.extraWebhooks&&currentUser.settings.extraWebhooks.length){
-    currentUser.settings.extraWebhooks.forEach(u=>{ if(u.startsWith('https://discord.com/api/webhooks/')) list.push(u); });
-  }
-  return list.filter((v,i,a)=>a.indexOf(v)===i).slice(0,hasPerk('multi_webhook')?3:1);
-}
-async function sendWebhook(p,name){
-  const urls=resolveWebhook(p);
-  if(!urls.length) return;
-  const meta=PLATFORM_META[p];
-  const payload={embeds:[{
-    title:'Username Hit',
-    description:'**'+name+'** is available on **'+meta.name+'**',
-    color:meta.color,
-    fields:[
-      {name:'Platform',value:meta.name,inline:true},
-      {name:'Username',value:'`'+name+'`',inline:true},
-      {name:'Length',value:name.length+' chars',inline:true},
-      {name:'Found by',value:currentUser.displayName,inline:true},
-      {name:'Time',value:new Date().toUTCString(),inline:false}
-    ],
-    footer:{text:'BeamBlade Sniper'},
-    timestamp:new Date().toISOString()
-  }]};
-  for(const url of urls){
-    try{ await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }
-    catch(e){ console.error('webhook fail',e); }
-  }
-}
-async function testWebhook(p){
-  const pfx=PLATFORM_META[p].pfx;
-  const url=document.getElementById(pfx+'-webhook').value.trim()||(currentUser.settings&&currentUser.settings.globalWebhook)||'';
-  const box=document.getElementById(pfx+'-webhook-status'), dot=document.getElementById(pfx+'-webhook-dot'), txt=document.getElementById(pfx+'-webhook-text');
-  box.classList.remove('hidden'); dot.style.background='var(--warning)'; txt.textContent='Testing...';
-  if(!url.startsWith('https://discord.com/api/webhooks/')){ dot.style.background='var(--danger)'; txt.textContent='Invalid webhook URL'; return; }
-  try{
-    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'BeamBlade webhook test successful.'})});
-    if(r.ok||r.status===204){ dot.style.background='var(--success)'; txt.textContent='Webhook connected and working'; toast('Webhook test successful','success'); }
-    else{ dot.style.background='var(--danger)'; txt.textContent='Error '+r.status+' - check the webhook URL'; }
-  }catch(e){ dot.style.background='var(--danger)'; txt.textContent='Connection failed - check the webhook URL'; }
-}
-
-/* ===== HIT RECORDING ===== */
-function recordHit(p,name){
-  const hit={platform:p,username:name,time:Date.now(),user:currentUser.username};
-  const u=currentUser;
-  u.hits[p]++; u.hits.total++;
-  if(!u.hitLog) u.hitLog=[];
-  u.hitLog.unshift(hit);
-  if(u.hitLog.length>200) u.hitLog.length=200;
-  if(!u.bestHit||name.length<u.bestHit.length) u.bestHit=name;
-  saveUser(u);
-  const db=getDB(); db.globalHits.unshift(hit); if(db.globalHits.length>500) db.globalHits.length=500; setDB(db);
-  updateHitBadge(); updateDashboardStats(); addDashboardHit(hit);
-  if(document.getElementById('sound-alerts').checked) playHitSound();
-  if((currentUser.settings&&currentUser.settings.browserNotif)&&'Notification' in window&&Notification.permission==='granted'){
-    try{ new Notification('BeamBlade Hit',{body:name+' is available on '+p}); }catch(e){}
-  }
-  if(!hasPerk('stealth_mode')) toast('Hit: @'+name+' on '+PLATFORM_META[p].name,'success');
-}
-function updateHitBadge(){
-  const b=document.getElementById('hits-badge'), t=currentUser.hits.total;
-  b.textContent=t>99?'99+':t; b.classList.toggle('hidden',t===0);
-}
-function updateDashboardStats(){
-  document.getElementById('stat-total').textContent=fmt(currentUser.hits.total);
-  document.getElementById('stat-discord').textContent=fmt(currentUser.hits.discord);
-  document.getElementById('stat-tiktok').textContent=fmt(currentUser.hits.tiktok);
-  document.getElementById('stat-roblox').textContent=fmt(currentUser.hits.roblox);
-}
-function addDashboardHit(h){
-  const feed=document.getElementById('dashboard-hits');
-  if(feed.querySelector('.empty-state')) feed.innerHTML='';
-  const el=document.createElement('div');
-  el.className='hit-item new';
-  el.innerHTML='<span class="hit-platform '+h.platform+'">'+h.platform+'</span><span class="hit-name">@'+escapeHtml(h.username)+'</span><span class="hit-time">'+timeAgo(h.time)+'</span><span class="hit-badge">Available</span>';
-  feed.insertBefore(el,feed.firstChild);
-  if(feed.children.length>10) feed.removeChild(feed.lastChild);
-}
-function playHitSound(){
-  try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
-    const osc=ctx.createOscillator(), gain=ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.setValueAtTime(880,ctx.currentTime);
-    osc.frequency.setValueAtTime(1320,ctx.currentTime+0.1);
-    gain.gain.setValueAtTime(0.25,ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.3);
-  }catch(e){}
-}
-
-/* ===== LOG ===== */
-function addLog(pfx,msg,type){
-  const term=document.getElementById(pfx+'-log'); if(!term) return;
-  const line=document.createElement('div');
-  line.className='log-line '+(type||'info');
-  line.textContent='['+new Date().toTimeString().slice(0,8)+'] '+msg;
-  term.appendChild(line);
-  const max=hasPerk('extended_log')?5000:350;
-  while(term.children.length>max) term.removeChild(term.firstChild);
-  term.scrollTop=term.scrollHeight;
-}
-
-/* ===== RPS TRACKER ===== */
-function startRpsTracker(){
-  const prev={discord:0,tiktok:0,roblox:0};
-  let checksTotal=0;
-  setInterval(()=>{
-    let total=0;
-    Object.keys(PLATFORM_META).forEach(p=>{
-      const st=sniperStates[p], pfx=PLATFORM_META[p].pfx;
-      const delta=st.checked-prev[p]; prev[p]=st.checked; st.rps=delta; total+=delta;
-      checksTotal+=delta;
-      document.getElementById(pfx+'-speed-bar').style.width=Math.min(100,(delta/20)*100)+'%';
-      document.getElementById(pfx+'-rps').textContent=delta+' req/s';
-      document.getElementById(pfx+'-rate').textContent=delta+'/s';
-      document.getElementById(pfx+'-status-label').textContent=st.running?'Running ('+delta+'/s)':'Idle';
-    });
-    if(total>peakRps) peakRps=total;
-    rpsHistory.push(total); rpsHistory.shift();
-    const bars=document.querySelectorAll('.rps-bar'), max=Math.max(...rpsHistory,1);
-    rpsHistory.forEach((v,i)=>{ if(bars[i]){ bars[i].style.height=((v/max)*42)+'px'; bars[i].classList.toggle('active',v>0); } });
-    if(hasPerk('analytics')){
-      document.getElementById('analytics-card').classList.remove('hidden');
-      const mins=(Date.now()-sessionStart)/60000;
-      document.getElementById('an-checks').textContent=fmt(checksTotal);
-      document.getElementById('an-rate').textContent=(checksTotal?((currentUser.hits.total/(checksTotal||1))*100).toFixed(2):'0')+'%';
-      document.getElementById('an-peak').textContent=peakRps;
-      document.getElementById('an-hr').textContent=fmt(mins>0?Math.round(checksTotal/mins*60):0);
-    }
-  },1000);
-}
-function buildRpsChart(){
-  const c=document.getElementById('rps-chart'); c.innerHTML='';
-  for(let i=0;i<20;i++){ const b=document.createElement('div'); b.className='rps-bar'; c.appendChild(b); }
-}
-
-/* ===== PLATFORM TABS / SPEED ===== */
-function switchSniperPlatform(p){
-  document.querySelectorAll('.platform-tab').forEach((t,i)=>t.classList.toggle('active',['discord','tiktok','roblox'][i]===p));
-  document.querySelectorAll('.sniper-panel').forEach(x=>x.classList.remove('active'));
-  document.getElementById('panel-'+p).classList.add('active');
-}
-function updateSpeedLabel(pfx){
-  document.getElementById(pfx+'-speed-label').textContent=SPEED_LABELS[parseInt(document.getElementById(pfx+'-speed').value)-1];
-}
-
-/* ===== HITS PAGE ===== */
-function renderHitsPage(){
-  const filter=document.getElementById('hits-filter').value;
-  const hits=(currentUser.hitLog||[]).filter(h=>filter==='all'||h.platform===filter);
-  const list=document.getElementById('hits-list');
-  if(!hits.length){ list.innerHTML='<div class="empty-state"><div class="empty-title">No hits yet</div><div class="empty-desc">Start the sniper and come back here</div></div>'; return; }
-  list.innerHTML='<div class="card"><div class="hits-feed">'+hits.map(h=>'<div class="hit-item"><span class="hit-platform '+h.platform+'">'+h.platform+'</span><span class="hit-name">@'+escapeHtml(h.username)+'</span><span class="hit-time">'+new Date(h.time).toLocaleString()+'</span><span class="hit-badge">Sniped</span></div>').join('')+'</div></div>';
-}
-function clearHits(){
-  if(!confirm('Clear all your hits? This cannot be undone.')) return;
-  currentUser.hitLog=[]; currentUser.hits={discord:0,tiktok:0,roblox:0,total:0}; currentUser.bestHit=null;
-  saveUser(currentUser);
-  const db=getDB(); db.globalHits=db.globalHits.filter(h=>h.user!==currentUser.username); setDB(db);
-  renderHitsPage(); updateDashboardStats(); updateHitBadge(); toast('Hits cleared','info');
-}
-function clearAllData(){
-  if(!confirm('Clear all data permanently?')) return;
-  clearHits();
-}
-
-/* ===== LEADERBOARD ===== */
-function renderLeaderboard(){
-  const users=Object.values(getDB().users||{}).filter(u=>!u.banned).sort((a,b)=>(b.hits&&b.hits.total||0)-(a.hits&&a.hits.total||0));
-  const body=document.getElementById('lb-body');
-  if(!users.length){ body.innerHTML='<tr><td colspan="7" class="empty-state">No data yet</td></tr>'; return; }
-  body.innerHTML=users.map((u,i)=>{
-    const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    const c=u.avatarColor||'#333';
-    const badges=(u.role==='owner'?'<span class="badge-vip">Owner</span> ':'')+((u.perks||[]).includes('early_access')?'<span class="badge-beta">BETA</span> ':'');
-    return '<tr><td><span class="lb-rank '+rc+'">'+(i===0?'#1':i===1?'#2':i===2?'#3':'#'+(i+1))+'</span></td>'+
-      '<td><div style="display:flex;align-items:center;gap:8px"><div style="width:26px;height:26px;border-radius:50%;background:'+c+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:'+getContrastColor(c)+'">'+(u.displayName||u.username)[0].toUpperCase()+'</div><div><div class="lb-user">'+escapeHtml(u.displayName||u.username)+' '+badges+'</div><div style="font-size:11px;color:var(--muted)">@'+escapeHtml(u.username)+'</div></div></div></td>'+
-      '<td><span class="lb-hits">'+fmt(u.hits&&u.hits.total||0)+'</span></td><td>'+fmt(u.hits&&u.hits.discord||0)+'</td><td>'+fmt(u.hits&&u.hits.tiktok||0)+'</td><td>'+fmt(u.hits&&u.hits.roblox||0)+'</td>'+
-      '<td class="mono" style="font-weight:600">'+(u.bestHit?'@'+escapeHtml(u.bestHit):'—')+'</td></tr>';
-  }).join('');
-}
-
-/* ===== PROFILE ===== */
-function renderProfilePage(){
-  document.getElementById('profile-display-name').textContent=currentUser.displayName;
-  document.getElementById('profile-username-display').textContent='@'+currentUser.username;
-  document.getElementById('profile-total').textContent=fmt(currentUser.hits.total);
-  document.getElementById('profile-best').textContent=currentUser.bestHit?'@'+currentUser.bestHit:'—';
-  document.getElementById('profile-since').textContent=new Date(currentUser.joined).toLocaleDateString();
-  const rb=document.getElementById('profile-role-badge');
-  rb.textContent=currentUser.role.toUpperCase(); rb.className='role-badge role-'+currentUser.role;
-  const av=document.getElementById('profile-avatar-big');
-  av.textContent=(currentUser.displayName||'?')[0].toUpperCase();
-  av.style.background=currentUser.avatarColor||'#333'; av.style.color=getContrastColor(currentUser.avatarColor||'#333');
-  if(currentUser.avatarColor==='#ffd700'||(currentUser.perks||[]).includes('golden_avatar')) av.style.borderColor='#ffd700';
-  const pk=document.getElementById('profile-perks');
-  pk.innerHTML=(currentUser.perks||[]).map(k=>{ const p=PERKS.find(x=>x.key===k); return p?'<span class="perk-tag">'+p.name+'</span>':''; }).join('')||'';
-  const hl=document.getElementById('profile-hits-list');
-  const hits=currentUser.hitLog||[];
-  if(!hits.length){ hl.innerHTML='<div class="empty-state"><div class="empty-title">No hits recorded</div><div class="empty-desc">Start sniping to see your hits here</div></div>'; return; }
-  hl.innerHTML='<div class="hits-feed">'+hits.slice(0,50).map(h=>'<div class="hit-item"><span class="hit-platform '+h.platform+'">'+h.platform+'</span><span class="hit-name">@'+escapeHtml(h.username)+'</span><span class="hit-time">'+timeAgo(h.time)+'</span></div>').join('')+'</div>';
-}
-function openEditProfile(){ document.getElementById('modal-display-name').value=currentUser.displayName; document.getElementById('modal-edit-profile').classList.add('open'); }
-function saveProfile(){
-  const n=document.getElementById('modal-display-name').value.trim();
-  if(!n){ toast('Display name cannot be empty','error'); return; }
-  currentUser.displayName=n; saveUser(currentUser);
-  closeModal('modal-edit-profile'); renderProfilePage(); updateSidebarUser(); toast('Profile updated','success');
-}
-
-/* ===== SETTINGS ===== */
 function saveDisplaySettings(){
-  const n=document.getElementById('settings-display').value.trim();
-  if(!n){ toast('Display name cannot be empty','error'); return; }
-  currentUser.displayName=n; saveUser(currentUser); updateSidebarUser(); renderLeaderboard(); toast('Display name updated','success');
+  const newName = document.getElementById('settings-display').value.trim();
+  if(!newName){
+    toast('Please enter a display name', 'error');
+    return;
+  }
+  currentUser.displayName = newName;
+  saveUser(currentUser);
+  updateSidebarUser();
+  toast('Display name updated!', 'success');
 }
-function saveGlobalWebhook(){
-  const u=document.getElementById('global-webhook').value.trim();
-  if(u&&!u.startsWith('https://discord.com/api/webhooks/')){ toast('Invalid webhook URL','error'); return; }
-  if(!currentUser.settings) currentUser.settings={};
-  currentUser.settings.globalWebhook=u; saveUser(currentUser); toast('Global webhook saved','success');
-}
-function toggleBrowserNotif(){
-  const en=document.getElementById('browser-notif').checked;
-  if(en&&'Notification' in window){ Notification.requestPermission().then(p=>{ if(p!=='granted') document.getElementById('browser-notif').checked=false; }); }
-  if(!currentUser.settings) currentUser.settings={};
-  currentUser.settings.browserNotif=en; saveUser(currentUser);
-}
-function toggleCompact(){
-  const c=document.getElementById('compact-mode').checked;
-  document.body.classList.toggle('compact',c);
-  if(!currentUser.settings) currentUser.settings={};
-  currentUser.settings.compact=c; saveUser(currentUser);
-}
-
-/* ===== OWNER PANEL ===== */
-function buildPerksGrid(){
-  const g=document.getElementById('perks-grid'); g.innerHTML='';
-  PERKS.forEach(p=>{
-    const c=document.createElement('div');
-    c.className='perk-card'; c.onclick=()=>{ document.querySelectorAll('.perk-card').forEach(x=>x.classList.remove('selected')); c.classList.add('selected'); selectedPerk=p.key; };
-    c.innerHTML='<div class="perk-name">'+p.name+'</div><div class="perk-desc">'+p.desc+'</div>';
-    g.appendChild(c);
-  });
-}
-function renderOwnerPanel(){
-  if(currentUser.role!=='owner') return;
-  const db=getDB(), users=Object.values(db.users||{});
-  document.getElementById('owner-total-users').textContent=users.length;
-  document.getElementById('owner-total-hits').textContent=fmt(users.reduce((s,u)=>s+(u.hits&&u.hits.total||0),0));
-  document.getElementById('owner-online').textContent=0;
-  document.getElementById('owner-global-count').textContent=fmt(db.globalHits.length);
-  const body=document.getElementById('user-manage-body');
-  body.innerHTML=users.map(u=>{
-    const perkTags=(u.perks||[]).map(k=>{ const p=PERKS.find(x=>x.key===k); return p?'<span class="perk-tag">'+p.name+'</span>':''; }).join('')||'—';
-    const roleSel=u.username==='beamblade'?'<span class="role-badge role-owner">Owner</span>'
-      :'<select onchange="quickRole(\''+u.username+'\',this.value)"><option value="user"'+(u.role==='user'?' selected':'')+'>User</option><option value="mod"'+(u.role==='mod'?' selected':'')+'>Mod</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>Admin</option></select>';
-    const actions=u.username==='beamblade'?'<span class="badge-vip">Owner</span>'
-      :'<div style="display:flex;gap:4px;flex-wrap:wrap">'
-      +'<button class="btn btn-secondary btn-sm" onclick="resetPassword(\''+u.username+'\')">Pass</button>'
-      +'<button class="btn btn-secondary btn-sm" onclick="resetHits(\''+u.username+'\')">Hits</button>'
-      +'<button class="btn btn-secondary btn-sm" onclick="toggleBan(\''+u.username+'\')">'+(u.banned?'Unban':'Ban')+'</button>'
-      +'<button class="btn btn-danger btn-sm" onclick="deleteUser(\''+u.username+'\')">Del</button></div>';
-    return '<tr><td class="mono" style="font-weight:600">@'+escapeHtml(u.username)+'</td><td>'+escapeHtml(u.displayName||u.username)+'</td><td>'+roleSel+'</td><td>'+fmt(u.hits&&u.hits.total||0)+'</td><td style="max-width:180px">'+perkTags+'</td><td>'+new Date(u.joined).toLocaleDateString()+'</td><td>'+actions+'</td></tr>';
-  }).join('');
-}
-function quickRole(u,role){
-  const user=getUser(u); if(!user||u==='beamblade') return;
-  user.role=role; saveUser(user); renderOwnerPanel(); toast('Role updated for @'+u+' ('+role+')','success');
-}
-function grantRole(){
-  const u=document.getElementById('grant-username').value.trim().toLowerCase();
-  const role=document.getElementById('grant-role').value;
-  const user=getUser(u);
-  if(!user){ toast('User not found','error'); return; }
-  if(u==='beamblade'){ toast('Cannot change owner role','error'); return; }
-  user.role=role; saveUser(user); renderOwnerPanel(); toast('Role updated for @'+u,'success');
-}
-function grantPerk(){
-  const u=document.getElementById('perk-username').value.trim().toLowerCase();
-  if(!selectedPerk){ toast('Select a perk first','error'); return; }
-  const user=getUser(u);
-  if(!user){ toast('User not found','error'); return; }
-  if(!user.perks) user.perks=[];
-  if(!user.perks.includes(selectedPerk)){ user.perks.push(selectedPerk); saveUser(user); toast('Perk granted to @'+u,'success'); }
-  else toast('User already has this perk','info');
-  renderOwnerPanel();
-}
-function revokePerk(){
-  const u=document.getElementById('perk-username').value.trim().toLowerCase();
-  if(!selectedPerk){ toast('Select a perk first','error'); return; }
-  const user=getUser(u);
-  if(!user){ toast('User not found','error'); return; }
-  if(!user.perks) user.perks=[];
-  user.perks=user.perks.filter(k=>k!==selectedPerk); saveUser(user);
-  renderOwnerPanel(); toast('Perk revoked from @'+u,'info');
-}
-function resetPassword(u){
-  const user=getUser(u); if(!user) return;
-  const np=prompt('New password for @'+u+' (min 6 chars):');
-  if(!np||np.length<6){ toast('Password must be 6+ characters','error'); return; }
-  user.password=np; saveUser(user); toast('Password reset for @'+u,'success');
-}
-function resetHits(u){
-  if(!confirm('Reset all hits for @'+u+'?')) return;
-  const user=getUser(u); if(!user) return;
-  user.hits={discord:0,tiktok:0,roblox:0,total:0}; user.hitLog=[]; user.bestHit=null;
-  saveUser(user); renderOwnerPanel(); toast('Hits reset for @'+u,'success');
-}
-function toggleBan(u){
-  const user=getUser(u); if(!user||u==='beamblade') return;
-  user.banned=!user.banned; saveUser(user); renderOwnerPanel();
-  toast('@'+u+' '+(user.banned?'banned':'unbanned'),user.banned?'error':'success');
-}
-function deleteUser(u){
-  if(!confirm('Permanently delete @'+u+'? This cannot be undone.')) return;
-  if(u==='beamblade'){ toast('Cannot delete owner','error'); return; }
-  const db=getDB(); delete db.users[u]; db.globalHits=db.globalHits.filter(h=>h.user!==u); setDB(db);
-  renderOwnerPanel(); renderLeaderboard(); toast('@'+u+' deleted','info');
-}
-function sendAnnouncement(){
-  const t=document.getElementById('owner-announce-input').value.trim();
-  if(!t){ toast('Enter a message first','error'); return; }
-  const db=getDB(); db.announcement={text:t,time:Date.now()}; setDB(db);
-  renderAnnouncement(); toast('Announcement broadcast','success');
-}
-function clearAnnouncement(){
-  const db=getDB(); db.announcement=null; setDB(db);
-  renderAnnouncement(); toast('Announcement cleared','info');
-}
-function renderAnnouncement(){
-  const db=getDB();
-  const banner=document.getElementById('announce-banner');
-  if(db.announcement){ document.getElementById('announce-text').textContent=db.announcement.text; banner.classList.remove('hidden'); }
-  else banner.classList.add('hidden');
-}
-function hideAnnounce(){ document.getElementById('announce-banner').classList.add('hidden'); }
-function renderGlobalHits(){
-  const db=getDB();
-  const list=document.getElementById('global-hits-list');
-  if(!db.globalHits||!db.globalHits.length){ list.innerHTML='<div class="empty-state" style="padding:20px"><div class="empty-desc">No global hits yet</div></div>'; return; }
-  list.innerHTML=db.globalHits.slice(0,40).map(h=>{
-    const u=getUser(h.user);
-    return '<div class="hit-item"><span class="hit-platform '+h.platform+'">'+h.platform+'</span><span class="hit-name">@'+escapeHtml(h.username)+'</span><span style="font-size:10.5px;color:var(--muted)">'+(u?escapeHtml(u.displayName):'deleted')+'</span><span class="hit-time">'+timeAgo(h.time)+'</span></div>';
-  }).join('');
-}
-function exportDB(){
-  const blob=new Blob([JSON.stringify(getDB(),null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download='beamblade-backup.json'; a.click();
-  URL.revokeObjectURL(a.href); toast('Database exported','success');
-}
-function importDB(ev){
-  const file=ev.target.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=()=>{
-    try{
-      const data=JSON.parse(reader.result);
-      if(!data.users) throw new Error('bad file');
-      localStorage.setItem(DB_KEY,JSON.stringify(data));
-      toast('Database imported - reloading','success');
-      setTimeout(()=>location.reload(),800);
-    }catch(e){ toast('Invalid backup file','error'); }
-  };
-  reader.readAsText(file);
-}
-function wipeDB(){
-  if(!confirm('Wipe ALL data? This resets the entire app including all users.')) return;
-  if(!confirm('Are you absolutely sure? This cannot be undone.')) return;
-  localStorage.removeItem(DB_KEY); location.reload();
-}
-
-/* ===== MODALS / TOASTS ===== */
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-function toast(msg,type){
-  const wrap=document.getElementById('toast-wrap');
-  const el=document.createElement('div');
-  el.className='toast '+type;
-  const ico=type==='success'?'OK':type==='error'?'X':'i';
-  el.innerHTML='<span class="toast-ico">'+ico+'</span><span>'+escapeHtml(msg)+'</span>';
-  wrap.appendChild(el);
-  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='all .2s'; setTimeout(()=>el.remove(),200); },3200);
-}
-
-/* ===== INIT ===== */
-initDB();
-window.addEventListener('storage',e=>{ if(e.key===DB_KEY){ const d=getDB(); if(d.announcement) renderAnnouncement(); renderLeaderboard(); renderGlobalHits(); } });
-document.getElementById('ds-speed').oninput=()=>updateSpeedLabel('ds');
-document.getElementById('tt-speed').oninput=()=>updateSpeedLabel('tt');
-document.getElementById('rb-speed').oninput=()=>updateSpeedLabel('rb');
-const sess=sessionStorage.getItem('bb_session');
-if(sess){ const u=getUser(sess); if(u&&!u.banned){ currentUser=u; loadApp(); } }
 </script>
 </body>
 </html>
-
-                                                        
