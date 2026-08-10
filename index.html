@@ -3,1017 +3,2683 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BeamBlade — Sniper</title>
+<title>BeamBlade — Username Sniper</title>
 <style>
-:root{
-  --bg:#0a0e17; --panel:#111827; --panel2:#0d1420; --line:#1f2937;
-  --text:#e5e7eb; --muted:#9ca3af; --accent:#22d3ee; --accent2:#a855f7;
-  --good:#34d399; --bad:#f87171; --warn:#fbbf24; --gold:#fbbf24;
-}
-body.theme-neon{--bg:#120a1c;--panel:#1a0f2e;--panel2:#150b26;--line:#2e1a4d;--accent:#e879f9;--accent2:#22d3ee;}
-body.theme-gold{--bg:#14100a;--panel:#1d1812;--panel2:#171209;--line:#3a2f1d;--accent:#fbbf24;--accent2:#f59e0b;}
-body.theme-toxic{--bg:#0a1410;--panel:#0f1f18;--panel2:#0c1a13;--line:#1f3d2e;--accent:#4ade80;--accent2:#facc15;}
-body.theme-plasma{--bg:#100a1c;--panel:#181029;--panel2:#140c21;--line:#2d1f4d;--accent:#a78bfa;--accent2:#f472b6;}
-body.theme-inferno{--bg:#160b08;--panel:#22120c;--panel2:#1b0e08;--line:#4a2415;--accent:#fb923c;--accent2:#ef4444;}
-body.theme-ocean{--bg:#081018;--panel:#0d1c2b;--panel2:#0a1622;--line:#1b3a52;--accent:#38bdf8;--accent2:#2dd4bf;}
-body.theme-mint{--bg:#081310;--panel:#0d1f19;--panel2:#0a1814;--line:#1b3d31;--accent:#2dd4bf;--accent2:#a3e635;}
-body.theme-ice{--bg:#0e1620;--panel:#16222e;--panel2:#121c26;--line:#2c3e50;--accent:#93c5fd;--accent2:#e0f2fe;}
-body.theme-noir{--bg:#050505;--panel:#111;--panel2:#0a0a0a;--line:#262626;--accent:#f5f5f5;--accent2:#737373;}
-body.theme-forest{--bg:#0a120c;--panel:#10201a;--panel2:#0c1813;--line:#1f3d2e;--accent:#22c55e;--accent2:#84cc16;}
-body.theme-sunset{--bg:#180a14;--panel:#24101f;--panel2:#1c0c18;--line:#45203a;--accent:#f472b6;--accent2:#fb923c;}
-body.theme-cyber{--bg:#0a0e17;--panel:#111827;--panel2:#0d1420;--line:#1f2937;--accent:#22d3ee;--accent2:#a855f7;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh}
-body.compact .card{padding:10px 12px}
-body.compact .stat-card{padding:10px 12px}
-body.compact h2{font-size:14px}
-::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
-header{position:sticky;top:0;z-index:50;background:rgba(10,14,23,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.brand{font-weight:800;font-size:20px;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
-.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:pulse 1.6s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-nav{display:flex;gap:4px;flex:1}
-nav button{background:none;border:none;color:var(--muted);font-size:14px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer}
-nav button:hover{color:var(--text);background:var(--panel)}
-nav button.active{color:var(--accent);background:var(--panel)}
-.spacer{flex:1}
-.owner-badge{display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1a1206;font-weight:800;font-size:12px;padding:5px 12px;border-radius:99px;box-shadow:0 0 18px rgba(251,191,36,.5);letter-spacing:.5px}
-.owner-badge.show{display:inline-flex}
-.btn{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:8px 16px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:.15s}
-.btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#04121a}
-.btn.primary:hover{filter:brightness(1.15);color:#04121a}
-.btn.gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);border:none;color:#1a1206}
-.btn.danger{background:transparent;border-color:var(--bad);color:var(--bad)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.sm{padding:4px 10px;font-size:12px}
-main{padding:20px;max-width:1400px;margin:0 auto}
-.view{display:none}.view.active{display:block}
-.grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
-.stat-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
-.stat-card .label{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.stat-card .value{font-size:28px;font-weight:800;margin-top:6px}
-.stat-card .sub{color:var(--muted);font-size:12px;margin-top:2px}
-.stat-card.accent-border{border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
-.status-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;border:1px solid var(--line)}
-.status-chip .led{width:8px;height:8px;border-radius:50%;background:var(--muted)}
-.status-chip.running .led{background:var(--good);box-shadow:0 0 8px var(--good);animation:pulse 1s infinite}
-.status-chip.paused .led{background:var(--warn);box-shadow:0 0 8px var(--warn)}
-.status-chip.off .led{background:var(--bad)}
-.grid-main{display:grid;grid-template-columns:1fr 380px;gap:16px;align-items:start}
-@media(max-width:1100px){.grid-main{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
-.card h2{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.card h2 .tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
-.card h2 .tag.owner{background:rgba(251,191,36,.15);color:var(--gold);border-color:rgba(251,191,36,.4)}
-.sniper-panel{border:1px solid var(--line);border-radius:12px;margin-bottom:14px;overflow:hidden;background:var(--panel)}
-.sniper-head{padding:14px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line);cursor:pointer;user-select:none}
-.sniper-head:hover{background:var(--panel2)}
-.sniper-head .ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800}
-.sniper-head h3{font-size:15px;font-weight:700}
-.sniper-head .sub{color:var(--muted);font-size:12px}
-.sniper-body{padding:16px;display:none}
-.sniper-panel.open .sniper-body{display:block}
-.sniper-panel.open .chev{transform:rotate(180deg)}
-.chev{transition:.2s;color:var(--muted);margin-left:auto}
-.config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px}
-.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:5px}
-.field input,.field select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:9px 11px;border-radius:8px;font-size:13px;outline:none}
-.field input:focus,.field select:focus{border-color:var(--accent)}
-.check-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;padding:4px 0}
-.check-row input{accent-color:var(--accent);width:15px;height:15px}
-.live-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
-.live-stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center}
-.live-stat .v{font-size:18px;font-weight:800}
-.live-stat .k{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
-.terminal{background:#05070c;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;height:190px;overflow-y:auto;line-height:1.6}
-.terminal .ln{color:var(--muted);white-space:pre-wrap;word-break:break-all}
-.terminal .ln.hit{color:var(--good);font-weight:700}
-.terminal .ln.warn{color:var(--warn)}
-.terminal .ln.err{color:var(--bad)}
-.terminal .ln.info{color:var(--accent)}
-.watch-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--panel2)}
-.watch-row .nm{font-weight:700;font-family:ui-monospace,Menlo,monospace;flex:1;word-break:break-all}
-.badge-status{font-size:11px;font-weight:800;padding:3px 10px;border-radius:99px;white-space:nowrap}
-.badge-status.available{background:rgba(52,211,153,.15);color:var(--good)}
-.badge-status.taken{background:rgba(248,113,113,.15);color:var(--bad)}
-.badge-status.banned{background:rgba(148,163,184,.15);color:var(--muted)}
-.badge-status.checking{background:rgba(251,191,36,.15);color:var(--warn);animation:pulse 1s infinite}
-.badge-status.error{background:rgba(248,113,113,.15);color:var(--bad)}
-.badge-status.queued{background:rgba(148,163,184,.1);color:var(--muted)}
-.badge-status.invalid{background:rgba(248,113,113,.15);color:var(--bad)}
-.hit-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
-.hit-row:last-child{border-bottom:none}
-.hit-row .pico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
-.hit-row .nm{font-weight:700;font-family:ui-monospace,Menlo,monospace}
-.hit-row .tm{color:var(--muted);font-size:11px;margin-left:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:9px 10px;border-bottom:1px solid var(--line)}
-tr:last-child td{border-bottom:none}
-.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
-.theme-swatch{border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;cursor:pointer;background:var(--panel2);font-size:11px;font-weight:600}
-.theme-swatch .sw{height:22px;border-radius:5px;margin-bottom:5px;border:1px solid var(--line)}
-.theme-swatch.active{border-color:var(--accent);box-shadow:0 0 10px color-mix(in srgb,var(--accent) 35%,transparent)}
-.toast-wrap{position:fixed;bottom:18px;right:18px;z-index:200;display:flex;flex-direction:column;gap:8px}
-.toast{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);padding:12px 16px;border-radius:10px;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:320px;animation:slidein .25s}
-.toast.good{border-left-color:var(--good)}.toast.bad{border-left-color:var(--bad)}.toast.warn{border-left-color:var(--warn)}
-@keyframes slidein{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:150}
-.modal-bg.open{display:flex}
-.modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;width:360px;max-width:92vw}
-.modal h2{font-size:18px;margin-bottom:4px}
-.modal p{color:var(--muted);font-size:13px;margin-bottom:16px}
-.modal input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px;font-size:14px;margin-bottom:10px;outline:none}
-.modal input:focus{border-color:var(--accent)}
-.modal .err{color:var(--bad);font-size:12px;min-height:16px;margin-bottom:8px}
-.shake{animation:shake .4s}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.notice{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35);color:var(--warn);border-radius:8px;padding:10px 12px;font-size:12px;margin:10px 0;line-height:1.5}
-.muted{color:var(--muted);font-size:12px}
-.hint{color:var(--muted);font-size:11px;margin-top:4px}
-.kbd{background:var(--panel2);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-size:11px;font-family:monospace}
-.flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.grow{flex:1}
-.toggle{position:relative;width:38px;height:21px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;cursor:pointer;transition:.2s;flex-shrink:0}
-.toggle::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:var(--muted);transition:.2s}
-.toggle.on{background:color-mix(in srgb,var(--accent) 40%,transparent);border-color:var(--accent)}
-.toggle.on::after{left:19px;background:var(--accent)}
-.perk-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:rgba(167,139,250,.12);color:#c4b5fd;border:1px solid rgba(167,139,250,.35);margin:2px}
-footer{padding:20px;text-align:center;color:var(--muted);font-size:12px;border-top:1px solid var(--line);margin-top:30px}
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #1a1a1a;
+    --bg4: #222222;
+    --border: #2a2a2a;
+    --text: #e8e8e8;
+    --text2: #888888;
+    --text3: #555555;
+    --accent: #ffffff;
+    --accent2: #cccccc;
+    --success: #4caf50;
+    --error: #f44336;
+    --warning: #ff9800;
+    --hit: #4caf50;
+    --sidebar-w: 220px;
+    --radius: 6px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    font-size: 14px;
+  }
+
+  #sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #sidebar-logo {
+    padding: 18px 16px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #sidebar-logo .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 15px; color: var(--bg); letter-spacing: -1px;
+    flex-shrink: 0;
+  }
+
+  #sidebar-logo span { font-weight: 700; font-size: 15px; letter-spacing: 0.5px; }
+
+  #nav-list {
+    padding: 10px 8px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 10px 8px 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: background 0.12s, color 0.12s;
+    user-select: none;
+  }
+
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--bg4); color: var(--accent); }
+  .nav-item .nav-icon { font-size: 15px; width: 20px; text-align: center; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 1px 6px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  #sidebar-user {
+    border-top: 1px solid var(--border);
+    padding: 10px 12px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+  }
+
+  #sidebar-user:hover { background: var(--bg3); }
+
+  .user-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg4);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+    flex-shrink: 0;
+    border: 2px solid var(--border);
+    overflow: hidden;
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 10px; color: var(--text2); }
+
+  .user-status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--success);
+    flex-shrink: 0;
+  }
+
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #topbar {
+    height: 52px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 20px;
+    gap: 12px;
+    background: var(--bg2);
+    flex-shrink: 0;
+  }
+
+  #topbar h2 { font-size: 15px; font-weight: 600; flex: 1; }
+
+  .tb-btn {
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text2);
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    font-family: var(--font);
+  }
+
+  .tb-btn:hover { background: var(--bg3); color: var(--text); }
+  .tb-btn.accent { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+  .tb-btn.accent:hover { opacity: 0.88; }
+
+  /* LIVE COUNTER STRIP in topbar */
+  #topbar-live {
+    display: none;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text2);
+    border-left: 1px solid var(--border);
+    padding-left: 14px;
+  }
+
+  #topbar-live.visible { display: flex; }
+
+  .live-stat { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
+  .live-stat-val { font-size: 15px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+  .live-stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; }
+
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--success);
+    animation: pulse 1.2s infinite;
+    flex-shrink: 0;
+  }
+
+  #content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+
+  .card h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card.live-pulse { border-color: var(--success); }
+
+  .stat-label { font-size: 11px; color: var(--text2); font-weight: 500; margin-bottom: 6px; }
+  .stat-value { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+  .stat-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: 1fr; }
+  }
+
+  .platform-tab-bar {
+    display: flex; gap: 4px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+
+  .platform-tab {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.12s, border-color 0.12s;
+    user-select: none;
+  }
+
+  .platform-tab:hover { color: var(--text); }
+  .platform-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; letter-spacing: 0.3px; }
+
+  input[type="text"], input[type="password"], input[type="number"], input[type="url"], select, textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 8px 11px;
+    font-size: 13px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus, select:focus, textarea:focus { border-color: var(--accent2); }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .range-row { display: flex; align-items: center; gap: 10px; }
+  .range-row input[type="number"] { width: 60px; flex-shrink: 0; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-family: var(--font);
+    transition: opacity 0.12s, background 0.12s;
+  }
+
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-secondary { background: var(--bg4); border-color: var(--border); color: var(--text); }
+  .btn-secondary:hover { background: var(--bg3); }
+  .btn-danger { background: var(--error); color: #fff; }
+  .btn-danger:hover { opacity: 0.85; }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { opacity: 0.85; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-lg { padding: 11px 22px; font-size: 14px; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* SNIPER STATUS CARD — full metrics */
+  .sniper-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .sniper-metric {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .sniper-metric-val {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  .sniper-metric-val.green { color: var(--success); }
+  .sniper-metric-val.white { color: var(--text); }
+  .sniper-metric-val.amber { color: var(--warning); }
+
+  .sniper-metric-label {
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-top: 3px;
+  }
+
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status-dot.idle { background: var(--text3); }
+  .status-dot.running { background: var(--success); animation: pulse 1.4s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* rate bar */
+  .rate-bar-wrap {
+    background: var(--bg4);
+    border-radius: 4px;
+    height: 5px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .rate-bar-fill {
+    height: 100%;
+    background: var(--success);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  #sniper-log {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px;
+    height: 200px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 11.5px;
+    color: var(--text2);
+  }
+
+  .log-line { padding: 1px 0; line-height: 1.5; }
+  .log-line.hit { color: var(--success); font-weight: 600; }
+  .log-line.err { color: var(--error); }
+  .log-line.warn { color: var(--warning); }
+  .log-line.info { color: var(--text2); }
+
+  .hits-table { width: 100%; border-collapse: collapse; }
+  .hits-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hits-table td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .hits-table tr:last-child td { border-bottom: none; }
+  .hits-table tr:hover td { background: var(--bg3); }
+
+  .platform-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-discord { background: #5865f244; color: #7289da; }
+  .badge-tiktok { background: #ff004444; color: #ff6b6b; }
+  .badge-roblox { background: #ff000022; color: #ff3e3e; }
+
+  .hit-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--success);
+    font-size: 14px;
+  }
+
+  .lb-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    margin-bottom: 4px;
+    background: var(--bg3);
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .lb-rank { font-weight: 700; color: var(--text3); width: 24px; text-align: right; }
+  .lb-rank.gold { color: #ffd700; }
+  .lb-rank.silver { color: #c0c0c0; }
+  .lb-rank.bronze { color: #cd7f32; }
+  .lb-name { flex: 1; font-weight: 600; }
+  .lb-count { font-weight: 700; color: var(--accent); }
+  .lb-best { font-family: monospace; color: var(--text2); font-size: 12px; }
+
+  #auth-overlay {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+
+  .auth-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 40px;
+    width: 380px;
+    max-width: 95vw;
+  }
+
+  .auth-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+
+  .auth-logo-icon {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px; color: var(--bg); letter-spacing: -1px;
+  }
+
+  .auth-logo span { font-size: 22px; font-weight: 700; }
+
+  .auth-tabs {
+    display: flex; gap: 4px;
+    margin-bottom: 24px;
+    background: var(--bg3);
+    border-radius: var(--radius);
+    padding: 3px;
+  }
+
+  .auth-tab {
+    flex: 1; text-align: center;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text2);
+    transition: background 0.12s, color 0.12s;
+    user-select: none;
+  }
+
+  .auth-tab.active { background: var(--bg4); color: var(--text); }
+
+  .auth-error {
+    background: #f4433622;
+    border: 1px solid #f4433644;
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 12.5px;
+    color: var(--error);
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  .settings-section { margin-bottom: 28px; }
+  .settings-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .settings-desc { font-size: 12.5px; color: var(--text2); margin-bottom: 16px; }
+
+  .settings-row {
+    display: flex; align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row-label { flex: 1; }
+  .settings-row-label strong { display: block; font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .settings-row-label span { font-size: 12px; color: var(--text2); }
+
+  .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; cursor: pointer; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: var(--bg4);
+    border-radius: 11px;
+    border: 1px solid var(--border);
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+  .toggle input:checked + .toggle-track { background: var(--accent); }
+  .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 14px; height: 14px;
+    background: var(--text2);
+    border-radius: 50%;
+    transition: left 0.2s, background 0.2s;
+    pointer-events: none;
+  }
+  .toggle input:checked ~ .toggle-thumb { left: 21px; background: var(--bg); }
+
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .theme-chip {
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-align: center;
+    transition: border-color 0.15s, opacity 0.15s;
+    user-select: none;
+  }
+
+  .theme-chip:hover { opacity: 0.8; }
+  .theme-chip.selected { border-color: var(--accent) !important; }
+
+  .owner-section {
+    background: linear-gradient(135deg, #1a0a0a 0%, #0a0a1a 100%);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .owner-crown {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffd700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .users-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .user-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--bg3);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  .user-row-name { flex: 1; font-weight: 600; font-size: 13px; }
+  .user-row-role { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+
+  .role-owner { background: #ffd70022; color: #ffd700; }
+  .role-admin { background: #f4433622; color: #f44336; }
+  .role-mod { background: #2196f322; color: #2196f3; }
+  .role-user { background: #ffffff11; color: var(--text2); }
+
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500;
+    display: none;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    width: 440px;
+    max-width: 95vw;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+
+  .modal-footer {
+    display: flex; gap: 8px; justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  #toast-container {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    display: flex; flex-direction: column-reverse; gap: 8px;
+    z-index: 9000;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    max-width: 340px;
+    animation: toastIn 0.2s ease;
+    pointer-events: all;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .toast.success { border-left: 3px solid var(--success); }
+  .toast.error { border-left: 3px solid var(--error); }
+  .toast.info { border-left: 3px solid var(--text3); }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .profile-banner {
+    height: 80px;
+    background: linear-gradient(90deg, var(--bg3), var(--bg4));
+    border-radius: 8px 8px 0 0;
+    margin: -18px -18px 0;
+    position: relative;
+  }
+
+  .profile-avatar-wrap { position: absolute; bottom: -28px; left: 16px; }
+
+  .profile-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 4px solid var(--bg2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700;
+    overflow: hidden;
+  }
+
+  .profile-main { padding-top: 36px; }
+  .profile-username { font-size: 20px; font-weight: 700; }
+  .profile-tag { color: var(--text2); font-size: 13px; }
+  .profile-bio { margin-top: 8px; color: var(--text2); font-size: 13px; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border); }
+
+  .flex { display: flex; }
+  .flex-1 { flex: 1; }
+  .items-center { align-items: center; }
+  .gap-2 { gap: 8px; }
+  .gap-3 { gap: 12px; }
+  .mb-2 { margin-bottom: 8px; }
+  .mb-3 { margin-bottom: 12px; }
+  .mb-4 { margin-bottom: 16px; }
+  .text-sm { font-size: 12px; color: var(--text2); }
+  .text-mono { font-family: monospace; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .no-hits { text-align: center; padding: 40px; color: var(--text3); font-size: 13px; }
+
+  .webhook-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11.5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .webhook-status.ok { background: #4caf5022; color: #4caf50; }
+  .webhook-status.bad { background: #f4433622; color: #f44336; }
+  .webhook-status.untested { background: #ffffff11; color: var(--text2); }
+
+  .activity-feed { display: flex; flex-direction: column; gap: 6px; }
+
+  .activity-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--bg3);
+    border-radius: var(--radius);
+    font-size: 12.5px;
+    align-items: center;
+  }
+
+  .activity-icon { font-size: 14px; flex-shrink: 0; }
+  .activity-text { flex: 1; }
+  .activity-time { color: var(--text3); font-size: 11px; flex-shrink: 0; }
+
+  /* hit flash animation on dashboard stat */
+  @keyframes statFlash {
+    0% { border-color: var(--success); box-shadow: 0 0 8px #4caf5044; }
+    100% { border-color: var(--border); box-shadow: none; }
+  }
+
+  .stat-flash { animation: statFlash 0.8s ease-out; }
 </style>
 </head>
-<body class="theme-cyber">
+<body>
 
-<header>
-  <div class="brand"><span class="dot"></span>Beam<span style="color:var(--accent)">Blade</span></div>
-  <nav id="nav">
-    <button data-view="dashboard" class="active">Dashboard</button>
-    <button data-view="leaderboard">Leaderboard</button>
-    <button data-view="settings">Settings</button>
-    <button data-view="admin" id="navAdmin" style="display:none">Admin</button>
-  </nav>
-  <span class="owner-badge" id="ownerBadge">👑 OWNER</span>
-  <button class="btn primary sm" id="loginBtn">Sign in</button>
-  <button class="btn sm" id="logoutBtn" style="display:none">Sign out</button>
-</header>
-
-<main>
-  <!-- ================= DASHBOARD ================= -->
-  <div class="view active" id="view-dashboard">
-    <div class="grid-stats">
-      <div class="stat-card accent-border"><div class="label">Total Hits</div><div class="value" id="stTotal">0</div><div class="sub">all time</div></div>
-      <div class="stat-card"><div class="label">Discord Hits</div><div class="value" id="stDiscord">0</div><div class="sub">4-letter usernames</div></div>
-      <div class="stat-card"><div class="label">TikTok Hits</div><div class="value" id="stTikTok">0</div><div class="sub">3-letter usernames</div></div>
-      <div class="stat-card"><div class="label">Roblox Hits</div><div class="value" id="stRoblox">0</div><div class="sub">4-letter usernames</div></div>
-      <div class="stat-card"><div class="label">Checked</div><div class="value" id="stChecked">0</div><div class="sub">names scanned</div></div>
-      <div class="stat-card"><div class="label">Request Rate</div><div class="value" id="stRate">0.0/s</div><div class="sub">last 20s</div></div>
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">BB</div>
+      <span>BeamBlade</span>
     </div>
-
-    <div class="grid-main">
-      <div>
-        <!-- INSTANT CHECK -->
-        <div class="card">
-          <h2>⚡ Instant Check <span class="tag">Roblox API</span></h2>
-          <div class="flex">
-            <input class="grow" id="quickName" placeholder="Type a Roblox username… (3–20 chars)" style="background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:8px;font-size:14px;outline:none" maxlength="20">
-            <button class="btn primary" id="quickBtn">Check</button>
-          </div>
-          <div id="quickResult" style="margin-top:12px"></div>
-        </div>
-
-        <!-- SNIPER PANELS -->
-        <div id="sniperPanels">
-          <!-- DISCORD -->
-          <div class="sniper-panel" id="panel-discord">
-            <div class="sniper-head" data-panel="discord">
-              <div class="ico" style="background:rgba(88,101,242,.2);color:#8b9cf7">D</div>
-              <div><h3>Discord Sniper</h3><div class="sub">4-letter usernames · needs backend bot</div></div>
-              <span class="status-chip off"><span class="led"></span>Offline</span>
-              <span class="chev">▾</span>
-            </div>
-            <div class="sniper-body">
-              <div class="notice">Discord username sniping requires a server-side bot (authentication + captcha), which is <b>impossible on static GitHub Pages</b>. This panel is kept for layout parity. Use the <b>Discord Webhook</b> field instead to receive Roblox hit alerts in your Discord server.</div>
-              <div class="config-grid">
-                <div class="field" style="grid-column:1/-1"><label>Discord Webhook URL</label><input id="webhookMain" placeholder="https://discord.com/api/webhooks/…"></div>
-                <div class="field"><label>Request Speed</label><select id="dSpeed"><option>Fast</option><option>Slow</option></select></div>
-                <div class="field"><label>Username Length</label><select><option>4</option></select></div>
-              </div>
-              <div class="check-row"><input type="checkbox" checked><span>Notify on hit (webhook)</span></div>
-              <div class="live-stats">
-                <div class="live-stat"><div class="v">0</div><div class="k">Checked</div></div>
-                <div class="live-stat"><div class="v">0</div><div class="k">Hits</div></div>
-                <div class="live-stat"><div class="v">0/s</div><div class="k">Rate</div></div>
-                <div class="live-stat"><div class="v">Idle</div><div class="k">Status</div></div>
-              </div>
-              <div class="terminal"><div class="ln">[system] Discord sniper requires a backend — not available on GitHub Pages.</div></div>
-            </div>
-          </div>
-
-          <!-- TIKTOK -->
-          <div class="sniper-panel" id="panel-tiktok">
-            <div class="sniper-head" data-panel="tiktok">
-              <div class="ico" style="background:rgba(0,0,0,.4);color:#69c9d0">T</div>
-              <div><h3>TikTok Sniper</h3><div class="sub">3-letter usernames · needs backend bot</div></div>
-              <span class="status-chip off"><span class="led"></span>Offline</span>
-              <span class="chev">▾</span>
-            </div>
-            <div class="sniper-body">
-              <div class="notice">TikTok has no public username-availability API and blocks browser requests. This panel is kept for layout parity.</div>
-              <div class="config-grid">
-                <div class="field"><label>Request Speed</label><select><option>Fast</option><option>Slow</option></select></div>
-                <div class="field"><label>Username Length</label><select><option>3</option></select></div>
-              </div>
-              <div class="check-row"><input type="checkbox" checked><span>Notify on hit (webhook)</span></div>
-              <div class="live-stats">
-                <div class="live-stat"><div class="v">0</div><div class="k">Checked</div></div>
-                <div class="live-stat"><div class="v">0</div><div class="k">Hits</div></div>
-                <div class="live-stat"><div class="v">0/s</div><div class="k">Rate</div></div>
-                <div class="live-stat"><div class="v">Idle</div><div class="k">Status</div></div>
-              </div>
-              <div class="terminal"><div class="ln">[system] TikTok sniper requires a backend — not available on GitHub Pages.</div></div>
-            </div>
-          </div>
-
-          <!-- ROBLOX -->
-          <div class="sniper-panel open" id="panel-roblox">
-            <div class="sniper-head" data-panel="roblox">
-              <div class="ico" style="background:rgba(34,211,238,.15);color:#22d3ee">R</div>
-              <div><h3>Roblox Sniper</h3><div class="sub">live API · watchlist + generator · banned-proof</div></div>
-              <span class="status-chip off" id="rbxStatus"><span class="led"></span>Idle</span>
-              <span class="chev">▾</span>
-            </div>
-            <div class="sniper-body">
-              <div class="flex" style="margin-bottom:12px">
-                <button class="btn primary" id="rbxStart">▶ Start Sniper</button>
-                <button class="btn" id="rbxStop" disabled>⏸ Stop</button>
-                <span class="muted" id="rbxTimer">engine offline</span>
-              </div>
-
-              <h3 style="font-size:13px;margin:14px 0 8px">🎯 Watchlist — monitor specific names</h3>
-              <div class="flex" style="margin-bottom:10px">
-                <input class="grow" id="wlInput" placeholder="Add username to watch… (e.g. azure, 4xlt)" maxlength="20" style="background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;outline:none">
-                <button class="btn" id="wlAdd">+ Add</button>
-              </div>
-              <div id="wlList"></div>
-              <div class="hint" id="wlLimit">Watchlist: 0/25 slots (owner: 200)</div>
-
-              <h3 style="font-size:13px;margin:16px 0 8px">⚙️ Generator config</h3>
-              <div class="config-grid">
-                <div class="field"><label>Character Set</label><input id="rbxCharset" value="abcdefghijklmnopqrstuvwxyz" maxlength="40"></div>
-                <div class="field"><label>Username Length</label><select id="rbxLength"><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
-                <div class="field"><label>Request Speed</label><select id="rbxSpeed"><option value="slow">Slow (8s)</option><option value="fast" selected>Fast (5s)</option><option value="extreme">Extreme (3s)</option></select></div>
-                <div class="field"><label>Batch Size / tick</label><select id="rbxBatch"><option value="20">20 names</option><option value="40" selected>40 names</option><option value="60">60 names</option></select></div>
-              </div>
-              <div class="check-row"><input type="checkbox" id="optSkip" checked><span>Skip dictionary words</span></div>
-              <div class="check-row"><input type="checkbox" id="optNotify" checked><span>Notify on hit (sound + browser + webhook)</span></div>
-              <div class="check-row"><input type="checkbox" id="optAutoStop" checked><span>Auto-stop generator after first hit</span></div>
-              <div class="check-row"><input type="checkbox" id="optWatch" checked><span>Keep watching watchlist names</span></div>
-              <div class="check-row owner-only" style="display:none"><input type="checkbox" id="optAutoClaim"><span><b style="color:var(--gold)">👑 AUTO-CLAIM</b> — instantly copy + open Roblox signup when a name goes available</span></div>
-
-              <div class="live-stats">
-                <div class="live-stat"><div class="v" id="lsChecked">0</div><div class="k">Checked</div></div>
-                <div class="live-stat"><div class="v" id="lsHits">0</div><div class="k">Hits</div></div>
-                <div class="live-stat"><div class="v" id="lsRate">0/s</div><div class="k">Rate</div></div>
-                <div class="live-stat"><div class="v" id="lsStatus">Idle</div><div class="k">Status</div></div>
-              </div>
-
-              <h3 style="font-size:13px;margin:8px 0 8px">💻 Terminal Log</h3>
-              <div class="terminal" id="rbxTerm"></div>
-            </div>
-          </div>
-        </div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+      <div class="auth-tab" onclick="switchAuthTab('register')">Create Account</div>
+    </div>
+    <div id="auth-error" class="auth-error"></div>
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" id="login-user" placeholder="beamblade" autocomplete="username">
       </div>
-
-      <!-- RIGHT COLUMN -->
-      <div>
-        <div class="card">
-          <h2>📡 Recent Hits <span class="tag">live</span></h2>
-          <div id="recentHits"><div class="muted">No hits yet — start the Roblox sniper to begin.</div></div>
-        </div>
-        <div class="card">
-          <h2>👑 Owner Perks</h2>
-          <div id="perkList">
-            <div class="muted">Sign in as owner to unlock perks.</div>
-          </div>
-          <div style="margin-top:12px">
-            <button class="btn gold sm" id="exportBtn" style="display:none">⬇ Export hit log (.txt)</button>
-          </div>
-        </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
       </div>
+      <button class="btn btn-primary btn-lg" style="width:100%;margin-top:8px" onclick="doLogin()">Sign In</button>
     </div>
-  </div>
-
-  <!-- ================= LEADERBOARD ================= -->
-  <div class="view" id="view-leaderboard">
-    <div class="card">
-      <h2>🏆 Leaderboard <span class="tag">local</span></h2>
-      <p class="muted" style="margin-bottom:12px">GitHub Pages has no shared database, so the leaderboard ranks accounts tracked on this browser. Hit stats are real and synced to your profile.</p>
-      <table>
-        <thead><tr><th>#</th><th>User</th><th>Role</th><th>Total Hits</th><th>Roblox</th><th>Checked</th><th>Best Hit</th></tr></thead>
-        <tbody id="lbBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ================= SETTINGS ================= -->
-  <div class="view" id="view-settings">
-    <div class="card">
-      <h2>🎨 Theme <span class="tag">12 themes</span></h2>
-      <div class="theme-grid" id="themeGrid"></div>
-    </div>
-    <div class="card">
-      <h2>⚙️ Preferences</h2>
-      <div style="display:flex;flex-direction:column;gap:14px;max-width:520px">
-        <div class="flex"><div class="grow"><b style="font-size:14px">Browser Notifications</b><div class="hint">Get notified even when BeamBlade is in the background</div></div><div class="toggle" id="togNotify"></div></div>
-        <div class="flex"><div class="grow"><b style="font-size:14px">Sound Alerts</b><div class="hint">Play a sound when a username is found</div></div><div class="toggle on" id="togSound"></div></div>
-        <div class="flex"><div class="grow"><b style="font-size:14px">Compact Mode</b><div class="hint">Show more information with less spacing</div></div><div class="toggle" id="togCompact"></div></div>
+    <div id="register-form" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" id="reg-user" placeholder="coolname" maxlength="24">
       </div>
-    </div>
-    <div class="card">
-      <h2>👤 Account</h2>
-      <div class="config-grid" style="max-width:520px">
-        <div class="field"><label>Display Name</label><input id="profileName" maxlength="20"></div>
-        <div class="field"><label>Avatar Color</label><input type="color" id="profileColor" style="height:38px;padding:3px"></div>
+      <div class="form-group">
+        <label class="form-label">Display Name</label>
+        <input type="text" id="reg-display" placeholder="Cool Name" maxlength="32">
       </div>
-      <button class="btn primary sm" id="saveProfile">Save profile</button>
-    </div>
-    <div class="card">
-      <h2>⚠️ Danger Zone</h2>
-      <div class="flex">
-        <button class="btn danger sm" id="clearData">Clear all data</button>
-        <button class="btn sm" id="signOut">Sign out</button>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="reg-pass" placeholder="••••••••">
       </div>
-    </div>
-  </div>
-
-  <!-- ================= ADMIN ================= -->
-  <div class="view" id="view-admin">
-    <div class="grid-stats">
-      <div class="stat-card accent-border"><div class="label">Total Users</div><div class="value" id="adUsers">0</div><div class="sub">local registry</div></div>
-      <div class="stat-card"><div class="label">Total Hits (All Users)</div><div class="value" id="adHits">0</div><div class="sub">all time</div></div>
-      <div class="stat-card"><div class="label">Total Checked</div><div class="value" id="adChecked">0</div><div class="sub">names scanned</div></div>
-      <div class="stat-card"><div class="label">API Errors</div><div class="value" id="adErrors">0</div><div class="sub">auto-recovered</div></div>
-    </div>
-    <div class="card">
-      <h2>👥 User Management <span class="tag owner">OWNER</span></h2>
-      <table>
-        <thead><tr><th>Username</th><th>Display Name</th><th>Role</th><th>Hits</th><th>Checked</th><th>Joined</th><th>Actions</th></tr></thead>
-        <tbody id="adminBody"></tbody>
-      </table>
-    </div>
-    <div class="card">
-      <h2>🎖 Grant Perks <span class="tag owner">OWNER</span></h2>
-      <p class="muted" style="margin-bottom:10px">Perks apply to the local profile while this browser is signed in. As owner you already have everything unlocked.</p>
-      <div class="config-grid" style="max-width:520px">
-        <div class="field"><label>Grant Role To</label><select id="grantUser"><option value="you">You (local profile)</option><option value="beamblade">beamblade (owner)</option></select></div>
-        <div class="field"><label>Role</label><select id="grantRole"><option value="User">User</option><option value="Pro">Pro</option><option value="Admin">Admin</option></select></div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" id="reg-pass2" placeholder="••••••••">
       </div>
-      <div style="margin:10px 0">
-        <span class="perk-chip"><input type="checkbox" id="pkSpeed" style="accent-color:var(--accent)"> Speed Boost</span>
-        <span class="perk-chip"><input type="checkbox" id="pkPriority" style="accent-color:var(--accent)"> Priority Queue</span>
-        <span class="perk-chip"><input type="checkbox" id="pkLog" style="accent-color:var(--accent)"> Extended Log</span>
-        <span class="perk-chip"><input type="checkbox" id="pkWeb" style="accent-color:var(--accent)"> Multi-Webhook</span>
-        <span class="perk-chip"><input type="checkbox" id="pkCharset" style="accent-color:var(--accent)"> Custom Charset</span>
-        <span class="perk-chip"><input type="checkbox" id="pkAnalytics" style="accent-color:var(--accent)"> Analytics+</span>
-      </div>
-      <button class="btn primary sm" id="grantBtn">Apply perks</button>
+      <button class="btn btn-primary btn-lg" style="width:100%;margin-top:8px" onclick="doRegister()">Create Account</button>
     </div>
-    <div class="card">
-      <h2>📊 Analytics+ <span class="tag owner">OWNER</span></h2>
-      <div id="analyticsBox"><div class="muted">No data yet — run the sniper first.</div></div>
-    </div>
-    <div class="card">
-      <h2>🛠 Tools</h2>
-      <div class="flex">
-        <button class="btn gold sm" id="exportAdmin">⬇ Export full terminal log</button>
-        <button class="btn sm" id="clearData2">Reset all local data</button>
-      </div>
-    </div>
-  </div>
-</main>
-
-<footer>BeamBlade v2.0 · runs 100% client-side on GitHub Pages · Roblox checks via public API with relay fallbacks · <span id="footOwner"></span></footer>
-
-<div class="modal-bg" id="loginModal">
-  <div class="modal" id="loginCard">
-    <h2>👑 Owner Sign In</h2>
-    <p>Sign in as the site owner to unlock admin panel, unlimited watchlist, speed boost, auto-claim &amp; more.</p>
-    <input id="lgUser" placeholder="Username" autocomplete="off">
-    <input id="lgPass" type="password" placeholder="Password">
-    <div class="err" id="lgErr"></div>
-    <button class="btn primary" id="lgBtn" style="width:100%">Unlock Owner Mode</button>
   </div>
 </div>
 
-<div class="toast-wrap" id="toasts"></div>
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-role">
+  <div class="modal">
+    <h3>Manage User — <span id="modal-role-username"></span></h3>
+    <div class="form-group">
+      <label class="form-label">Role</label>
+      <select id="modal-role-select">
+        <option value="user">User</option>
+        <option value="mod">Moderator</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Perks (comma separated)</label>
+      <input type="text" id="modal-role-perks" placeholder="e.g. vip,fast-snipe,custom-theme">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea id="modal-role-notes" rows="2" placeholder="Internal note..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-role')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRole()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-ban">
+  <div class="modal">
+    <h3>Ban User — <span id="modal-ban-username"></span></h3>
+    <div class="form-group">
+      <label class="form-label">Reason</label>
+      <input type="text" id="modal-ban-reason" placeholder="Ban reason...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Duration</label>
+      <select id="modal-ban-dur">
+        <option value="1h">1 Hour</option>
+        <option value="24h">24 Hours</option>
+        <option value="7d">7 Days</option>
+        <option value="perm">Permanent</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-ban')">Cancel</button>
+      <button class="btn btn-danger" onclick="saveBan()">Ban User</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-announce">
+  <div class="modal">
+    <h3>Send Announcement</h3>
+    <div class="form-group">
+      <label class="form-label">Message</label>
+      <textarea id="announce-text" rows="4" placeholder="Announcement text..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select id="announce-type">
+        <option value="info">Info</option>
+        <option value="warning">Warning</option>
+        <option value="success">Success</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-announce')">Cancel</button>
+      <button class="btn btn-primary" onclick="sendAnnounce()">Send</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-profile">
+  <div class="modal">
+    <h3>Edit Profile</h3>
+    <div class="form-group">
+      <label class="form-label">Display Name</label>
+      <input type="text" id="edit-display" maxlength="32">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bio</label>
+      <textarea id="edit-bio" rows="3" maxlength="200" placeholder="Tell something about yourself..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Discord Tag (optional)</label>
+      <input type="text" id="edit-discord" placeholder="user#0000">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-profile')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="sidebar">
+  <div id="sidebar-logo">
+    <div class="logo-icon">BB</div>
+    <span>BeamBlade</span>
+  </div>
+
+  <div id="nav-list">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="nav('dashboard')">
+      <span class="nav-icon">⬛</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="nav('sniper')">
+      <span class="nav-icon">◈</span> Sniper
+      <span class="nav-badge" id="sniper-run-badge" style="display:none">ON</span>
+    </div>
+    <div class="nav-item" onclick="nav('hits')">
+      <span class="nav-icon">◉</span> My Hits
+      <span class="nav-badge" id="hits-badge">0</span>
+    </div>
+    <div class="nav-section-label">Community</div>
+    <div class="nav-item" onclick="nav('leaderboard')">
+      <span class="nav-icon">▲</span> Leaderboard
+    </div>
+    <div class="nav-item" onclick="nav('activity')">
+      <span class="nav-icon">◌</span> Activity
+    </div>
+    <div class="nav-section-label">Account</div>
+    <div class="nav-item" onclick="nav('profile')">
+      <span class="nav-icon">◎</span> Profile
+    </div>
+    <div class="nav-item" onclick="nav('settings')">
+      <span class="nav-icon">◫</span> Settings
+    </div>
+    <div class="nav-item" id="owner-nav" style="display:none" onclick="nav('owner')">
+      <span class="nav-icon" style="color:#ffd700">★</span> Owner Panel
+    </div>
+    <div class="nav-section-label">Session</div>
+    <div class="nav-item" onclick="logout()">
+      <span class="nav-icon">←</span> Sign Out
+    </div>
+  </div>
+
+  <div id="sidebar-user" onclick="nav('profile')">
+    <div class="user-avatar" id="sidebar-avatar">?</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebar-username">—</div>
+      <div class="user-role" id="sidebar-role">User</div>
+    </div>
+    <div class="user-status-dot"></div>
+  </div>
+</div>
+
+<div id="main">
+  <div id="topbar">
+    <h2 id="topbar-title">Dashboard</h2>
+
+    <!-- LIVE STATS STRIP — only visible while sniper runs -->
+    <div id="topbar-live">
+      <div class="live-dot"></div>
+      <div class="live-stat">
+        <div class="live-stat-val" id="tl-checked">0</div>
+        <div class="live-stat-label">Checked</div>
+      </div>
+      <div class="live-stat">
+        <div class="live-stat-val" id="tl-speed">0/s</div>
+        <div class="live-stat-label">Speed</div>
+      </div>
+      <div class="live-stat">
+        <div class="live-stat-val" id="tl-hits">0</div>
+        <div class="live-stat-label">Hits</div>
+      </div>
+      <div class="live-stat">
+        <div class="live-stat-val" id="tl-rate">0%</div>
+        <div class="live-stat-label">Hit Rate</div>
+      </div>
+    </div>
+
+    <button class="tb-btn" onclick="nav('sniper')">Open Sniper</button>
+    <button class="tb-btn accent" id="topbar-start" onclick="toggleSniper()">Start Sniping</button>
+  </div>
+
+  <div id="content">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stat-grid" id="dash-stats"></div>
+      <div class="two-col">
+        <div class="card">
+          <h3>Recent Hits</h3>
+          <div id="dash-recent-hits"></div>
+        </div>
+        <div class="card">
+          <h3>Live Sniper Status</h3>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <div class="status-dot idle" id="dash-dot"></div>
+            <span id="dash-status-text" style="font-weight:600;font-size:13px">Idle</span>
+            <span id="dash-platform-badge" style="margin-left:auto;font-size:11px;color:var(--text3)"></span>
+          </div>
+          <!-- 3-metric mini grid -->
+          <div class="sniper-metric-grid">
+            <div class="sniper-metric">
+              <div class="sniper-metric-val white" id="dash-checked-live">0</div>
+              <div class="sniper-metric-label">Checked</div>
+            </div>
+            <div class="sniper-metric">
+              <div class="sniper-metric-val amber" id="dash-speed-live">0</div>
+              <div class="sniper-metric-label">Req/s</div>
+            </div>
+            <div class="sniper-metric">
+              <div class="sniper-metric-val green" id="dash-hits-live">0</div>
+              <div class="sniper-metric-label">Session Hits</div>
+            </div>
+          </div>
+          <div class="rate-bar-wrap">
+            <div class="rate-bar-fill" id="dash-rate-fill" style="width:0%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px">
+            <span class="text-sm" id="dash-rate-label">Throughput: 0%</span>
+            <span class="text-sm" id="dash-uptime-label">Uptime: 0s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SNIPER -->
+    <div class="panel" id="panel-sniper">
+      <div class="card">
+        <h3>Webhook</h3>
+        <div class="flex gap-2 items-center">
+          <input type="url" id="webhook-url" placeholder="https://discord.com/api/webhooks/..." style="flex:1">
+          <button class="btn btn-secondary btn-sm" onclick="testWebhook()">Test</button>
+          <span class="webhook-status untested" id="webhook-status-badge">Not tested</span>
+        </div>
+      </div>
+
+      <div class="platform-tab-bar">
+        <div class="platform-tab active" onclick="switchPlatform('discord')">Discord</div>
+        <div class="platform-tab" onclick="switchPlatform('tiktok')">TikTok</div>
+        <div class="platform-tab" onclick="switchPlatform('roblox')">Roblox</div>
+      </div>
+
+      <!-- DISCORD -->
+      <div id="platform-discord" class="card">
+        <h3>Discord Sniper</h3>
+        <div class="two-col">
+          <div class="form-group">
+            <label class="form-label">Characters (min 3, max 10)</label>
+            <div class="range-row">
+              <input type="range" id="discord-len-min" min="3" max="10" value="4" oninput="updateRange('discord')">
+              <input type="range" id="discord-len-max" min="3" max="10" value="4" oninput="updateRange('discord')">
+              <input type="number" id="discord-len-display" min="3" max="10" value="4" style="width:60px">
+            </div>
+            <div class="text-sm" id="discord-len-label">Target length: 4 characters</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Check Interval (ms)</label>
+            <input type="number" id="discord-interval" value="500" min="100" max="5000">
+            <div class="text-sm">Lower = faster. Watch rate limits.</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Custom character set (leave blank for a-z0-9_)</label>
+          <input type="text" id="discord-charset" placeholder="abcdefghijklmnopqrstuvwxyz0123456789_">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username list (one per line, overrides random)</label>
+          <textarea id="discord-list" rows="4" placeholder="optional&#10;custom&#10;list"></textarea>
+        </div>
+      </div>
+
+      <!-- TIKTOK -->
+      <div id="platform-tiktok" class="card" style="display:none">
+        <h3>TikTok Sniper</h3>
+        <div class="two-col">
+          <div class="form-group">
+            <label class="form-label">Characters (min 2, max 8)</label>
+            <div class="range-row">
+              <input type="range" id="tiktok-len-min" min="2" max="8" value="3" oninput="updateRange('tiktok')">
+              <input type="range" id="tiktok-len-max" min="2" max="8" value="3" oninput="updateRange('tiktok')">
+              <input type="number" id="tiktok-len-display" min="2" max="8" value="3" style="width:60px">
+            </div>
+            <div class="text-sm" id="tiktok-len-label">Target length: 3 characters</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Check Interval (ms)</label>
+            <input type="number" id="tiktok-interval" value="500" min="100" max="5000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Custom character set</label>
+          <input type="text" id="tiktok-charset" placeholder="abcdefghijklmnopqrstuvwxyz0123456789_.">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username list (one per line)</label>
+          <textarea id="tiktok-list" rows="4" placeholder="optional&#10;custom&#10;list"></textarea>
+        </div>
+      </div>
+
+      <!-- ROBLOX -->
+      <div id="platform-roblox" class="card" style="display:none">
+        <h3>Roblox Sniper</h3>
+        <div class="two-col">
+          <div class="form-group">
+            <label class="form-label">Characters (min 3, max 10)</label>
+            <div class="range-row">
+              <input type="range" id="roblox-len-min" min="3" max="10" value="4" oninput="updateRange('roblox')">
+              <input type="range" id="roblox-len-max" min="3" max="10" value="4" oninput="updateRange('roblox')">
+              <input type="number" id="roblox-len-display" min="3" max="10" value="4" style="width:60px">
+            </div>
+            <div class="text-sm" id="roblox-len-label">Target length: 4 characters</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Check Interval (ms)</label>
+            <input type="number" id="roblox-interval" value="500" min="100" max="5000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Custom character set</label>
+          <input type="text" id="roblox-charset" placeholder="abcdefghijklmnopqrstuvwxyz0123456789_">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username list (one per line)</label>
+          <textarea id="roblox-list" rows="4" placeholder="optional&#10;custom&#10;list"></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-lg" onclick="toggleSniper()" id="sniper-toggle-btn">Start Sniping</button>
+        <button class="btn btn-secondary btn-lg" onclick="clearLog()">Clear Log</button>
+        <button class="btn btn-secondary btn-lg" onclick="exportHits()">Export Hits</button>
+      </div>
+
+      <!-- SNIPER LIVE METRICS in sniper panel -->
+      <div style="margin-top:16px">
+        <div style="display:flex;align-items:center;gap:14px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius);margin-bottom:12px;border:1px solid var(--border)">
+          <div class="status-dot idle" id="main-status-dot"></div>
+          <span id="main-status-text" style="font-size:13px;font-weight:600">Idle — not running</span>
+          <span style="margin-left:auto;font-size:12px;color:var(--text2)" id="main-status-stats">Checked: 0 | Hits: 0 | Speed: 0/s</span>
+        </div>
+        <!-- big metric row on sniper panel -->
+        <div class="sniper-metric-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:10px">
+          <div class="sniper-metric">
+            <div class="sniper-metric-val white" id="sm-checked">0</div>
+            <div class="sniper-metric-label">Checked</div>
+          </div>
+          <div class="sniper-metric">
+            <div class="sniper-metric-val amber" id="sm-speed">0</div>
+            <div class="sniper-metric-label">Req/s</div>
+          </div>
+          <div class="sniper-metric">
+            <div class="sniper-metric-val green" id="sm-hits">0</div>
+            <div class="sniper-metric-label">Hits</div>
+          </div>
+          <div class="sniper-metric">
+            <div class="sniper-metric-val white" id="sm-rate">—</div>
+            <div class="sniper-metric-label">Hit Rate</div>
+          </div>
+          <div class="sniper-metric">
+            <div class="sniper-metric-val white" id="sm-uptime">0s</div>
+            <div class="sniper-metric-label">Uptime</div>
+          </div>
+        </div>
+        <div class="rate-bar-wrap" style="margin-bottom:10px">
+          <div class="rate-bar-fill" id="sm-rate-bar" style="width:0%"></div>
+        </div>
+        <div id="sniper-log"></div>
+      </div>
+    </div>
+
+    <!-- HITS -->
+    <div class="panel" id="panel-hits">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <div style="font-size:18px;font-weight:700">My Hits</div>
+          <div class="text-sm" id="hits-total-label">0 hits total</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <select id="hits-filter" onchange="renderHits()" style="width:auto">
+            <option value="all">All Platforms</option>
+            <option value="discord">Discord</option>
+            <option value="tiktok">TikTok</option>
+            <option value="roblox">Roblox</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="exportHits()">Export</button>
+          <button class="btn btn-danger btn-sm" onclick="clearAllHits()">Clear All</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div id="hits-container"></div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="panel" id="panel-leaderboard">
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px">Leaderboard</div>
+      <div class="text-sm mb-4">Top snipers across all platforms</div>
+      <div class="three-col">
+        <div class="card">
+          <h3>All Time Hits</h3>
+          <div id="lb-hits"></div>
+        </div>
+        <div class="card">
+          <h3>Best Username</h3>
+          <div id="lb-best"></div>
+        </div>
+        <div class="card">
+          <h3>Most Active</h3>
+          <div id="lb-active"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY -->
+    <div class="panel" id="panel-activity">
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px">Activity Feed</div>
+      <div class="text-sm mb-4">Recent events across all users</div>
+      <div class="card">
+        <div id="activity-feed" class="activity-feed"></div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="panel" id="panel-profile">
+      <div class="card" style="padding-top:0;overflow:hidden">
+        <div class="profile-banner" id="profile-banner"></div>
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="profile-avatar-big">?</div>
+        </div>
+        <div class="profile-main">
+          <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
+            <div style="flex:1">
+              <div class="profile-username" id="profile-username-display">—</div>
+              <div class="profile-tag" id="profile-tag-display">@—</div>
+              <div class="profile-bio" id="profile-bio-display"></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button class="btn btn-secondary btn-sm" onclick="openEditProfile()">Edit Profile</button>
+            </div>
+          </div>
+          <hr class="divider">
+          <div class="three-col" id="profile-stats"></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <h3>Connected Platforms</h3>
+          <div id="profile-platforms"></div>
+        </div>
+        <div class="card">
+          <h3>Perks &amp; Badges</h3>
+          <div id="profile-perks"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="panel" id="panel-settings">
+      <div class="settings-section">
+        <div class="settings-title">Theme</div>
+        <div class="settings-desc">35+ color schemes</div>
+        <div class="theme-grid" id="theme-grid"></div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Webhook</div>
+        <div class="settings-desc">Configure hit notifications</div>
+        <div class="card">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <strong>Discord Webhook URL</strong>
+              <span>Fired on every username hit</span>
+            </div>
+            <input type="url" id="settings-webhook" placeholder="https://discord.com/api/webhooks/..." style="width:320px">
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <strong>Notify on every check</strong>
+              <span>Sends a message for every username tested (noisy)</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-all">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <strong>Notify on hits only</strong>
+              <span>Only send webhook when a username is available</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-hits" checked>
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Sniper</div>
+        <div class="settings-desc">Global sniper behavior</div>
+        <div class="card">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <strong>Auto-stop on hit</strong>
+              <span>Stop sniping when a username is found</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-autostop" checked>
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <strong>Sound on hit</strong>
+              <span>Play a ping when a username is available</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-sound" checked>
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <strong>Log all checks</strong>
+              <span>Show every checked username in the log</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-logall">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <strong>Turbo mode</strong>
+              <span>Ignore interval, spam as fast as possible</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-turbo">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Account</div>
+        <div class="settings-desc">Manage your account preferences</div>
+        <div class="card">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <strong>Change Display Name</strong>
+              <span>How your name appears everywhere</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="change-display" style="width:180px">
+              <button class="btn btn-secondary btn-sm" onclick="changeDisplayName()">Save</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <strong>Change Password</strong>
+              <span>Update your login password</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input type="password" id="change-pass" placeholder="New password" style="width:180px">
+              <button class="btn btn-secondary btn-sm" onclick="changePassword()">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OWNER PANEL -->
+    <div class="panel" id="panel-owner">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <div style="font-size:24px">★</div>
+        <div>
+          <div style="font-size:18px;font-weight:700">Owner Panel</div>
+          <div class="text-sm">Full control over BeamBlade</div>
+        </div>
+      </div>
+
+      <div class="three-col" style="margin-bottom:20px" id="owner-stats"></div>
+
+      <div class="two-col">
+        <div>
+          <div class="owner-section">
+            <div class="owner-crown">User Management</div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+              <button class="btn btn-secondary btn-sm" onclick="openModal('modal-announce')">Announce</button>
+              <button class="btn btn-secondary btn-sm" onclick="wipeAllHits()">Wipe All Hits</button>
+              <button class="btn btn-secondary btn-sm" onclick="resetLeaderboard()">Reset LB</button>
+              <button class="btn btn-danger btn-sm" onclick="clearAllUsers()">Clear Users</button>
+            </div>
+            <div class="users-list" id="owner-users-list"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="owner-section">
+            <div class="owner-crown">Server Stats</div>
+            <div id="owner-server-stats" style="display:flex;flex-direction:column;gap:8px;font-size:13px"></div>
+          </div>
+
+          <div class="owner-section" style="margin-top:16px">
+            <div class="owner-crown">Perk Manager</div>
+            <div class="form-group">
+              <label class="form-label">Grant perk to username</label>
+              <input type="text" id="perk-target" placeholder="username">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Perk name</label>
+              <select id="perk-name">
+                <option value="vip">VIP</option>
+                <option value="fast-snipe">Fast Snipe (no cooldown)</option>
+                <option value="custom-theme">Custom Theme Unlock</option>
+                <option value="early-access">Early Access</option>
+                <option value="priority-webhook">Priority Webhook</option>
+                <option value="unlimited-export">Unlimited Export</option>
+                <option value="rainbow-name">Rainbow Name</option>
+              </select>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="grantPerk()">Grant Perk</button>
+          </div>
+
+          <div class="owner-section" style="margin-top:16px">
+            <div class="owner-crown">Broadcast Webhook</div>
+            <div class="form-group">
+              <label class="form-label">Owner webhook URL</label>
+              <input type="url" id="owner-webhook" placeholder="https://discord.com/api/webhooks/...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea id="owner-msg" rows="3" placeholder="Send a message to the owner webhook..."></textarea>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="ownerWebhookSend()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <script>
-'use strict';
-/* ============================================================
-   BeamBlade v2.0 — functional GitHub Pages build
-   Roblox check: POST users.roblox.com/v1/usernames/users
-   excludeBannedUsers:true  -> active accounts (TAKEN)
-   excludeBannedUsers:false -> ALL accounts incl. banned
-   => in true: TAKEN | only in false: BANNED | neither: AVAILABLE
-   CORS-safe: direct -> corsproxy.io -> allorigins/codetabs (GET)
-   ============================================================ */
+// ════════════════════════════════════
+//  STATE
+// ════════════════════════════════════
+const OWNER_USER = 'beamblade';
+const OWNER_PASS = 'beamblademsk123';
 
-// ---------- constants ----------
-const OWNER_USER='beamblade', OWNER_PASS='beamblademsk123';
-const LS_KEY='bb_state_v3';
-const API='https://users.roblox.com/v1/usernames/users';
-const API_LEGACY='https://api.roblox.com/users/get-by-username?username=';
-const API_USER='https://users.roblox.com/v1/users/';
-const NAME_RE=/^[A-Za-z0-9_]{3,20}$/;
-const WORDLIST=['the','and','you','for','are','but','not','all','can','had','her','was','one','our','out','day','get','has','him','his','how','man','new','now','old','see','two','way','who','boy','did','its','let','put','say','she','too','use','god','cat','dog','run','red','big','top','win','fun','ice','sky','sea','sun','moon','star','king','queen','love','hate','time','life','dead','fire','rain','gold','dark','wolf','fire','play','stop','open','code','hack','root','user','pass','fish','bird','tree','rock','sand','wind','snow','blue','pink','grey','evil','good','fast','slow','real','fake','cool','epic','lol','omg','xbox','ps5','cake','beer','weed','drug','sex','penis','butt','poop','fart','gay','nazi','hitler','fuck','shit','dick','bitch','ass','hell','damn','crap','idiot','stupid','noob','bot','admin','mod','test','demo','guest','anon','null','zero','one2','ab','cd','ef','gh','ij','kl','mn','op','qr','st','uv','wx','yz'];
+let state = {
+  currentUser: null,
+  users: {},
+  hits: [],
+  activity: [],
+  sniperRunning: false,
+  checkedCount: 0,    // total checks this session
+  sessionHits: 0,     // hits this session
+  speed: 0,           // current req/s
+  currentPanel: 'dashboard',
+  currentPlatform: 'discord',
+  announcement: null,
+  sniperStartTime: null,  // when sniper started (for uptime)
+};
 
-// ---------- helpers ----------
-const $=s=>document.querySelector(s);
-const $$=s=>[...document.querySelectorAll(s)];
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid=()=>Math.random().toString(36).slice(2,9);
-const now=()=>new Date().toLocaleTimeString();
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-function debounce(fn,ms){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
+// ════════════════════════════════════
+//  PERSISTENCE
+// ════════════════════════════════════
+function save() {
+  try {
+    localStorage.setItem('bb_users', JSON.stringify(state.users));
+    localStorage.setItem('bb_hits', JSON.stringify(state.hits));
+    localStorage.setItem('bb_activity', JSON.stringify(state.activity.slice(0, 200)));
+  } catch(e) {}
+}
 
-// ---------- state ----------
-function defState(){
-  return {
-    watchlist:[], hits:[], totalChecked:0, apiErrors:0, checksToday:0, today:new Date().toDateString(),
-    platform:{discord:0,tiktok:0,roblox:0},
-    profile:{name:'You',color:'#22d3ee'},
-    grants:{you:{role:'User',perks:[]}},
-    theme:'cyber', sound:true, notify:false, compact:false,
-    webhooks:[], config:{charset:'abcdefghijklmnopqrstuvwxyz',length:4,speed:'fast',batch:40,skipWords:true,notifyOn:true,autoStop:true,watchActive:true,autoClaim:false},
-    term:[], hitNames:{}
+function load() {
+  try {
+    const u = localStorage.getItem('bb_users');
+    if (u) state.users = JSON.parse(u);
+    const h = localStorage.getItem('bb_hits');
+    if (h) state.hits = JSON.parse(h);
+    const a = localStorage.getItem('bb_activity');
+    if (a) state.activity = JSON.parse(a);
+  } catch(e) {}
+
+  if (!state.users[OWNER_USER]) {
+    state.users[OWNER_USER] = {
+      username: OWNER_USER,
+      displayName: 'BeamBlade',
+      password: OWNER_PASS,
+      role: 'owner',
+      perks: ['vip','fast-snipe','custom-theme','rainbow-name','priority-webhook','unlimited-export','early-access'],
+      bio: 'The one who built this.',
+      discord: '',
+      createdAt: Date.now(),
+      lastSeen: Date.now(),
+      banned: false,
+    };
+    save();
+  } else {
+    state.users[OWNER_USER].role = 'owner';
+    state.users[OWNER_USER].password = OWNER_PASS;
+  }
+}
+
+// ════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => {
+    t.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='register'));
+  });
+  document.getElementById('login-form').style.display = tab==='login' ? '' : 'none';
+  document.getElementById('register-form').style.display = tab==='register' ? '' : 'none';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.style.display = '';
+}
+
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim().toLowerCase();
+  const p = document.getElementById('login-pass').value;
+  if (!u || !p) return showAuthError('Fill in all fields.');
+  const user = state.users[u];
+  if (!user) return showAuthError('User not found.');
+  if (user.banned) return showAuthError('Account suspended.');
+  if (user.password !== p) return showAuthError('Wrong password.');
+  loginAs(user);
+}
+
+function doRegister() {
+  const u = document.getElementById('reg-user').value.trim().toLowerCase();
+  const d = document.getElementById('reg-display').value.trim();
+  const p = document.getElementById('reg-pass').value;
+  const p2 = document.getElementById('reg-pass2').value;
+  if (!u || !p || !d) return showAuthError('Fill in all fields.');
+  if (p !== p2) return showAuthError('Passwords do not match.');
+  if (u.length < 3) return showAuthError('Username must be at least 3 characters.');
+  if (!/^[a-z0-9_]+$/.test(u)) return showAuthError('Username: letters, numbers, underscore only.');
+  if (state.users[u]) return showAuthError('Username taken.');
+  state.users[u] = {
+    username: u,
+    displayName: d,
+    password: p,
+    role: 'user',
+    perks: [],
+    bio: '',
+    discord: '',
+    createdAt: Date.now(),
+    lastSeen: Date.now(),
+    banned: false,
   };
-}
-let S=defState();
-try{const raw=localStorage.getItem(LS_KEY);if(raw){const p=JSON.parse(raw);S=Object.assign(defState(),p);if(S.today!==new Date().toDateString()){S.checksToday=0;S.today=new Date().toDateString();}}}catch(e){}
-function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S))}catch(e){}}
-
-// ---------- owner session ----------
-let isOwner=false;
-try{isOwner=sessionStorage.getItem('bb_owner')==='1'}catch(e){}
-function refreshOwnerUI(){
-  $('#ownerBadge').classList.toggle('show',isOwner);
-  $('#loginBtn').style.display=isOwner?'none':'';
-  $('#logoutBtn').style.display=isOwner?'':'none';
-  $('#navAdmin').style.display=isOwner?'':'none';
-  $$('.owner-only').forEach(el=>el.style.display=isOwner?'':'none');
-  $('#exportBtn').style.display=isOwner?'':'none';
-  $('#footOwner').textContent=isOwner?'Signed in as owner: '+OWNER_USER:'';
-  if(isOwner&&!$('#view-admin').classList.contains('active')){}
-  renderPerks(); renderAdmin(); renderWatchlist(); renderAnalytics();
-  const wlMax=isOwner?200:25;
-  $('#wlLimit').textContent='Watchlist: '+S.watchlist.length+'/'+wlMax+' slots (owner: 200)';
-}
-function login(u,p){
-  if(u.trim()===OWNER_USER&&p===OWNER_PASS){
-    isOwner=true;
-    try{sessionStorage.setItem('bb_owner','1')}catch(e){}
-    $('#lgErr').textContent=''; $('#loginModal').classList.remove('open');
-    toast('👑 Owner mode unlocked — all perks active','good');
-    logTerm('info','[auth] Owner signed in: '+OWNER_USER);
-    refreshOwnerUI(); renderStats();
-  }else{
-    const c=$('#loginCard'); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
-    $('#lgErr').textContent='Invalid username or password.';
-  }
-}
-function logout(){
-  isOwner=false;
-  try{sessionStorage.removeItem('bb_owner')}catch(e){}
-  $('#loginModal').classList.remove('open');
-  toast('Signed out.','warn');
-  refreshOwnerUI();
-}
-
-// ---------- fetch with fallback (CORS-safe) ----------
-async function fetchFB(url,opts={}){
-  const layers=[{label:'direct',u:url}];
-  layers.push({label:'relay',u:'https://corsproxy.io/?url='+encodeURIComponent(url)});
-  if(!opts.method||opts.method==='GET'){
-    layers.push({label:'allorigins',u:'https://api.allorigins.win/raw?url='+encodeURIComponent(url)});
-    layers.push({label:'codetabs',u:'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url)});
-  }
-  let last=null;
-  for(const L of layers){
-    const ctrl=new AbortController();
-    const t=setTimeout(()=>ctrl.abort(),12000);
-    try{
-      const res=await fetch(L.u,Object.assign({},opts,{signal:ctrl.signal}));
-      clearTimeout(t);
-      if(res.status===429){last={status:429};continue;}
-      if(res.ok)return res;
-      last={status:res.status};
-    }catch(e){last={err:e,label:L.label};}
-  }
-  const err=new Error('all relay layers failed'+(last&&last.status?' (HTTP '+last.status+')':''));
-  err.status=last&&last.status?last.status:0; err.layer=last&&last.label; throw err;
-}
-
-// ---------- core check: batch names -> status map ----------
-async function checkNames(names){
-  const uniq=[...new Set(names.map(n=>String(n).trim().toLowerCase()).filter(n=>NAME_RE.test(n)))];
-  const out=new Map();
-  uniq.forEach(n=>out.set(n,'error'));
-  if(!uniq.length)return out;
-  const body=ex=>JSON.stringify({usernames:uniq,excludeBannedUsers:ex});
-  try{
-    const [rT,rF]=await Promise.all([
-      fetchFB(API,{method:'POST',headers:{'Content-Type':'application/json'},body:body(true)}),
-      fetchFB(API,{method:'POST',headers:{'Content-Type':'application/json'},body:body(false)})
-    ]);
-    let dT=[],dF=[];
-    try{dT=(await rT.json()).data||[]}catch(e){}
-    try{dF=(await rF.json()).data||[]}catch(e){}
-    const k=u=>(u.requestedUsername||u.name||'').toLowerCase();
-    const tSet=new Set(dT.map(k)), fSet=new Set(dF.map(k));
-    uniq.forEach(n=>{
-      if(tSet.has(n))out.set(n,'taken');
-      else if(fSet.has(n))out.set(n,'banned');
-      else out.set(n,'available');
-    });
-  }catch(e){
-    // full fallback: legacy GET endpoint + isBanned
-    for(const n of uniq){
-      try{
-        const r=await fetchFB(API_LEGACY+encodeURIComponent(n));
-        const j=await r.json().catch(()=>null);
-        if(!j||j.success===false||!j.Id){out.set(n,'available');continue;}
-        const r2=await fetchFB(API_USER+j.Id);
-        const j2=await r2.json().catch(()=>null);
-        out.set(n,(j2&&j2.isBanned)?'banned':'taken');
-      }catch(e2){}
-    }
-  }
-  return out;
-}
-
-// ---------- terminal ----------
-function logTerm(cls,msg){
-  const entry={t:Date.now(),cls,msg};
-  S.term.push(entry);
-  const max=isOwner?10000:300;
-  if(S.term.length>max)S.term.splice(0,S.term.length-max);
   save();
-  const box=$('#rbxTerm');
-  const d=document.createElement('div');
-  d.className='ln '+cls;
-  d.textContent='['+new Date(entry.t).toLocaleTimeString()+'] '+msg;
-  box.prepend(d);
-  while(box.children.length>max)box.lastChild.remove();
+  addActivity('register', `${u} joined BeamBlade`);
+  loginAs(state.users[u]);
 }
 
-// ---------- toasts / sound / notifications ----------
-function toast(msg,cls){
-  const w=$('#toasts'); const d=document.createElement('div');
-  d.className='toast '+(cls||'');
-  d.textContent=msg; w.appendChild(d);
-  setTimeout(()=>{d.style.opacity='0';d.style.transition='.4s';setTimeout(()=>d.remove(),400)},3800);
-}
-let audioCtx=null;
-function playHit(){
-  if(!S.sound)return;
-  try{
-    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
-    const seq=[[880,0],[1175,.13],[1568,.26]];
-    seq.forEach(([f,d])=>{
-      const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-      o.type='square';o.frequency.value=f;o.connect(g);g.connect(audioCtx.destination);
-      const t=audioCtx.currentTime+d;
-      g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+.18);
-      o.start(t);o.stop(t+.2);
-    });
-  }catch(e){}
-}
-function notifyHit(name){
-  if(S.notify&&'Notification'in window&&Notification.permission==='granted'){
-    try{new Notification('🎯 BEAMBLADE HIT',{body:'@'+name+' is AVAILABLE on Roblox!',tag:'bbhit'+name})}catch(e){}
-  }
-}
-
-// ---------- webhooks ----------
-async function sendWebhooks(content){
-  const urls=S.webhooks.filter(Boolean);
-  if(!urls.length)return;
-  const payload={content:content.slice(0,2000)};
-  for(const url of urls){
-    try{await fetchFB(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
-    catch(e){logTerm('warn','[webhook] failed to deliver (relay unreachable) — non-critical');}
-  }
-}
-
-// ---------- hits ----------
-function registerHit(name,src){
-  name=name.toLowerCase();
-  S.platform.roblox++; S.hits.unshift({name,t:Date.now(),src});
-  if(S.hits.length>100)S.hits.pop();
-  if(!S.hitNames[name]||Date.now()-S.hitNames[name]>3600000)S.hitNames[name]=Date.now();
+function loginAs(user) {
+  state.currentUser = user;
+  user.lastSeen = Date.now();
   save();
-  renderStats(); renderHits(); renderLeaderboard(); renderAdmin(); renderAnalytics();
-  playHit(); notifyHit(name);
-  logTerm('hit','🎯 HIT — @'+name+' is AVAILABLE on Roblox ('+src+')');
-  const wh='🎯 **BEAMBLADE HIT**\n`@'+name+'` is **AVAILABLE** on Roblox!\nSource: '+src+'\nTime: '+new Date().toLocaleTimeString();
-  sendWebhooks(wh);
-  toast('🎯 HIT: @'+name+' is AVAILABLE!','good');
-  if(isOwner&&S.config.autoClaim)autoClaim(name);
-  if(S.config.autoStop&&src==='generator')engine.stopGen=true;
+  document.getElementById('auth-overlay').style.display = 'none';
+  initApp();
 }
 
-// ---------- auto claim (owner) ----------
-let lastClaim=0;
-async function autoClaim(name){
-  const nowT=Date.now();
-  if(nowT-lastClaim<20000)return;
-  lastClaim=nowT;
-  try{await navigator.clipboard.writeText(name)}catch(e){}
-  logTerm('info','[autoclaim] @'+name+' copied to clipboard — opening Roblox signup');
-  toast('👑 AUTO-CLAIM: @'+name+' copied — signup opening…','warn');
-  setTimeout(()=>window.open('https://www.roblox.com/','_blank'),900);
+function logout() {
+  stopSniper();
+  state.currentUser = null;
+  state.sniperRunning = false;
+  state.checkedCount = 0;
+  state.sessionHits = 0;
+  state.sniperStartTime = null;
+  document.getElementById('auth-overlay').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('auth-error').style.display = 'none';
 }
 
-// ---------- generator ----------
-function genName(cfg){
-  const cs=cfg.charset||'abcdefghijklmnopqrstuvwxyz';
-  const len=Math.min(Math.max(parseInt(cfg.length)||4,3),20);
-  let n='';
-  do{
-    n='';
-    for(let i=0;i<len;i++)n+=cs[Math.floor(Math.random()*cs.length)];
-  }while(cfg.skipWords&&WORDLIST.includes(n));
-  return n;
+// ════════════════════════════════════
+//  APP INIT
+// ════════════════════════════════════
+function initApp() {
+  const user = state.currentUser;
+  document.getElementById('sidebar-username').textContent = user.displayName || user.username;
+  document.getElementById('sidebar-role').textContent = capitalize(user.role);
+  document.getElementById('sidebar-avatar').textContent = (user.displayName || user.username)[0].toUpperCase();
+  document.getElementById('owner-nav').style.display = user.role === 'owner' ? '' : 'none';
+
+  const savedWh = localStorage.getItem('bb_webhook_' + user.username) || '';
+  document.getElementById('webhook-url').value = savedWh;
+  document.getElementById('settings-webhook').value = savedWh;
+  document.getElementById('change-display').value = user.displayName || '';
+
+  nav('dashboard');
+  buildThemeGrid();
+  updateHitsBadge();
+  startLiveTicker();
 }
 
-// ---------- engine ----------
-const engine={running:false,stopGen:false,timer:null,pausedUntil:0,checked:0,hits:0,lastTick:0,rateWindow:[],lastWatchCheck:0};
-function speedMs(){
-  const base={slow:8000,fast:5000,extreme:3000}[S.config.speed]||5000;
-  return isOwner?Math.max(2000,base/2):base; // owner: 2x speed boost
-}
-function maxWatch(){return isOwner?200:25}
-function batchSize(){return isOwner?Math.max(parseInt(S.config.batch)||40,60):(parseInt(S.config.batch)||40)}
-function chunks(arr,size){const out=[];for(let i=0;i<arr.length;i+=size)out.push(arr.slice(i,i+size));return out}
+// ════════════════════════════════════
+//  LIVE TICKER — updates ALL metric displays every second
+// ════════════════════════════════════
+let liveTickerInterval = null;
 
-async function engineTick(){
-  if(!engine.running)return;
-  if(Date.now()<engine.pausedUntil){
-    engine.timer=setTimeout(engineTick,Math.max(1000,engine.pausedUntil-Date.now()));
+function startLiveTicker() {
+  if (liveTickerInterval) clearInterval(liveTickerInterval);
+  liveTickerInterval = setInterval(tickAllMetrics, 1000);
+}
+
+function tickAllMetrics() {
+  if (!state.currentUser) return;
+
+  const running = state.sniperRunning;
+  const checked = state.checkedCount;
+  const hits = state.sessionHits;
+  const speed = state.speed;
+  const uptime = state.sniperStartTime ? Math.floor((Date.now() - state.sniperStartTime) / 1000) : 0;
+  const hitRate = checked > 0 ? ((hits / checked) * 100).toFixed(2) : '0.00';
+  const speedPct = Math.min(speed * 5, 100);
+  const uptimeStr = uptime < 60 ? uptime + 's' : uptime < 3600 ? Math.floor(uptime/60) + 'm ' + (uptime%60) + 's' : Math.floor(uptime/3600) + 'h ' + Math.floor((uptime%3600)/60) + 'm';
+
+  // ── TOPBAR LIVE STRIP ──
+  const topLive = document.getElementById('topbar-live');
+  if (topLive) {
+    topLive.classList.toggle('visible', running);
+    setText('tl-checked', checked.toLocaleString());
+    setText('tl-speed', speed + '/s');
+    setText('tl-hits', hits);
+    setText('tl-rate', hitRate + '%');
+  }
+
+  // ── SNIPER PANEL METRICS ──
+  setText('sm-checked', checked.toLocaleString());
+  setText('sm-speed', speed + '/s');
+  setText('sm-hits', hits);
+  setText('sm-rate', checked > 0 ? hitRate + '%' : '—');
+  setText('sm-uptime', running ? uptimeStr : '0s');
+  setText('main-status-stats', `Checked: ${checked.toLocaleString()} | Hits: ${hits} | Speed: ${speed}/s`);
+  setWidth('sm-rate-bar', speedPct + '%');
+
+  // ── DASHBOARD METRICS ──
+  setText('dash-checked-live', checked.toLocaleString());
+  setText('dash-speed-live', speed);
+  setText('dash-hits-live', hits);
+  setText('dash-rate-label', `Throughput: ${hitRate}%`);
+  setText('dash-uptime-label', running ? ('Uptime: ' + uptimeStr) : 'Uptime: —');
+  setWidth('dash-rate-fill', speedPct + '%');
+
+  // re-render dashboard stat cards if on dashboard (live update checked count)
+  if (state.currentPanel === 'dashboard' && running) {
+    const el = document.querySelector('#dash-stats .stat-card:nth-child(6) .stat-value');
+    if (el) el.textContent = checked.toLocaleString();
+  }
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function setWidth(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.style.width = val;
+}
+
+// ════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════
+function nav(panel) {
+  state.currentPanel = panel;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const el = document.getElementById('panel-' + panel);
+  if (el) el.classList.add('active');
+
+  const navLabels = {
+    dashboard: 'Dashboard', sniper: 'Sniper', hits: 'My Hits',
+    leaderboard: 'Leaderboard', activity: 'Activity', profile: 'Profile',
+    settings: 'Settings', owner: 'Owner Panel'
+  };
+
+  document.getElementById('topbar-title').textContent = navLabels[panel] || panel;
+
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const oc = n.getAttribute('onclick') || '';
+    if (oc.includes(`'${panel}'`)) n.classList.add('active');
+  });
+
+  if (panel === 'dashboard') renderDashboard();
+  if (panel === 'hits') renderHits();
+  if (panel === 'leaderboard') renderLeaderboard();
+  if (panel === 'activity') renderActivity();
+  if (panel === 'profile') renderProfile();
+  if (panel === 'owner') renderOwnerPanel();
+  if (panel === 'settings') {
+    document.getElementById('change-display').value = state.currentUser.displayName || '';
+  }
+}
+
+// ════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════
+function renderDashboard() {
+  const user = state.currentUser;
+  const myHits = state.hits.filter(h => h.user === user.username);
+  const discordHits = myHits.filter(h => h.platform === 'discord').length;
+  const tiktokHits = myHits.filter(h => h.platform === 'tiktok').length;
+  const robloxHits = myHits.filter(h => h.platform === 'roblox').length;
+  const bestUsername = [...myHits].sort((a,b) => a.username.length - b.username.length)[0]?.username || '—';
+
+  const statsHtml = [
+    { label: 'Total Hits', value: myHits.length, sub: 'all platforms' },
+    { label: 'Discord Hits', value: discordHits, sub: 'usernames sniped' },
+    { label: 'TikTok Hits', value: tiktokHits, sub: 'usernames sniped' },
+    { label: 'Roblox Hits', value: robloxHits, sub: 'usernames sniped' },
+    { label: 'Best Username', value: bestUsername, sub: 'shortest hit', mono: true },
+    { label: 'Checked This Session', value: state.checkedCount.toLocaleString(), sub: 'live count' },
+  ].map(s => `
+    <div class="stat-card">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value" style="${s.mono ? 'font-family:monospace;font-size:20px' : ''}">${s.value}</div>
+      <div class="stat-sub">${s.sub}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('dash-stats').innerHTML = statsHtml;
+
+  // dot + status text
+  const dot = document.getElementById('dash-dot');
+  const statusText = document.getElementById('dash-status-text');
+  const platformBadge = document.getElementById('dash-platform-badge');
+  if (dot) dot.className = 'status-dot ' + (state.sniperRunning ? 'running' : 'idle');
+  if (statusText) statusText.textContent = state.sniperRunning ? `Running` : 'Idle';
+  if (platformBadge) platformBadge.textContent = state.sniperRunning ? `● ${state.currentPlatform}` : '';
+
+  const recent = [...myHits].slice(0, 5);
+  document.getElementById('dash-recent-hits').innerHTML = recent.length
+    ? recent.map(h => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span class="platform-badge badge-${h.platform}">${h.platform}</span>
+        <span class="hit-name">${h.username}</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--text3)">${timeAgo(h.time)}</span>
+      </div>
+    `).join('')
+    : '<div class="no-hits">No hits yet. Start sniping!</div>';
+}
+
+// ════════════════════════════════════
+//  SNIPER ENGINE
+// ════════════════════════════════════
+const PLATFORM_CONFIG = {
+  discord: {
+    check: checkDiscord,
+    getLenEl: () => parseInt(document.getElementById('discord-len-display').value) || 4,
+    getInterval: () => parseInt(document.getElementById('discord-interval').value) || 500,
+    getCharset: () => document.getElementById('discord-charset').value || 'abcdefghijklmnopqrstuvwxyz0123456789_',
+    getList: () => document.getElementById('discord-list').value.split('\n').map(s=>s.trim()).filter(Boolean),
+  },
+  tiktok: {
+    check: checkTiktok,
+    getLenEl: () => parseInt(document.getElementById('tiktok-len-display').value) || 3,
+    getInterval: () => parseInt(document.getElementById('tiktok-interval').value) || 500,
+    getCharset: () => document.getElementById('tiktok-charset').value || 'abcdefghijklmnopqrstuvwxyz0123456789_.',
+    getList: () => document.getElementById('tiktok-list').value.split('\n').map(s=>s.trim()).filter(Boolean),
+  },
+  roblox: {
+    check: checkRoblox,
+    getLenEl: () => parseInt(document.getElementById('roblox-len-display').value) || 4,
+    getInterval: () => parseInt(document.getElementById('roblox-interval').value) || 500,
+    getCharset: () => document.getElementById('roblox-charset').value || 'abcdefghijklmnopqrstuvwxyz0123456789_',
+    getList: () => document.getElementById('roblox-list').value.split('\n').map(s=>s.trim()).filter(Boolean),
+  },
+};
+
+function genUsername(charset, len) {
+  let result = '';
+  for (let i = 0; i < len; i++) result += charset[Math.floor(Math.random() * charset.length)];
+  return result;
+}
+
+async function checkDiscord(username) {
+  try {
+    const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://discord.com/users/@${username}`)}`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    return r.status === 404;
+  } catch(e) {
+    return false;
+  }
+}
+
+async function checkTiktok(username) {
+  try {
+    const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.tiktok.com/@${username}`)}`, {
+      signal: AbortSignal.timeout(4000),
+    });
+    const data = await r.json();
+    if (!data || !data.contents) return false;
+    const taken = data.contents.includes('"uniqueId"') || !data.contents.includes('user-not-found');
+    return !taken;
+  } catch(e) {
+    return false;
+  }
+}
+
+async function checkRoblox(username) {
+  try {
+    const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.roblox.com/users/get-by-username?username=${username}`)}`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    const data = await r.json();
+    return !data.Id || data.Id === 0;
+  } catch(e) {
+    return false;
+  }
+}
+
+let sniperTimer = null;
+let sniperQueue = [];
+
+// Speed tracking: rolling window count
+let speedWindowChecks = 0;
+let speedWindowStart = Date.now();
+
+function toggleSniper() {
+  if (state.sniperRunning) {
+    stopSniper();
+  } else {
+    startSniper();
+  }
+}
+
+function startSniper() {
+  const webhook = document.getElementById('webhook-url').value.trim();
+  if (!webhook) {
+    toast('Set a webhook URL first.', 'error');
+    nav('sniper');
     return;
   }
-  const t0=performance.now();
-  let targets=[];
-  const wl=S.watchlist.filter(w=>w.active!==false).map(w=>w.name);
-  // watchlist re-check throttle: 8s
-  if(S.config.watchActive&&wl.length&&Date.now()-engine.lastWatchCheck>8000){
-    engine.lastWatchCheck=Date.now();
-    targets=targets.concat(wl);
-  }
-  if(!engine.stopGen){
-    const b=batchSize();
-    for(let i=0;i<b;i++)targets.push(genName(S.config));
-  }
-  targets=[...new Set(targets.map(n=>n.toLowerCase()).filter(n=>NAME_RE.test(n)))];
-  if(!targets.length){engine.timer=setTimeout(engineTick,speedMs());return;}
 
-  // priority queue: owner checks all groups in parallel; free sequential
-  const groups=chunks(targets,90);
-  const results=new Map();
-  if(isOwner){
-    const maps=await Promise.all(groups.map(g=>checkNames(g)));
-    maps.forEach(m=>m.forEach((v,k)=>results.set(k,v)));
-  }else{
-    for(const g of groups){const m=await checkNames(g);m.forEach((v,k)=>results.set(k,v));}
+  state.sniperRunning = true;
+  state.sessionHits = 0;
+  state.checkedCount = 0;
+  state.speed = 0;
+  state.sniperStartTime = Date.now();
+  speedWindowChecks = 0;
+  speedWindowStart = Date.now();
+  sniperQueue = [];
+
+  updateSniperUI(true);
+  logLine(`Sniper started — hunting on ${state.currentPlatform}...`, 'info');
+  addActivity('sniper', `${state.currentUser.username} started sniping`);
+  localStorage.setItem('bb_webhook_' + state.currentUser.username, webhook);
+
+  runSniperLoop();
+}
+
+function stopSniper() {
+  state.sniperRunning = false;
+  state.sniperStartTime = null;
+  if (sniperTimer) { clearTimeout(sniperTimer); sniperTimer = null; }
+  updateSniperUI(false);
+  logLine('Sniper stopped.', 'warn');
+  tickAllMetrics(); // final update to freeze stats display
+}
+
+async function runSniperLoop() {
+  if (!state.sniperRunning) return;
+
+  const platform = state.currentPlatform;
+  const cfg = PLATFORM_CONFIG[platform];
+  const len = cfg.getLenEl();
+  const charset = cfg.getCharset();
+  const userList = cfg.getList();
+  const turbo = document.getElementById('setting-turbo').checked;
+  const interval = turbo ? 0 : cfg.getInterval();
+  const logAll = document.getElementById('setting-logall').checked;
+
+  // Refill queue from list if needed
+  if (userList.length > 0 && sniperQueue.length === 0) {
+    sniperQueue = [...userList];
   }
 
-  const dt=(performance.now()-t0)/1000;
-  engine.checked+=targets.length;
-  S.totalChecked+=targets.length; S.checksToday+=targets.length;
-  engine.rateWindow.push({t:Date.now(),n:targets.length,dt});
-  engine.rateWindow=engine.rateWindow.filter(r=>Date.now()-r.t<20000);
-  const winN=engine.rateWindow.reduce((a,r)=>a+r.n,0);
-  const winT=(Date.now()-(engine.rateWindow[0]?engine.rateWindow[0].t:Date.now()))/1000;
-  const rate=winT>0?winN/winT:0;
+  const username = sniperQueue.length > 0 ? sniperQueue.shift() : genUsername(charset, len);
 
-  // apply statuses to watchlist UI
-  let hitCount=0;
-  results.forEach((st,name)=>{
-    if(st==='available'){
-      const isWatch=wl.includes(name);
-      if(isWatch)registerHit(name,'watchlist');
-      else{registerHit(name,'generator');hitCount++;}
+  try {
+    const available = await cfg.check(username);
+
+    // Increment check count
+    state.checkedCount++;
+    speedWindowChecks++;
+
+    // Recalculate speed every second
+    const now = Date.now();
+    const elapsed = now - speedWindowStart;
+    if (elapsed >= 1000) {
+      state.speed = Math.round(speedWindowChecks / (elapsed / 1000));
+      speedWindowChecks = 0;
+      speedWindowStart = now;
+    }
+
+    if (logAll) logLine(`[${platform}] ${username} — taken`, 'info');
+
+    if (available) {
+      onHit(platform, username);
+    }
+  } catch(e) {}
+
+  if (state.sniperRunning) {
+    sniperTimer = setTimeout(runSniperLoop, interval);
+  }
+}
+
+function onHit(platform, username) {
+  const hit = {
+    id: Date.now() + Math.random(),
+    platform, username,
+    user: state.currentUser.username,
+    time: Date.now(),
+  };
+
+  state.hits.unshift(hit);
+  state.sessionHits++;
+  save();
+
+  logLine(`🔔 HIT [${platform.toUpperCase()}] → ${username}`, 'hit');
+  updateHitsBadge();
+  addActivity('hit', `${state.currentUser.username} sniped @${username} on ${platform}`);
+
+  // Flash dashboard stat card
+  const cards = document.querySelectorAll('#dash-stats .stat-card');
+  if (cards[0]) {
+    cards[0].classList.add('stat-flash');
+    setTimeout(() => cards[0].classList.remove('stat-flash'), 800);
+  }
+
+  if (document.getElementById('setting-sound').checked) playHitSound();
+
+  const webhook = document.getElementById('webhook-url').value.trim() ||
+                  document.getElementById('settings-webhook').value.trim();
+  if (webhook) sendWebhook(webhook, platform, username);
+
+  if (document.getElementById('setting-autostop').checked) {
+    stopSniper();
+  }
+
+  toast(`🔔 Hit: @${username} on ${platform}`, 'success');
+
+  // If on hits panel, re-render live
+  if (state.currentPanel === 'hits') renderHits();
+  // If on dash, re-render
+  if (state.currentPanel === 'dashboard') renderDashboard();
+}
+
+function playHitSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.4);
+  } catch(e) {}
+}
+
+async function sendWebhook(url, platform, username) {
+  const colors = { discord: 5793266, tiktok: 16711680, roblox: 16711680 };
+  const body = {
+    username: 'BeamBlade',
+    avatar_url: 'https://i.imgur.com/4M34hi2.png',
+    embeds: [{
+      title: `🔔 Username Available`,
+      description: `**@${username}** is available on **${capitalize(platform)}**`,
+      color: colors[platform] || 16777215,
+      fields: [
+        { name: 'Platform', value: capitalize(platform), inline: true },
+        { name: 'Username', value: `\`${username}\``, inline: true },
+        { name: 'Length', value: `${username.length} chars`, inline: true },
+        { name: 'Sniped by', value: state.currentUser.displayName || state.currentUser.username, inline: true },
+        { name: 'Total Checked', value: state.checkedCount.toLocaleString(), inline: true },
+        { name: 'Session Hits', value: String(state.sessionHits), inline: true },
+      ],
+      footer: { text: 'BeamBlade Sniper' },
+      timestamp: new Date().toISOString(),
+    }]
+  };
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch(e) {
+    logLine('Webhook failed: ' + e.message, 'err');
+  }
+}
+
+async function testWebhook() {
+  const url = document.getElementById('webhook-url').value.trim();
+  if (!url) return toast('Enter a webhook URL first.', 'error');
+  const badge = document.getElementById('webhook-status-badge');
+  badge.textContent = 'Testing...';
+  badge.className = 'webhook-status untested';
+
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'BeamBlade',
+        content: '✅ Webhook test from BeamBlade — connection is good!',
+      }),
+    });
+    if (r.ok || r.status === 204) {
+      badge.textContent = '✓ Connected';
+      badge.className = 'webhook-status ok';
+      toast('Webhook is working.', 'success');
+    } else {
+      throw new Error('HTTP ' + r.status);
+    }
+  } catch(e) {
+    badge.textContent = '✗ Failed';
+    badge.className = 'webhook-status bad';
+    toast('Webhook failed: ' + e.message, 'error');
+  }
+}
+
+function updateSniperUI(running) {
+  const btn = document.getElementById('sniper-toggle-btn');
+  const topBtn = document.getElementById('topbar-start');
+  const badge = document.getElementById('sniper-run-badge');
+  const dot = document.getElementById('main-status-dot');
+  const text = document.getElementById('main-status-text');
+  const dashDot = document.getElementById('dash-dot');
+  const dashText = document.getElementById('dash-status-text');
+  const platformBadge = document.getElementById('dash-platform-badge');
+
+  btn.textContent = running ? 'Stop Sniping' : 'Start Sniping';
+  btn.className = running ? 'btn btn-danger btn-lg' : 'btn btn-primary btn-lg';
+  topBtn.textContent = running ? 'Stop Sniping' : 'Start Sniping';
+  topBtn.className = running ? 'tb-btn' : 'tb-btn accent';
+  badge.style.display = running ? '' : 'none';
+
+  dot.className = 'status-dot ' + (running ? 'running' : 'idle');
+  text.textContent = running ? `Running — ${state.currentPlatform}` : 'Idle — not running';
+  if (dashDot) dashDot.className = 'status-dot ' + (running ? 'running' : 'idle');
+  if (dashText) dashText.textContent = running ? 'Running' : 'Idle';
+  if (platformBadge) platformBadge.textContent = running ? `● ${state.currentPlatform}` : '';
+}
+
+// ════════════════════════════════════
+//  PLATFORM SWITCHING
+// ════════════════════════════════════
+function switchPlatform(p) {
+  state.currentPlatform = p;
+  document.querySelectorAll('.platform-tab').forEach(t => {
+    t.classList.toggle('active', t.textContent.toLowerCase() === p);
+  });
+  ['discord','tiktok','roblox'].forEach(pl => {
+    document.getElementById('platform-' + pl).style.display = pl === p ? '' : 'none';
+  });
+}
+
+function updateRange(p) {
+  const min = parseInt(document.getElementById(`${p}-len-min`).value);
+  const max = parseInt(document.getElementById(`${p}-len-max`).value);
+  const val = Math.min(Math.max(min, 3), max);
+  document.getElementById(`${p}-len-display`).value = val;
+  document.getElementById(`${p}-len-label`).textContent = `Target length: ${val} character${val === 1 ? '' : 's'}`;
+}
+
+// ════════════════════════════════════
+//  LOG
+// ════════════════════════════════════
+function logLine(msg, type='info') {
+  const log = document.getElementById('sniper-log');
+  if (!log) return;
+  const ts = new Date().toTimeString().slice(0,8);
+  const d = document.createElement('div');
+  d.className = 'log-line ' + type;
+  d.textContent = `[${ts}] ${msg}`;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+  while (log.children.length > 500) log.removeChild(log.firstChild);
+}
+
+function clearLog() {
+  const log = document.getElementById('sniper-log');
+  if (log) log.innerHTML = '';
+}
+
+// ════════════════════════════════════
+//  HITS
+// ════════════════════════════════════
+function renderHits() {
+  const filter = document.getElementById('hits-filter').value;
+  const user = state.currentUser;
+  const myHits = state.hits.filter(h => h.user === user.username && (filter === 'all' || h.platform === filter));
+  document.getElementById('hits-total-label').textContent = `${myHits.length} hit${myHits.length !== 1 ? 's' : ''} total`;
+
+  document.getElementById('hits-container').innerHTML = myHits.length
+    ? `<table class="hits-table">
+        <thead><tr>
+          <th>#</th><th>Username</th><th>Platform</th><th>Time</th><th>Actions</th>
+        </tr></thead>
+        <tbody>${myHits.map((h,i) => `
+          <tr>
+            <td class="text-mono" style="color:var(--text3)">${myHits.length - i}</td>
+            <td><span class="hit-name">🔔 ${h.username}</span></td>
+            <td><span class="platform-badge badge-${h.platform}">${h.platform}</span></td>
+            <td style="color:var(--text2);font-size:12px">${timeAgo(h.time)}</td>
+            <td>
+              <button class="btn btn-secondary btn-sm" onclick="copyText('${h.username}')">Copy</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteHit('${h.id}')">Del</button>
+            </td>
+          </tr>
+        `).join('')}</tbody>
+      </table>`
+    : '<div class="no-hits">No hits found. Get sniping.</div>';
+}
+
+function deleteHit(id) {
+  state.hits = state.hits.filter(h => String(h.id) !== String(id));
+  save();
+  renderHits();
+  updateHitsBadge();
+}
+
+function clearAllHits() {
+  const user = state.currentUser.username;
+  state.hits = state.hits.filter(h => h.user !== user);
+  save();
+  renderHits();
+  updateHitsBadge();
+  toast('All hits cleared.', 'info');
+}
+
+function updateHitsBadge() {
+  const user = state.currentUser;
+  if (!user) return;
+  const count = state.hits.filter(h => h.user === user.username).length;
+  document.getElementById('hits-badge').textContent = count;
+}
+
+function exportHits() {
+  const user = state.currentUser;
+  const myHits = state.hits.filter(h => h.user === user.username);
+  const lines = ['Platform,Username,Time', ...myHits.map(h => `${h.platform},${h.username},${new Date(h.time).toISOString()}`)];
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `beamblade_hits_${user.username}.csv`;
+  a.click();
+}
+
+// ════════════════════════════════════
+//  LEADERBOARD
+// ════════════════════════════════════
+function renderLeaderboard() {
+  const hitCounts = {};
+  state.hits.forEach(h => { hitCounts[h.user] = (hitCounts[h.user] || 0) + 1; });
+
+  const hitsLB = Object.entries(hitCounts).sort((a,b) => b[1]-a[1]).slice(0,10);
+  document.getElementById('lb-hits').innerHTML = hitsLB.length
+    ? hitsLB.map(([u, count], i) => `
+      <div class="lb-row">
+        <div class="lb-rank ${['gold','silver','bronze'][i] || ''}">${i+1}</div>
+        <div class="lb-name">${state.users[u]?.displayName || u}</div>
+        <div class="lb-count">${count}</div>
+      </div>
+    `).join('')
+    : '<div class="no-hits">No data</div>';
+
+  const bestByUser = {};
+  state.hits.forEach(h => {
+    if (!bestByUser[h.user] || h.username.length < bestByUser[h.user].length) {
+      bestByUser[h.user] = h.username;
     }
   });
-  // 429 backoff
-  let rl=false;
-  for(const g of groups){
-    try{
-      const [rT,rF]=await Promise.all([
-        fetchFB(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usernames:g,excludeBannedUsers:true})}),
-        fetchFB(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usernames:g,excludeBannedUsers:false})})
-      ]);
-      void rT;void rF;
-    }catch(e){if(e.status===429){rl=true;break;}}
-  }
-  // ^^ NOTE: the block above double-checks rate limit status cheaply; results already computed above.
-  if(rl){
-    engine.pausedUntil=Date.now()+15000;
-    S.apiErrors++;
-    logTerm('warn','[ratelimit] 429 detected — backing off 15s (auto-recover)');
-  }
 
-  $('#lsChecked').textContent=engine.checked.toLocaleString();
-  $('#lsRate').textContent=rate.toFixed(1)+'/s';
-  $('#stRate').textContent=rate.toFixed(1)+'/s';
-  $('#stChecked').textContent=S.totalChecked.toLocaleString();
-  $('#stRate2')&&($('#stRate2').textContent=rate.toFixed(1)+'/s');
-  $('#stTotal').textContent=(S.platform.roblox+S.platform.discord+S.platform.tiktok).toLocaleString();
-  $('#stRoblox').textContent=S.platform.roblox.toLocaleString();
-  $('#stDiscord').textContent=S.platform.discord.toLocaleString();
-  $('#stTikTok').textContent=S.platform.tiktok.toLocaleString();
-  if(!rl)logTerm('info','[engine] checked '+targets.length+' names ('+groups.length+' batch'+(groups.length>1?'es':'')+') — '+rate.toFixed(1)+'/s');
-  save(); renderStats(); renderWatchlist();
-  engine.timer=setTimeout(engineTick,Math.max(2000,speedMs()-dt*1000));
-}
-function engineStart(){
-  if(engine.running)return;
-  engine.running=true; engine.stopGen=false; engine.checked=0; engine.hits=0;
-  $('#rbxStart').disabled=true; $('#rbxStop').disabled=false;
-  setStatus('running');
-  logTerm('info','[engine] Roblox sniper started — mode: '+(isOwner?'OWNER (boosted)':'FREE'));
-  if(S.notify&&'Notification'in window&&Notification.permission==='default'){
-    Notification.requestPermission().catch(()=>{});
-  }
-  engineTick();
-}
-function engineStop(){
-  engine.running=false;
-  if(engine.timer){clearTimeout(engine.timer);engine.timer=null;}
-  $('#rbxStart').disabled=false; $('#rbxStop').disabled=true;
-  setStatus('off');
-  logTerm('info','[engine] sniper stopped');
-}
-function setStatus(st){
-  const chip=$('#rbxStatus');
-  chip.className='status-chip '+(st==='running'?'running':st==='paused'?'paused':'off');
-  chip.innerHTML='<span class="led"></span>'+(st==='running'?'Running':st==='paused'?'Paused':'Idle');
-  $('#lsStatus').textContent=st==='running'?'Running':st==='paused'?'Paused':'Idle';
+  const bestLB = Object.entries(bestByUser).sort((a,b) => a[1].length - b[1].length).slice(0,10);
+  document.getElementById('lb-best').innerHTML = bestLB.length
+    ? bestLB.map(([u, name], i) => `
+      <div class="lb-row">
+        <div class="lb-rank ${['gold','silver','bronze'][i] || ''}">${i+1}</div>
+        <div class="lb-name">${state.users[u]?.displayName || u}</div>
+        <div class="lb-best">${name}</div>
+      </div>
+    `).join('')
+    : '<div class="no-hits">No data</div>';
+
+  const activeLB = Object.entries(state.users)
+    .filter(([u]) => hitCounts[u])
+    .map(([u]) => [u, hitCounts[u] || 0])
+    .sort((a,b) => b[1]-a[1]).slice(0,10);
+
+  document.getElementById('lb-active').innerHTML = activeLB.length
+    ? activeLB.map(([u, count], i) => `
+      <div class="lb-row">
+        <div class="lb-rank ${['gold','silver','bronze'][i] || ''}">${i+1}</div>
+        <div class="lb-name">${state.users[u]?.displayName || u}</div>
+        <div class="lb-count">${count} hits</div>
+      </div>
+    `).join('')
+    : '<div class="no-hits">No data</div>';
 }
 
-// ---------- watchlist UI ----------
-function renderWatchlist(){
-  const box=$('#wlList'); box.innerHTML='';
-  if(!S.watchlist.length){box.innerHTML='<div class="muted">Watchlist empty — add names to monitor. Only <b>available</b> names count as hits (banned &amp; taken are filtered out).</div>';}
-  S.watchlist.forEach((w,i)=>{
-    const row=document.createElement('div');
-    row.className='watch-row';
-    const st=w.status||'queued';
-    row.innerHTML='<span class="nm">@'+esc(w.name)+'</span>'+
-      '<span class="badge-status '+st+'">'+({available:'✅ AVAILABLE',taken:'❌ TAKEN',banned:'🚫 BANNED',checking:'⏳ CHECKING',error:'⚠ ERROR',queued:'··· QUEUED'}[st]||st)+'</span>'+
-      (st==='available'?'<button class="btn gold sm claim-btn">Claim</button>':'')+
-      '<button class="btn sm rm-btn">✕</button>';
-    row.querySelector('.rm-btn').onclick=()=>{S.watchlist.splice(i,1);save();renderWatchlist();};
-    const cb=row.querySelector('.claim-btn');
-    if(cb)cb.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(w.name).catch(()=>{});window.open('https://www.roblox.com/','_blank');};
-    box.appendChild(row);
-  });
-  $('#wlLimit').textContent='Watchlist: '+S.watchlist.length+'/'+(isOwner?200:25)+' slots (owner: 200)';
-  $('#wlLimit').style.color=S.watchlist.length>=maxWatch()?'var(--warn)':'';
-}
-function addWatch(name){
-  const n=String(name||'').trim();
-  if(!NAME_RE.test(n)){toast('Invalid username — 3–20 chars, letters/numbers/_ only','bad');return false;}
-  if(S.watchlist.length>=maxWatch()){toast('Watchlist full — owner gets 200 slots','warn');return false;}
-  if(S.watchlist.some(w=>w.name===n.toLowerCase())){toast('Already watching @'+n,'warn');return false;}
-  S.watchlist.push({name:n.toLowerCase(),status:'queued'});
-  save(); renderWatchlist();
-  return true;
-}
-
-// ---------- instant check ----------
-async function doQuickCheck(){
-  const name=$('#quickName').value.trim();
-  const box=$('#quickResult');
-  if(!NAME_RE.test(name)){box.innerHTML='<div class="badge-status invalid">INVALID — must be 3–20 chars (letters, numbers, underscore)</div>';return;}
-  box.innerHTML='<span class="badge-status checking">⏳ CHECKING @'+esc(name.toLowerCase())+'…</span>';
-  const map=await checkNames([name]);
-  const st=map.get(name.toLowerCase())||'error';
-  const lbl={available:['✅ AVAILABLE','good','Claim it — copy + open Roblox signup'],taken:['❌ TAKEN','taken','This name is owned by an active account'],banned:['🚫 BANNED','banned','This name belongs to a banned account — not a hit'],error:['⚠ API ERROR','error','All relay layers failed — check connection / retry']}[st];
-  box.innerHTML='<div class="flex"><span class="badge-status '+lbl[1]+'">'+lbl[0]+'</span><span class="muted">@'+esc(name.toLowerCase())+'</span>'+
-    (st==='available'?'<button class="btn gold sm" id="qcClaim">⚡ Claim</button>':'')+'</div><div class="hint">'+lbl[2]+'</div>';
-  const cb=$('#qcClaim');
-  if(cb)cb.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(name.toLowerCase()).catch(()=>{});window.open('https://www.roblox.com/','_blank');};
-  if(st==='available'){S.platform.roblox++;S.hits.unshift({name:name.toLowerCase(),t:Date.now(),src:'instant'});if(S.hits.length>100)S.hits.pop();save();renderStats();renderHits();renderLeaderboard();renderAdmin();renderAnalytics();playHit();notifyHit(name.toLowerCase());logTerm('hit','🎯 HIT — @'+name.toLowerCase()+' AVAILABLE (instant check)');toast('🎯 HIT: @'+name.toLowerCase()+' is AVAILABLE!','good');}
-}
-
-// ---------- renders ----------
-function renderStats(){
-  $('#stTotal').textContent=(S.platform.roblox+S.platform.discord+S.platform.tiktok).toLocaleString();
-  $('#stDiscord').textContent=S.platform.discord.toLocaleString();
-  $('#stTikTok').textContent=S.platform.tiktok.toLocaleString();
-  $('#stRoblox').textContent=S.platform.roblox.toLocaleString();
-  $('#stChecked').textContent=S.totalChecked.toLocaleString();
-  $('#adErrors').textContent=S.apiErrors.toLocaleString();
-}
-function renderHits(){
-  const box=$('#recentHits');
-  if(!S.hits.length){box.innerHTML='<div class="muted">No hits yet — start the Roblox sniper to begin.</div>';return;}
-  box.innerHTML='';
-  S.hits.slice(0,12).forEach(h=>{
-    const d=document.createElement('div');
-    d.className='hit-row';
-    d.innerHTML='<div class="pico" style="background:rgba(34,211,238,.15);color:#22d3ee">R</div>'+
-      '<span class="nm">@'+esc(h.name)+'</span><span class="muted" style="font-size:11px">'+esc(h.src)+'</span>'+
-      '<span class="tm">'+new Date(h.t).toLocaleTimeString()+'</span>'+
-      '<button class="btn gold sm">Copy</button>';
-    d.querySelector('button').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(h.name).catch(()=>{});toast('Copied @'+h.name,'good');};
-    box.appendChild(d);
-  });
-}
-function renderLeaderboard(){
-  const rows=[];
-  const me={name:S.profile.name||'You',role:S.grants.you?S.grants.you.role:'User',hits:S.platform.roblox,checked:S.totalChecked,best:S.hits[0]?S.hits[0].name:'—'};
-  rows.push(me);
-  if(isOwner)rows.push({name:OWNER_USER,role:'OWNER',hits:S.platform.roblox,checked:S.totalChecked,best:S.hits[0]?S.hits[0].name:'—'});
-  rows.sort((a,b)=>b.hits-a.hits);
-  const body=$('#lbBody');body.innerHTML='';
-  rows.forEach((r,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML='<td>'+(i+1)+'</td><td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:'+esc(S.profile.color)+';display:inline-block"></span><b>'+esc(r.name)+'</b>'+(r.role==='OWNER'?' <span class="owner-badge show" style="padding:1px 8px;font-size:10px">👑</span>':'')+'</span></td><td>'+esc(r.role)+'</td><td><b style="color:var(--good)">'+r.hits.toLocaleString()+'</b></td><td>'+r.hits.toLocaleString()+'</td><td>'+r.checked.toLocaleString()+'</td><td>@'+esc(r.best)+'</td>';
-    body.appendChild(tr);
-  });
-}
-function renderAdmin(){
-  const body=$('#adminBody');body.innerHTML='';
-  const rows=[
-    {u:OWNER_USER,dn:OWNER_USER,role:'OWNER',hits:S.platform.roblox,checked:S.totalChecked},
-    {u:'you',dn:S.profile.name||'You',role:S.grants.you?S.grants.you.role:'User',hits:S.platform.roblox,checked:S.totalChecked}
-  ];
-  rows.forEach(r=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML='<td><b>'+esc(r.u)+'</b></td><td>'+esc(r.dn)+'</td><td>'+esc(r.role)+'</td><td>'+r.hits.toLocaleString()+'</td><td>'+r.checked.toLocaleString()+'</td><td>—</td><td><button class="btn sm">Manage</button></td>';
-    body.appendChild(tr);
-  });
-  $('#adUsers').textContent=rows.length;
-  $('#adHits').textContent=S.platform.roblox.toLocaleString();
-  $('#adChecked').textContent=S.totalChecked.toLocaleString();
-}
-function renderAnalytics(){
-  const box=$('#analyticsBox');
-  const byChar={};
-  S.hits.forEach(h=>{const c=h.name[0]||'?';byChar[c]=(byChar[c]||0)+1;});
-  const entries=Object.entries(byChar).sort((a,b)=>b[1]-a[1]).slice(0,12);
-  if(!entries.length){box.innerHTML='<div class="muted">No data yet — run the sniper first.</div>';return;}
-  const max=entries[0][1];
-  box.innerHTML='<div class="muted" style="margin-bottom:8px">Hit distribution by starting letter ('+S.hits.length+' total hits):</div>'+
-    entries.map(([c,n])=>'<div class="flex" style="margin-bottom:4px"><span style="width:22px;font-weight:800;font-family:monospace">'+esc(c)+'</span><div style="flex:1;background:var(--panel2);border-radius:5px;height:14px;overflow:hidden"><div style="width:'+Math.round(n/max*100)+'%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div><span style="width:30px;text-align:right;font-size:12px">'+n+'</span></div>').join('');
-}
-function renderPerks(){
-  const box=$('#perkList');box.innerHTML='';
-  const perks=[
-    ['⚡ Speed Boost','2x request rate ('+(isOwner?'active':'locked')+')'],
-    ['🚀 Priority Queue','parallel batch checks ('+(isOwner?'active':'locked')+')'],
-    ['📜 Extended Log','10,000-line terminal ('+(isOwner?'active':'locked')+')'],
-    ['🔗 Multi-Webhook','up to 5 hit webhooks ('+(isOwner?'active':'locked')+')'],
-    ['🧬 Custom Charset','any character set ('+(isOwner?'active':'locked')+')'],
-    ['📊 Analytics+','hit distribution stats ('+(isOwner?'active':'locked')+')'],
-    ['🤖 AUTO-CLAIM','one-click claim + auto open signup ('+(isOwner?'active':'locked')+')']
-  ];
-  perks.forEach(([t,d])=>{
-    const el=document.createElement('div');
-    el.innerHTML='<span class="perk-chip" style="'+(isOwner?'background:rgba(251,191,36,.12);color:var(--gold);border-color:rgba(251,191,36,.4)':'opacity:.5')+'">'+(isOwner?'✅':'🔒')+' '+t+'</span><div class="hint" style="margin:3px 0 10px">'+d+'</div>';
-    box.appendChild(el);
-  });
-}
-function renderThemes(){
-  const themes=['cyber','neon','gold','toxic','plasma','inferno','ocean','mint','ice','noir','forest','sunset'];
-  const colors={cyber:['#22d3ee','#a855f7'],neon:['#e879f9','#22d3ee'],gold:['#fbbf24','#f59e0b'],toxic:['#4ade80','#facc15'],plasma:['#a78bfa','#f472b6'],inferno:['#fb923c','#ef4444'],ocean:['#38bdf8','#2dd4bf'],mint:['#2dd4bf','#a3e635'],ice:['#93c5fd','#e0f2fe'],noir:['#f5f5f5','#737373'],forest:['#22c55e','#84cc16'],sunset:['#f472b6','#fb923c']};
-  const grid=$('#themeGrid');grid.innerHTML='';
-  themes.forEach(t=>{
-    const d=document.createElement('div');
-    d.className='theme-swatch'+(S.theme===t?' active':'');
-    d.innerHTML='<div class="sw" style="background:linear-gradient(135deg,'+colors[t][0]+','+colors[t][1]+')"></div>'+t;
-    d.onclick=()=>{S.theme=t;save();document.body.className='theme-'+t+(S.compact?' compact':'');renderThemes();};
-    grid.appendChild(d);
-  });
-}
-
-// ---------- export ----------
-function exportLog(){
-  const lines=S.term.map(e=>'['+new Date(e.t).toLocaleString()+'] ['+e.cls.toUpperCase()+'] '+e.msg).join('\n');
-  const blob=new Blob(['BeamBlade export — '+new Date().toLocaleString()+'\n\n'+lines],{type:'text/plain'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='beamblade-log.txt';a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
-  toast('Log exported ('+S.term.length+' lines)','good');
-}
-
-// ---------- webhooks mgmt ----------
-function renderWebhooks(){
-  $('#webhookMain').value=S.webhooks[0]||'';
-}
-$('#webhookMain')&&($('#webhookMain').addEventListener('change',e=>{
-  const v=e.target.value.trim();
-  S.webhooks=[v,...S.webhooks.filter(u=>u!==v).slice(0,isOwner?4:0)].filter(Boolean);
+// ════════════════════════════════════
+//  ACTIVITY
+// ════════════════════════════════════
+function addActivity(type, text) {
+  state.activity.unshift({ type, text, time: Date.now() });
+  if (state.activity.length > 200) state.activity = state.activity.slice(0, 200);
   save();
-}));
-
-// ---------- events ----------
-$('#loginBtn').onclick=()=>$('#loginModal').classList.add('open');
-$('#logoutBtn').onclick=logout;
-$('#lgBtn').onclick=()=>login($('#lgUser').value,$('#lgPass').value);
-$('#loginModal').addEventListener('click',e=>{if(e.target.id==='loginModal')e.target.classList.remove('open')});
-$('#lgUser').addEventListener('keydown',e=>{if(e.key==='Enter')$('#lgPass').focus()});
-$('#lgPass').addEventListener('keydown',e=>{if(e.key==='Enter')login($('#lgUser').value,$('#lgPass').value)});
-
-$$('#nav button').forEach(b=>b.onclick=()=>{
-  $$('#nav button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  $$('.view').forEach(v=>v.classList.remove('active'));
-  $('#view-'+b.dataset.view).classList.add('active');
-});
-
-$$('.sniper-head').forEach(h=>h.onclick=()=>h.parentElement.classList.toggle('open'));
-
-$('#quickBtn').onclick=doQuickCheck;
-$('#quickName').addEventListener('keydown',e=>{if(e.key==='Enter')doQuickCheck()});
-
-$('#rbxStart').onclick=engineStart;
-$('#rbxStop').onclick=engineStop;
-
-$('#wlAdd').onclick=()=>{if(addWatch($('#wlInput').value))$('#wlInput').value=''};
-$('#wlInput').addEventListener('keydown',e=>{if(e.key==='Enter'){if(addWatch($('#wlInput').value))$('#wlInput').value=''}});
-
-$('#rbxCharset').value=S.config.charset;
-$('#rbxLength').value=S.config.length;
-$('#rbxSpeed').value=S.config.speed;
-$('#rbxBatch').value=S.config.batch;
-$('#optSkip').checked=S.config.skipWords;
-$('#optNotify').checked=S.config.notifyOn;
-$('#optAutoStop').checked=S.config.autoStop;
-$('#optWatch').checked=S.config.watchActive;
-$('#optAutoClaim').checked=S.config.autoClaim;
-$('#rbxCharset').addEventListener('change',e=>{S.config.charset=e.target.value.trim()||'abcdefghijklmnopqrstuvwxyz';save();});
-$('#rbxLength').addEventListener('change',e=>{S.config.length=e.target.value;save();});
-$('#rbxSpeed').addEventListener('change',e=>{S.config.speed=e.target.value;save();});
-$('#rbxBatch').addEventListener('change',e=>{S.config.batch=parseInt(e.target.value)||40;save();});
-$('#optSkip').addEventListener('change',e=>{S.config.skipWords=e.target.checked;save();});
-$('#optNotify').addEventListener('change',e=>{S.config.notifyOn=e.target.checked;save();});
-$('#optAutoStop').addEventListener('change',e=>{S.config.autoStop=e.target.checked;save();});
-$('#optWatch').addEventListener('change',e=>{S.config.watchActive=e.target.checked;save();});
-$('#optAutoClaim').addEventListener('change',e=>{S.config.autoClaim=e.target.checked;save();});
-
-// toggles
-function bindToggle(sel,key,onChange){
-  const el=$(sel);
-  const sync=()=>el.classList.toggle('on',!!S[key]);
-  el.onclick=()=>{S[key]=!S[key];save();sync();onChange&&onChange(S[key]);};
-  sync();
 }
-bindToggle('#togNotify','notify',v=>{
-  if(v&&'Notification'in window&&Notification.permission==='default')Notification.requestPermission().catch(()=>{});
+
+function renderActivity() {
+  const icons = { hit: '🔔', register: '◉', sniper: '◈', ban: '✗', perk: '★', announce: '◌' };
+  document.getElementById('activity-feed').innerHTML = state.activity.slice(0,50).map(a => `
+    <div class="activity-item">
+      <span class="activity-icon">${icons[a.type] || '•'}</span>
+      <span class="activity-text">${escHtml(a.text)}</span>
+      <span class="activity-time">${timeAgo(a.time)}</span>
+    </div>
+  `).join('') || '<div class="no-hits">No activity yet.</div>';
+}
+
+// ════════════════════════════════════
+//  PROFILE
+// ════════════════════════════════════
+function renderProfile() {
+  const user = state.currentUser;
+  document.getElementById('profile-username-display').textContent = user.displayName || user.username;
+  document.getElementById('profile-tag-display').textContent = '@' + user.username;
+  document.getElementById('profile-bio-display').textContent = user.bio || 'No bio set.';
+  document.getElementById('profile-avatar-big').textContent = (user.displayName || user.username)[0].toUpperCase();
+
+  const myHits = state.hits.filter(h => h.user === user.username);
+  document.getElementById('profile-stats').innerHTML = [
+    { label: 'Total Hits', value: myHits.length },
+    { label: 'Role', value: capitalize(user.role) },
+    { label: 'Member Since', value: new Date(user.createdAt).toLocaleDateString() },
+  ].map(s => `
+    <div class="stat-card">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value" style="font-size:18px">${s.value}</div>
+    </div>
+  `).join('');
+
+  const platforms = [
+    { name: 'Discord', val: user.discord || '—' },
+    { name: 'TikTok', val: '—' },
+    { name: 'Roblox', val: '—' },
+  ];
+  document.getElementById('profile-platforms').innerHTML = platforms.map(p => `
+    <div class="settings-row" style="border-color:var(--border)">
+      <div class="settings-row-label"><strong>${p.name}</strong></div>
+      <span class="text-sm text-mono">${p.val}</span>
+    </div>
+  `).join('');
+
+  const perks = user.perks && user.perks.length > 0 ? user.perks : [];
+  document.getElementById('profile-perks').innerHTML = perks.length
+    ? perks.map(p => `<span class="platform-badge badge-discord" style="margin:3px;display:inline-block">${p}</span>`).join('')
+    : '<div class="text-sm">No perks yet.</div>';
+}
+
+function openEditProfile() {
+  const user = state.currentUser;
+  document.getElementById('edit-display').value = user.displayName || '';
+  document.getElementById('edit-bio').value = user.bio || '';
+  document.getElementById('edit-discord').value = user.discord || '';
+  openModal('modal-profile');
+}
+
+function saveProfile() {
+  const user = state.currentUser;
+  const display = document.getElementById('edit-display').value.trim();
+  if (!display) return toast('Display name required.', 'error');
+  user.displayName = display;
+  user.bio = document.getElementById('edit-bio').value.trim();
+  user.discord = document.getElementById('edit-discord').value.trim();
+  state.users[user.username] = user;
+  save();
+  updateSidebarUser();
+  renderProfile();
+  closeModal('modal-profile');
+  toast('Profile updated.', 'success');
+}
+
+function updateSidebarUser() {
+  const user = state.currentUser;
+  document.getElementById('sidebar-username').textContent = user.displayName || user.username;
+  document.getElementById('sidebar-avatar').textContent = (user.displayName || user.username)[0].toUpperCase();
+}
+
+// ════════════════════════════════════
+//  SETTINGS
+// ════════════════════════════════════
+function changeDisplayName() {
+  const val = document.getElementById('change-display').value.trim();
+  if (!val) return toast('Name cannot be empty.', 'error');
+  state.currentUser.displayName = val;
+  state.users[state.currentUser.username] = state.currentUser;
+  save();
+  updateSidebarUser();
+  toast('Display name updated.', 'success');
+}
+
+function changePassword() {
+  const val = document.getElementById('change-pass').value;
+  if (val.length < 4) return toast('Password too short.', 'error');
+  state.currentUser.password = val;
+  state.users[state.currentUser.username] = state.currentUser;
+  save();
+  document.getElementById('change-pass').value = '';
+  toast('Password updated.', 'success');
+}
+
+// ════════════════════════════════════
+//  THEMES (35+)
+// ════════════════════════════════════
+const THEMES = [
+  { name: 'Default', bg:'#0a0a0a', bg2:'#111', bg3:'#1a1a1a', bg4:'#222', border:'#2a2a2a', text:'#e8e8e8', text2:'#888', accent:'#ffffff', success:'#4caf50', error:'#f44336' },
+  { name: 'Midnight', bg:'#050510', bg2:'#0a0a1e', bg3:'#111130', bg4:'#1a1a40', border:'#222255', text:'#c8c8ff', text2:'#6666aa', accent:'#8888ff', success:'#4caf50', error:'#f44336' },
+  { name: 'Forest', bg:'#050f05', bg2:'#0a180a', bg3:'#112011', bg4:'#1a2e1a', border:'#223322', text:'#c8e8c8', text2:'#668866', accent:'#66dd66', success:'#44cc44', error:'#f44336' },
+  { name: 'Crimson', bg:'#0f0505', bg2:'#180a0a', bg3:'#201111', bg4:'#2e1a1a', border:'#332222', text:'#e8c8c8', text2:'#886666', accent:'#dd3333', success:'#4caf50', error:'#ff6666' },
+  { name: 'Amber', bg:'#0f0a00', bg2:'#18110a', bg3:'#201811', bg4:'#2e2211', border:'#332b11', text:'#f0dfa0', text2:'#887755', accent:'#ffb300', success:'#4caf50', error:'#f44336' },
+  { name: 'Rose', bg:'#0f0508', bg2:'#180a10', bg3:'#201118', bg4:'#2e1a22', border:'#332233', text:'#f0c8d8', text2:'#886688', accent:'#ff6688', success:'#4caf50', error:'#f44336' },
+  { name: 'Teal', bg:'#050f0f', bg2:'#0a1818', bg3:'#112020', bg4:'#1a2e2e', border:'#223333', text:'#c8f0f0', text2:'#668888', accent:'#22dddd', success:'#4caf50', error:'#f44336' },
+  { name: 'Slate', bg:'#0a0c10', bg2:'#111520', bg3:'#1a2030', bg4:'#222a40', border:'#2a3350', text:'#ccd5e8', text2:'#7788aa', accent:'#99aacc', success:'#4caf50', error:'#f44336' },
+  { name: 'Grape', bg:'#0d0510', bg2:'#160a18', bg3:'#1e1120', bg4:'#2a1a2e', border:'#332244', text:'#dec8e8', text2:'#886698', accent:'#bb44dd', success:'#4caf50', error:'#f44336' },
+  { name: 'Solar', bg:'#0f0d05', bg2:'#181500', bg3:'#201c00', bg4:'#2e2800', border:'#3a3300', text:'#f5f0c0', text2:'#999055', accent:'#eecc00', success:'#4caf50', error:'#f44336' },
+  { name: 'Ice', bg:'#050810', bg2:'#0a1018', bg3:'#111820', bg4:'#1a2230', border:'#22334a', text:'#d0e8ff', text2:'#7799cc', accent:'#aaddff', success:'#44bbcc', error:'#f44336' },
+  { name: 'Coral', bg:'#100805', bg2:'#180e0a', bg3:'#201511', bg4:'#2e1d14', border:'#3a2218', text:'#f5ddd0', text2:'#997766', accent:'#ff7744', success:'#4caf50', error:'#f44336' },
+  { name: 'Mint', bg:'#050f09', bg2:'#0a1810', bg3:'#112018', bg4:'#1a2e22', border:'#22332a', text:'#c8f0dc', text2:'#66887a', accent:'#44cc88', success:'#44cc66', error:'#f44336' },
+  { name: 'Volcanic', bg:'#100500', bg2:'#1a0800', bg3:'#221100', bg4:'#301800', border:'#401f00', text:'#f8c888', text2:'#996644', accent:'#ff5500', success:'#4caf50', error:'#ff3300' },
+  { name: 'Dusk', bg:'#0a0510', bg2:'#120a18', bg3:'#1a1120', bg4:'#24182e', border:'#332244', text:'#dcc8f0', text2:'#886699', accent:'#cc88ff', success:'#4caf50', error:'#f44336' },
+  { name: 'Steel', bg:'#0a0a0c', bg2:'#111214', bg3:'#1a1c1e', bg4:'#222426', border:'#2e3032', text:'#d4d8dc', text2:'#7a8088', accent:'#a0b0c0', success:'#4caf50', error:'#f44336' },
+  { name: 'Sakura', bg:'#100810', bg2:'#1a1018', bg3:'#221820', bg4:'#2e2029', border:'#3a2839', text:'#f0d8ee', text2:'#997799', accent:'#ff99cc', success:'#4caf50', error:'#f44336' },
+  { name: 'Cyber', bg:'#000c10', bg2:'#001418', bg3:'#001e24', bg4:'#002830', border:'#003344', text:'#00f8ff', text2:'#007788', accent:'#00ffee', success:'#00ff88', error:'#ff0066' },
+  { name: 'Neon', bg:'#050010', bg2:'#0a0018', bg3:'#100020', bg4:'#180029', border:'#220044', text:'#e8c8ff', text2:'#886699', accent:'#ff00ff', success:'#00ff66', error:'#ff0033' },
+  { name: 'Bone', bg:'#111008', bg2:'#1a180e', bg3:'#222012', bg4:'#2c2818', border:'#3a3620', text:'#f5f0e0', text2:'#9a9070', accent:'#d4c870', success:'#4caf50', error:'#f44336' },
+  { name: 'Blood', bg:'#100000', bg2:'#1a0000', bg3:'#220000', bg4:'#2e0000', border:'#440000', text:'#ffc0c0', text2:'#994444', accent:'#ff2222', success:'#4caf50', error:'#ff4444' },
+  { name: 'Void', bg:'#000000', bg2:'#080808', bg3:'#101010', bg4:'#181818', border:'#202020', text:'#d0d0d0', text2:'#606060', accent:'#888888', success:'#4caf50', error:'#f44336' },
+  { name: 'Lime', bg:'#060f00', bg2:'#0a1800', bg3:'#112000', bg4:'#1a2e00', border:'#223300', text:'#d4f088', text2:'#779944', accent:'#aaff00', success:'#44cc00', error:'#f44336' },
+  { name: 'Coffee', bg:'#0f0a07', bg2:'#18120e', bg3:'#201812', bg4:'#2c2018', border:'#3a2e22', text:'#f0e0cc', text2:'#998866', accent:'#cc8844', success:'#4caf50', error:'#f44336' },
+  { name: 'Arctic', bg:'#050a0f', bg2:'#0a1218', bg3:'#111a24', bg4:'#1a2433', border:'#224466', text:'#c8e0ff', text2:'#6688aa', accent:'#88aaff', success:'#44aaff', error:'#f44336' },
+  { name: 'Haze', bg:'#0a080f', bg2:'#120f18', bg3:'#1a1520', bg4:'#221c2c', border:'#2a2240', text:'#d4c8ee', text2:'#886699', accent:'#8855cc', success:'#4caf50', error:'#f44336' },
+  { name: 'Terra', bg:'#0f0a06', bg2:'#181208', bg3:'#201a0c', bg4:'#2c2414', border:'#3a3018', text:'#f0e4c0', text2:'#998855', accent:'#cc9933', success:'#4caf50', error:'#f44336' },
+  { name: 'Emerald', bg:'#040f08', bg2:'#081810', bg3:'#0e2018', bg4:'#152e22', border:'#1e4433', text:'#b8f0cc', text2:'#558866', accent:'#00cc66', success:'#00dd55', error:'#f44336' },
+  { name: 'Storm', bg:'#060810', bg2:'#0c1018', bg3:'#121820', bg4:'#1a2230', border:'#223348', text:'#c0ccdd', text2:'#6677aa', accent:'#4466cc', success:'#4caf50', error:'#f44336' },
+  { name: 'Sand', bg:'#100e08', bg2:'#181610', bg3:'#201e15', bg4:'#2c2a1c', border:'#3a381a', text:'#f5f0d0', text2:'#9a9468', accent:'#c8b844', success:'#4caf50', error:'#f44336' },
+  { name: 'Plum', bg:'#0c0510', bg2:'#140a18', bg3:'#1c1122', bg4:'#261830', border:'#302244', text:'#ddc8f5', text2:'#886699', accent:'#aa44cc', success:'#4caf50', error:'#f44336' },
+  { name: 'Rustic', bg:'#100808', bg2:'#180e0e', bg3:'#201414', bg4:'#2c1c1c', border:'#3a2424', text:'#f0dada', text2:'#997777', accent:'#cc5533', success:'#4caf50', error:'#f44336' },
+  { name: 'Glacial', bg:'#060a0f', bg2:'#0c1218', bg3:'#121c24', bg4:'#1a2632', border:'#223a50', text:'#c0d8f0', text2:'#6688aa', accent:'#6699cc', success:'#44aacc', error:'#f44336' },
+  { name: 'Toxic', bg:'#050f05', bg2:'#0a1800', bg3:'#112200', bg4:'#1a3300', border:'#224400', text:'#ccff44', text2:'#778822', accent:'#88ff00', success:'#44ff00', error:'#ff4400' },
+  { name: 'Twilight', bg:'#080510', bg2:'#100a18', bg3:'#180f20', bg4:'#22162e', border:'#2e2244', text:'#d8c8f5', text2:'#886699', accent:'#9966ff', success:'#4caf50', error:'#f44336' },
+];
+
+let currentThemeIdx = parseInt(localStorage.getItem('bb_theme') || '0');
+
+function buildThemeGrid() {
+  const grid = document.getElementById('theme-grid');
+  grid.innerHTML = THEMES.map((t, i) => `
+    <div class="theme-chip ${i === currentThemeIdx ? 'selected' : ''}"
+      style="background:${t.bg2};border-color:${t.border};color:${t.text};border-width:2px"
+      onclick="applyTheme(${i})">
+      <div style="display:flex;gap:4px;justify-content:center;margin-bottom:4px">
+        <div style="width:12px;height:12px;border-radius:50%;background:${t.accent}"></div>
+        <div style="width:12px;height:12px;border-radius:50%;background:${t.text2}"></div>
+        <div style="width:12px;height:12px;border-radius:50%;background:${t.success}"></div>
+      </div>
+      ${t.name}
+    </div>
+  `).join('');
+}
+
+function applyTheme(idx) {
+  currentThemeIdx = idx;
+  localStorage.setItem('bb_theme', idx);
+  const t = THEMES[idx];
+  const root = document.documentElement;
+  root.style.setProperty('--bg', t.bg);
+  root.style.setProperty('--bg2', t.bg2);
+  root.style.setProperty('--bg3', t.bg3);
+  root.style.setProperty('--bg4', t.bg4);
+  root.style.setProperty('--border', t.border);
+  root.style.setProperty('--text', t.text);
+  root.style.setProperty('--text2', t.text2);
+  root.style.setProperty('--accent', t.accent);
+  root.style.setProperty('--accent2', t.accent);
+  root.style.setProperty('--success', t.success);
+  root.style.setProperty('--error', t.error);
+  buildThemeGrid();
+  toast(`Theme: ${t.name}`, 'info');
+}
+
+// ════════════════════════════════════
+//  OWNER PANEL
+// ════════════════════════════════════
+function renderOwnerPanel() {
+  const allUsers = Object.values(state.users);
+  const totalHits = state.hits.length;
+  const totalUsers = allUsers.length;
+  const activeUsers = allUsers.filter(u => Date.now() - u.lastSeen < 3600000).length;
+
+  document.getElementById('owner-stats').innerHTML = [
+    { label: 'Total Users', value: totalUsers },
+    { label: 'Total Hits', value: totalHits },
+    { label: 'Active (1h)', value: activeUsers },
+  ].map(s => `
+    <div class="stat-card">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('owner-users-list').innerHTML = allUsers.map(u => `
+    <div class="user-row">
+      <div class="user-avatar" style="font-size:13px">${(u.displayName||u.username)[0].toUpperCase()}</div>
+      <div class="user-row-name">
+        ${escHtml(u.displayName||u.username)}
+        <div style="font-size:11px;color:var(--text2)">@${u.username}</div>
+      </div>
+      <span class="user-row-role role-${u.role}">${u.role}</span>
+      ${u.banned ? '<span style="font-size:11px;color:var(--error);font-weight:700">BANNED</span>' : ''}
+      <div style="display:flex;gap:6px">
+        ${u.username !== OWNER_USER ? `
+          <button class="btn btn-secondary btn-sm" onclick="openRoleModal('${u.username}')">Role</button>
+          <button class="btn btn-danger btn-sm" onclick="${u.banned ? `unbanUser('${u.username}')` : `openBanModal('${u.username}')`}">${u.banned ? 'Unban' : 'Ban'}</button>
+          <button class="btn btn-secondary btn-sm" onclick="deleteUser('${u.username}')">Del</button>
+        ` : '<span style="color:#ffd700;font-size:12px;font-weight:600">★ Owner</span>'}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('owner-server-stats').innerHTML = [
+    `Users registered: <strong>${totalUsers}</strong>`,
+    `Total hits: <strong>${totalHits}</strong>`,
+    `Session checks: <strong>${state.checkedCount.toLocaleString()}</strong>`,
+    `Current speed: <strong>${state.speed}/s</strong>`,
+    `Sniper state: <strong>${state.sniperRunning ? 'RUNNING (' + state.currentPlatform + ')' : 'idle'}</strong>`,
+    `Platforms: <strong>Discord, TikTok, Roblox</strong>`,
+    `Themes available: <strong>${THEMES.length}</strong>`,
+    `Storage: <strong>${(JSON.stringify(state).length / 1024).toFixed(1)} KB</strong>`,
+    `Last activity: <strong>${state.activity[0] ? timeAgo(state.activity[0].time) : 'none'}</strong>`,
+  ].map(s => `<div>${s}</div>`).join('');
+}
+
+let modalTargetUser = null;
+
+function openRoleModal(username) {
+  modalTargetUser = username;
+  const user = state.users[username];
+  document.getElementById('modal-role-username').textContent = username;
+  document.getElementById('modal-role-select').value = user.role || 'user';
+  document.getElementById('modal-role-perks').value = (user.perks || []).join(',');
+  document.getElementById('modal-role-notes').value = user.notes || '';
+  openModal('modal-role');
+}
+
+function saveRole() {
+  if (!modalTargetUser) return;
+  const user = state.users[modalTargetUser];
+  user.role = document.getElementById('modal-role-select').value;
+  user.perks = document.getElementById('modal-role-perks').value.split(',').map(s=>s.trim()).filter(Boolean);
+  user.notes = document.getElementById('modal-role-notes').value.trim();
+  state.users[modalTargetUser] = user;
+  save();
+  addActivity('perk', `${state.currentUser.username} set @${modalTargetUser} role to ${user.role}`);
+  closeModal('modal-role');
+  renderOwnerPanel();
+  toast('Role updated.', 'success');
+}
+
+function openBanModal(username) {
+  modalTargetUser = username;
+  document.getElementById('modal-ban-username').textContent = username;
+  openModal('modal-ban');
+}
+
+function saveBan() {
+  if (!modalTargetUser) return;
+  const user = state.users[modalTargetUser];
+  user.banned = true;
+  user.banReason = document.getElementById('modal-ban-reason').value;
+  user.banDur = document.getElementById('modal-ban-dur').value;
+  state.users[modalTargetUser] = user;
+  save();
+  addActivity('ban', `${state.currentUser.username} banned @${modalTargetUser}`);
+  closeModal('modal-ban');
+  renderOwnerPanel();
+  toast(`@${modalTargetUser} banned.`, 'info');
+}
+
+function unbanUser(username) {
+  state.users[username].banned = false;
+  state.users[username].banReason = '';
+  save();
+  addActivity('ban', `${state.currentUser.username} unbanned @${username}`);
+  renderOwnerPanel();
+  toast(`@${username} unbanned.`, 'success');
+}
+
+function deleteUser(username) {
+  if (!confirm(`Delete user @${username}? This cannot be undone.`)) return;
+  delete state.users[username];
+  state.hits = state.hits.filter(h => h.user !== username);
+  save();
+  renderOwnerPanel();
+  toast(`@${username} deleted.`, 'info');
+}
+
+function grantPerk() {
+  const target = document.getElementById('perk-target').value.trim().toLowerCase();
+  const perk = document.getElementById('perk-name').value;
+  if (!target || !state.users[target]) return toast('User not found.', 'error');
+  const user = state.users[target];
+  if (!user.perks) user.perks = [];
+  if (!user.perks.includes(perk)) user.perks.push(perk);
+  save();
+  addActivity('perk', `${state.currentUser.username} granted @${target} the "${perk}" perk`);
+  toast(`Perk "${perk}" granted to @${target}.`, 'success');
+  document.getElementById('perk-target').value = '';
+}
+
+function wipeAllHits() {
+  if (!confirm('Wipe ALL hits? Cannot be undone.')) return;
+  state.hits = [];
+  save();
+  renderOwnerPanel();
+  toast('All hits wiped.', 'info');
+}
+
+function resetLeaderboard() {
+  if (!confirm('Reset leaderboard (wipe all hits)? Cannot be undone.')) return;
+  state.hits = [];
+  save();
+  renderOwnerPanel();
+  toast('Leaderboard reset.', 'info');
+}
+
+function clearAllUsers() {
+  if (!confirm('Delete all users except owner? Cannot be undone.')) return;
+  Object.keys(state.users).forEach(u => { if (u !== OWNER_USER) delete state.users[u]; });
+  save();
+  renderOwnerPanel();
+  toast('All users cleared.', 'info');
+}
+
+function sendAnnounce() {
+  const msg = document.getElementById('announce-text').value.trim();
+  if (!msg) return;
+  state.announcement = { text: msg, type: document.getElementById('announce-type').value, time: Date.now() };
+  addActivity('announce', `Owner announced: ${msg.slice(0,60)}`);
+  closeModal('modal-announce');
+  toast('Announcement sent.', 'success');
+}
+
+async function ownerWebhookSend() {
+  const url = document.getElementById('owner-webhook').value.trim();
+  const msg = document.getElementById('owner-msg').value.trim();
+  if (!url || !msg) return toast('Fill in webhook and message.', 'error');
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'BeamBlade Owner', content: msg }),
+    });
+    toast('Sent.', 'success');
+    document.getElementById('owner-msg').value = '';
+  } catch(e) {
+    toast('Failed: ' + e.message, 'error');
+  }
+}
+
+// ════════════════════════════════════
+//  MODAL HELPERS
+// ════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
 });
-bindToggle('#togSound','sound');
-bindToggle('#togCompact','compact',v=>{document.body.className='theme-'+S.theme+(v?' compact':'');});
 
-$('#profileName').value=S.profile.name;
-$('#profileColor').value=S.profile.color;
-$('#saveProfile').onclick=()=>{
-  S.profile.name=$('#profileName').value.trim()||'You';
-  S.profile.color=$('#profileColor').value;
-  save();renderLeaderboard();renderAdmin();
-  toast('Profile saved','good');
-};
-$('#clearData').onclick=()=>{if(confirm('Delete all hits, stats, watchlist and settings?')){localStorage.removeItem(LS_KEY);location.reload();}};
-$('#clearData2').onclick=$('#clearData').onclick;
-$('#signOut').onclick=logout;
+// ════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════
+function toast(msg, type='info') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity 0.3s';
+    setTimeout(() => el.remove(), 300);
+  }, 3200);
+}
 
-$('#exportBtn').onclick=exportLog;
-$('#exportAdmin').onclick=exportLog;
+// ════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════
+function capitalize(s) { return s ? s[0].toUpperCase() + s.slice(1) : ''; }
 
-// grants
-$('#grantBtn').onclick=()=>{
-  const u=$('#grantUser').value;
-  S.grants[u]=S.grants[u]||{role:'User',perks:[]};
-  S.grants[u].role=$('#grantRole').value;
-  S.grants[u].perks=[];
-  if($('#pkSpeed').checked)S.grants[u].perks.push('speed');
-  if($('#pkPriority').checked)S.grants[u].perks.push('priority');
-  if($('#pkLog').checked)S.grants[u].perks.push('log');
-  if($('#pkWeb').checked)S.grants[u].perks.push('multiweb');
-  if($('#pkCharset').checked)S.grants[u].perks.push('charset');
-  if($('#pkAnalytics').checked)S.grants[u].perks.push('analytics');
-  save();renderAdmin();
-  toast('Perks applied to '+u,'good');
-};
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+  if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+  return Math.floor(diff / 86400000) + 'd ago';
+}
 
-// ---------- init ----------
-renderStats();renderHits();renderWatchlist();renderLeaderboard();renderAdmin();renderAnalytics();renderPerks();renderThemes();renderWebhooks();
-refreshOwnerUI();
-document.body.className='theme-'+S.theme+(S.compact?' compact':'');
-logTerm('info','[system] BeamBlade v2.0 online — Roblox API ready (relay-safe)');
-logTerm('info','[auth] '+(isOwner?'owner session active':'guest mode — sign in as owner for perks'));
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => toast(`Copied: ${text}`, 'success')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    toast(`Copied: ${text}`, 'success');
+  });
+}
+
+// ════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey) {
+    if (e.key === 'Enter') { e.preventDefault(); toggleSniper(); }
+    if (e.key === 'l') { e.preventDefault(); nav('leaderboard'); }
+    if (e.key === 'h') { e.preventDefault(); nav('hits'); }
+  }
+});
+
+// ════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════
+load();
+applyTheme(currentThemeIdx);
+
+document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('login-user').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 </script>
 </body>
 </html>
