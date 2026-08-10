@@ -1,1078 +1,893 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07080d">
-<title>BeamBlade Sniper</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beamblade | Multi-Platform Sniper</title>
+    <style>
+        :root {
+            --bg-primary: #0e0e10;
+            --bg-secondary: #18181b;
+            --bg-tertiary: #1f1f23;
+            --bg-hover: #26262c;
+            --text-primary: #f5f5f5;
+            --text-muted: #adadb8;
+            --accent-color: #ffffff;
+            --accent-muted: #888888;
+            --border-color: #2d2d35;
+            --sidebar-width: 240px;
+            --ui-opacity: 0.98;
+            --font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
 
-<style>
-*{box-sizing:border-box}
-:root{
-  --bg:#06070b;
-  --panel:#0c0e15;
-  --panel2:#11141d;
-  --border:#202531;
-  --text:#f4f7fb;
-  --muted:#7f899d;
-  --blue:#5b8cff;
-  --cyan:#4de8ff;
-  --green:#42e89d;
-  --red:#ff526d;
-  --yellow:#ffc857;
-  --purple:#9d6cff;
-}
-body{
-  margin:0;
-  background:
-    radial-gradient(circle at 80% -10%,#172752 0,transparent 35%),
-    radial-gradient(circle at 0% 100%,#101a34 0,transparent 30%),
-    var(--bg);
-  color:var(--text);
-  font:14px Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
-button,input,select{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-.app{min-height:100vh;display:flex}
-.sidebar{
-  width:245px;
-  border-right:1px solid var(--border);
-  background:rgba(8,9,14,.92);
-  backdrop-filter:blur(18px);
-  padding:22px 14px;
-  position:fixed;
-  inset:0 auto 0 0;
-  z-index:10;
-}
-.logo{
-  font-size:20px;
-  font-weight:900;
-  letter-spacing:-.7px;
-  padding:5px 10px 25px;
-}
-.logo span{color:var(--blue)}
-.nav-title{
-  color:#555f73;
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:1.5px;
-  margin:18px 10px 8px;
-}
-.nav button{
-  width:100%;
-  text-align:left;
-  border:0;
-  color:#8791a4;
-  background:transparent;
-  padding:11px 12px;
-  border-radius:9px;
-  margin:2px 0;
-}
-.nav button:hover,.nav button.active{
-  color:white;
-  background:#151a25;
-}
-.nav button.active{box-shadow:inset 2px 0 var(--blue)}
-.userbox{
-  position:absolute;
-  bottom:18px;
-  left:14px;
-  right:14px;
-  border:1px solid var(--border);
-  background:#0d1017;
-  padding:12px;
-  border-radius:12px;
-}
-.avatar{
-  width:31px;height:31px;border-radius:50%;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  display:grid;place-items:center;font-weight:800;
-}
-.userrow{display:flex;align-items:center;gap:9px}
-.username{font-weight:700}
-.owner{color:var(--yellow);font-size:10px}
-.main{margin-left:245px;width:calc(100% - 245px);padding:28px}
-.top{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:24px;
-}
-h1{font-size:27px;margin:0 0 5px;letter-spacing:-.8px}
-.subtitle{color:var(--muted)}
-.actions{display:flex;gap:8px}
-.btn{
-  border:1px solid var(--border);
-  color:white;background:#11151e;
-  padding:10px 15px;border-radius:9px;
-}
-.btn:hover{background:#181e29}
-.btn.primary{background:var(--blue);border-color:var(--blue);color:white}
-.btn.danger{background:#35131c;border-color:#69202e;color:#ff8ca0}
-.btn.green{background:#0e3026;border-color:#1a6049;color:#6bffbd}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.card{
-  background:linear-gradient(180deg,#0e1119,#0a0c12);
-  border:1px solid var(--border);
-  border-radius:13px;
-  padding:17px;
-}
-.stat-label{color:var(--muted);font-size:12px}
-.stat{font-size:27px;font-weight:850;margin-top:8px}
-.stat.good{color:var(--green)}
-.stat.blue{color:var(--cyan)}
-.section{margin-top:14px}
-.section-head{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:10px;
-}
-.section-head h2{font-size:15px;margin:0}
-.platforms{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.platform{
-  border:1px solid var(--border);
-  border-radius:13px;
-  padding:18px;
-  background:#0c0f16;
-}
-.platform-top{display:flex;justify-content:space-between;align-items:center}
-.platform-name{font-weight:800;font-size:16px}
-.badge{
-  padding:4px 8px;border-radius:20px;font-size:10px;
-  background:#171b25;color:#8993a7;
-}
-.badge.live{background:#0d2e24;color:#4cffb0}
-.badge.unsupported{background:#292116;color:#ffd36b}
-.platform p{color:var(--muted);line-height:1.5}
-.controls{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
-}
-.field label{
-  display:block;color:var(--muted);font-size:11px;margin-bottom:6px;
-}
-input,select{
-  width:100%;background:#090c12;color:white;
-  border:1px solid var(--border);border-radius:8px;
-  padding:10px;outline:none;
-}
-input:focus,select:focus{border-color:#365fb8}
-.switch{
-  display:flex;align-items:center;gap:8px;
-  color:#aab3c2;margin-top:12px;
-}
-.switch input{width:auto}
-.console{
-  background:#05070a;border:1px solid var(--border);
-  border-radius:11px;padding:12px;height:260px;
-  overflow:auto;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;
-}
-.log{margin:0 0 7px;color:#758095}
-.log .time{color:#3f4756}
-.log.ok{color:#5dffb4}
-.log.err{color:#ff7388}
-.log.warn{color:#ffd36b}
-.table{
-  width:100%;border-collapse:collapse;
-}
-.table th,.table td{
-  text-align:left;border-bottom:1px solid var(--border);
-  padding:12px 8px;
-}
-.table th{color:#697386;font-size:11px;text-transform:uppercase}
-.login{
-  min-height:100vh;display:grid;place-items:center;
-  padding:20px;
-}
-.loginbox{
-  width:min(410px,100%);
-  background:rgba(12,15,22,.94);
-  border:1px solid var(--border);
-  border-radius:18px;padding:30px;
-  box-shadow:0 25px 80px #0008;
-}
-.login-logo{text-align:center;font-size:29px;font-weight:950;margin-bottom:5px}
-.login-logo span{color:var(--blue)}
-.login-sub{text-align:center;color:var(--muted);margin-bottom:25px}
-.login .field{margin-bottom:13px}
-.login .btn{width:100%;margin-top:8px}
-.notice{
-  margin-top:15px;padding:10px;border-radius:8px;
-  background:#121722;color:#7f8ba0;font-size:11px;line-height:1.5;
-}
-.owner-panel{
-  border-color:#594516;
-  background:linear-gradient(135deg,#17140b,#0c0f15);
-}
-.perks{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.perk{
-  border:1px solid #292d35;border-radius:9px;padding:12px;
-}
-.perk b{display:block;margin-bottom:4px}
-.perk small{color:var(--muted)}
-.hit{
-  border-left:3px solid var(--green);
-  background:#0b1713;
-  padding:10px 12px;
-  margin-bottom:7px;
-  border-radius:5px;
-}
-.empty{color:#596376;padding:25px;text-align:center}
-.mobilebar{display:none}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+            user-select: none;
+        }
 
-@media(max-width:950px){
-  .grid{grid-template-columns:repeat(2,1fr)}
-  .platforms{grid-template-columns:1fr}
-  .controls{grid-template-columns:repeat(2,1fr)}
-  .perks{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:700px){
-  .sidebar{display:none}
-  .main{margin:0;width:100%;padding:18px 14px 80px}
-  .grid{grid-template-columns:repeat(2,1fr)}
-  .stat{font-size:22px}
-  .mobilebar{
-    display:flex;position:fixed;z-index:20;bottom:0;left:0;right:0;
-    background:#0a0d13;border-top:1px solid var(--border);
-    padding:8px;justify-content:space-around;
-  }
-  .mobilebar button{background:transparent;color:#8a94a7;border:0;padding:8px}
-}
-</style>
+        body {
+            background-color: #000000;
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Auth Screen */
+        #auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #050505;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 32px;
+            width: 380px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .auth-card h2 {
+            margin-bottom: 8px;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .auth-card p {
+            color: var(--text-muted);
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent-color);
+            color: #000000;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .auth-toggle {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .auth-toggle span {
+            color: var(--text-primary);
+            text-decoration: underline;
+        }
+
+        /* App Layout */
+        #app-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            opacity: var(--ui-opacity);
+            background: var(--bg-primary);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-header {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 12px 8px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .user-profile {
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Main Content */
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            height: 52px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .view-panel {
+            padding: 24px;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: none;
+        }
+
+        .view-panel.active {
+            display: block;
+        }
+
+        /* Dashboard & Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .card h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .card .stat {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        /* Console Log */
+        .console-box {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            height: 320px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            color: #00ff66;
+            margin-top: 16px;
+        }
+
+        .console-entry {
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
+        .console-entry.error { color: #ff4444; }
+        .console-entry.info { color: #888888; }
+        .console-entry.hit { color: #00ffff; font-weight: bold; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        th {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        /* Palette Grid */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .color-swatch {
+            width: 100%;
+            height: 40px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-swatch:hover, .color-swatch.active {
+            border-color: #ffffff;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 3px;
+            background: var(--border-color);
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+    </style>
 </head>
-
 <body>
 
-<div id="loginView" class="login">
-  <div class="loginbox">
-    <div class="login-logo">BEAM<span>BLADE</span></div>
-    <div class="login-sub">Username availability monitor</div>
-
-    <div class="field">
-      <label>USERNAME</label>
-      <input id="loginUser" autocomplete="username" placeholder="Username">
-    </div>
-
-    <div class="field">
-      <label>PASSWORD</label>
-      <input id="loginPass" type="password" autocomplete="current-password" placeholder="Password">
-    </div>
-
-    <button class="btn primary" onclick="login()">Sign in</button>
-    <div id="loginError" class="notice hidden"></div>
-
-    <div class="notice">
-      GitHub Pages mode: credentials are stored locally in this browser.
-      This is not suitable for protecting real secrets.
-    </div>
-  </div>
-</div>
-
-<div id="appView" class="app hidden">
-
-<aside class="sidebar">
-  <div class="logo">BEAM<span>BLADE</span></div>
-
-  <div class="nav">
-    <div class="nav-title">Monitor</div>
-    <button class="active" onclick="page('dashboard',this)">▦ Dashboard</button>
-    <button onclick="page('sniper',this)">◉ Sniper</button>
-    <button onclick="page('hits',this)">★ Hits</button>
-
-    <div class="nav-title">System</div>
-    <button onclick="page('settings',this)">⚙ Settings</button>
-    <button id="ownerNav" onclick="page('owner',this)">♛ Owner</button>
-  </div>
-
-  <div class="userbox">
-    <div class="userrow">
-      <div class="avatar" id="avatar">B</div>
-      <div>
-        <div class="username" id="sideUser">beamblade</div>
-        <div class="owner" id="sideRole">OWNER</div>
-      </div>
-    </div>
-  </div>
-</aside>
-
-<main class="main">
-
-<section id="dashboardPage">
-
-  <div class="top">
-    <div>
-      <h1>Dashboard</h1>
-      <div class="subtitle">Fast browser-based username monitoring.</div>
-    </div>
-    <div class="actions">
-      <button class="btn" onclick="clearLogs()">Clear logs</button>
-      <button class="btn primary" onclick="page('sniper')">Open Sniper</button>
-    </div>
-  </div>
-
-  <div class="grid">
-    <div class="card">
-      <div class="stat-label">CHECKED</div>
-      <div class="stat blue" id="checked">0</div>
-    </div>
-    <div class="card">
-      <div class="stat-label">AVAILABLE</div>
-      <div class="stat good" id="available">0</div>
-    </div>
-    <div class="card">
-      <div class="stat-label">ERRORS</div>
-      <div class="stat" id="errors">0</div>
-    </div>
-    <div class="card">
-      <div class="stat-label">STATUS</div>
-      <div class="stat" id="status">IDLE</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-head">
-      <h2>Platforms</h2>
-    </div>
-
-    <div class="platforms">
-      <div class="platform">
-        <div class="platform-top">
-          <div class="platform-name">Roblox</div>
-          <span class="badge live">BROWSER API</span>
+    <!-- Authentication Modal -->
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <h2 id="auth-title">BEAMBLADE</h2>
+            <p id="auth-sub">Enter credentials to access sniper platform</p>
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="auth-user" class="form-control" required placeholder="Roblox / Account Username">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="auth-pass" class="form-control" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn" id="auth-btn">LOGIN</button>
+            </form>
+            <div class="auth-toggle" onclick="toggleAuthMode()">
+                <span id="auth-toggle-text">Need an account? Register</span>
+            </div>
         </div>
-        <p>Real username availability checks through Roblox's public username validation endpoint.</p>
-        <button class="btn primary" onclick="selectPlatform('roblox')">Configure</button>
-      </div>
+    </div>
 
-      <div class="platform">
-        <div class="platform-top">
-          <div class="platform-name">Discord</div>
-          <span class="badge unsupported">API REQUIRED</span>
+    <!-- Main Application Structure -->
+    <div id="app-container">
+        <!-- Navigation Sidebar -->
+        <div class="sidebar">
+            <div class="brand-header">
+                BEAMBLADE
+                <span class="badge" id="version-tag">v2.4</span>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item active" onclick="switchView('dashboard')">Dashboard</li>
+                <li class="nav-item" onclick="switchView('sniper')">Sniper Engine</li>
+                <li class="nav-item" onclick="switchView('hits')">Hits & Leaderboard</li>
+                <li class="nav-item" onclick="switchView('settings')">Settings</li>
+                <li class="nav-item" id="owner-nav" style="display:none;" onclick="switchView('owner')">Owner Panel</li>
+            </ul>
+            <div class="user-profile">
+                <div class="user-info">
+                    <span class="user-name" id="display-user">Guest</span>
+                    <span class="user-role" id="display-role">Member</span>
+                </div>
+                <button onclick="logout()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:12px;">Logout</button>
+            </div>
         </div>
-        <p>Discord does not provide a suitable public availability endpoint for a GitHub Pages-only scanner.</p>
-        <button class="btn" onclick="showInfo('Discord checking requires an approved server-side integration.')">Info</button>
-      </div>
 
-      <div class="platform">
-        <div class="platform-top">
-          <div class="platform-name">TikTok</div>
-          <span class="badge unsupported">API REQUIRED</span>
+        <!-- Main Body Panel -->
+        <div class="content-area">
+            <div class="top-bar" id="top-bar-title">
+                Dashboard
+            </div>
+
+            <!-- View: Dashboard -->
+            <div id="view-dashboard" class="view-panel active">
+                <div class="grid-3">
+                    <div class="card">
+                        <h3>Total Hits</h3>
+                        <div class="stat" id="stat-hits">0</div>
+                    </div>
+                    <div class="card">
+                        <h3>Engine Status</h3>
+                        <div class="stat" id="stat-status" style="font-size:20px; color:#888;">IDLE</div>
+                    </div>
+                    <div class="card">
+                        <h3>Current Target</h3>
+                        <div class="stat" id="stat-target" style="font-size:20px;">ALL</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Active Console Log</h3>
+                    <div class="console-box" id="dashboard-console">
+                        <div class="console-entry info">[SYSTEM] Beamblade engine ready. Configure settings and start engine.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View: Sniper Engine -->
+            <div id="view-sniper" class="view-panel">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Sniper Configurations</h3>
+                        <div class="form-group" style="margin-top:12px;">
+                            <label>Target Platform</label>
+                            <select id="sniper-platform" class="form-control" onchange="updateLengthBounds()">
+                                <option value="discord">Discord</option>
+                                <option value="roblox">Roblox</option>
+                                <option value="tiktok">TikTok</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Character Length (<span id="len-bounds">Min: 3, Max: 10</span>)</label>
+                            <input type="number" id="sniper-length" class="form-control" value="4">
+                        </div>
+                        <div class="form-group">
+                            <label>Delay (ms)</label>
+                            <input type="number" id="sniper-delay" class="form-control" value="500" min="100">
+                        </div>
+                        <button class="btn" id="start-btn" onclick="toggleEngine()">START SNIPER</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Webhook Notifications</h3>
+                        <div class="form-group" style="margin-top:12px;">
+                            <label>Discord Webhook URL</label>
+                            <input type="text" id="webhook-url" class="form-control" placeholder="https://discord.com/api/webhooks/..." onchange="saveWebhook()">
+                        </div>
+                        <button class="btn" style="background:var(--bg-tertiary); color:var(--text-primary); border:1px solid var(--border-color);" onclick="testWebhook()">Test Webhook</button>
+                        <p style="font-size:11px; color:var(--text-muted); margin-top:12px;">Hits will automatically dispatch notifications to this webhook when claimed.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:20px;">
+                    <h3>Live Target Log</h3>
+                    <div class="console-box" id="engine-console"></div>
+                </div>
+            </div>
+
+            <!-- View: Hits & Leaderboard -->
+            <div id="view-hits" class="view-panel">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Your Hits</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Platform</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-hits-body">
+                                <tr><td colspan="3" style="color:var(--text-muted);">No hits recorded yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <h3>Best Hits Leaderboard</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Display Name</th>
+                                    <th>Total Hits</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <tr><td>beamblade</td><td>Beam Owner</td><td>42</td></tr>
+                                <tr><td>kxne</td><td>Kxne</td><td>28</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View: Settings -->
+            <div id="view-settings" class="view-panel">
+                <div class="card" style="margin-bottom:20px;">
+                    <h3>Display Settings</h3>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label>Custom Display Name</label>
+                        <input type="text" id="setting-display-name" class="form-control" placeholder="Enter display name" onchange="updateDisplayName()">
+                    </div>
+                    <div class="form-group">
+                        <label>UI Transparency / Opacity</label>
+                        <input type="range" id="setting-opacity" min="0.5" max="1" step="0.01" value="0.98" class="form-control" oninput="updateOpacity(this.value)">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Theme Selection (35+ Options)</h3>
+                    <p style="font-size:12px; color:var(--text-muted);">Select an accent color palette for your interface.</p>
+                    <div class="color-grid" id="palette-grid"></div>
+                </div>
+            </div>
+
+            <!-- View: Owner Panel -->
+            <div id="view-owner" class="view-panel">
+                <div class="card" style="margin-bottom:20px;">
+                    <h3>Owner Administrative Controls</h3>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Elevated controls for user account management and platform permission grants.</p>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Target Username</label>
+                            <input type="text" id="owner-target-user" class="form-control" placeholder="Enter account username">
+                        </div>
+                        <div class="form-group">
+                            <label>Assign Role</label>
+                            <select id="owner-role-select" class="form-control">
+                                <option value="Admin">Admin</option>
+                                <option value="Mod">Moderator</option>
+                                <option value="VIP">VIP User</option>
+                                <option value="Member">Member</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="grantRole()">Apply Role & Perks</button>
+                </div>
+
+                <div class="card">
+                    <h3>System User Directory</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Perks</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="owner-user-table">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
-        <p>TikTok username availability cannot be reliably read from a static browser page without a supported API.</p>
-        <button class="btn" onclick="showInfo('TikTok checking requires an approved server-side integration.')">Info</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="section card">
-    <div class="section-head">
-      <h2>Live terminal</h2>
-      <span class="badge" id="terminalState">STOPPED</span>
-    </div>
-    <div id="console" class="console"></div>
-  </div>
-
-</section>
-
-<section id="sniperPage" class="hidden">
-  <div class="top">
-    <div>
-      <h1>Sniper</h1>
-      <div class="subtitle">Generate and monitor usernames without auto-claiming them.</div>
-    </div>
-    <div class="actions">
-      <button class="btn danger" onclick="stopScanner()">Stop</button>
-      <button class="btn green" onclick="startScanner()">Start</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="section-head"><h2>Configuration</h2></div>
-
-    <div class="controls">
-      <div class="field">
-        <label>PLATFORM</label>
-        <select id="platform">
-          <option value="roblox">Roblox</option>
-          <option value="discord" disabled>Discord — API required</option>
-          <option value="tiktok" disabled>TikTok — API required</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>USERNAME LENGTH</label>
-        <select id="length">
-          <option>3</option>
-          <option>4</option>
-          <option>5</option>
-          <option>6</option>
-          <option>7</option>
-          <option>8</option>
-          <option>9</option>
-          <option>10</option>
-          <option>11</option>
-          <option>12</option>
-          <option>13</option>
-          <option>14</option>
-          <option>15</option>
-          <option>16</option>
-          <option>17</option>
-          <option>18</option>
-          <option>19</option>
-          <option>20</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>CHECK INTERVAL (MS)</label>
-        <input id="interval" type="number" min="1000" value="1500">
-      </div>
-
-      <div class="field">
-        <label>GENERATION MODE</label>
-        <select id="mode">
-          <option value="random">Random</option>
-          <option value="prefix">Prefix</option>
-          <option value="suffix">Suffix</option>
-        </select>
-      </div>
     </div>
 
-    <div class="controls" style="margin-top:10px">
-      <div class="field">
-        <label>CHARACTER SET</label>
-        <input id="charset" value="abcdefghijklmnopqrstuvwxyz0123456789">
-      </div>
-
-      <div class="field">
-        <label>PREFIX</label>
-        <input id="prefix" placeholder="beam">
-      </div>
-
-      <div class="field">
-        <label>SUFFIX</label>
-        <input id="suffix" placeholder="x">
-      </div>
-
-      <div class="field">
-        <label>WEBHOOK</label>
-        <input id="webhook" type="password" placeholder="Discord webhook URL">
-      </div>
-    </div>
-
-    <label class="switch">
-      <input id="keepAwake" type="checkbox">
-      Try to keep this page awake while monitoring
-    </label>
-
-    <label class="switch">
-      <input id="notify" type="checkbox" checked>
-      Browser notification on hit
-    </label>
-  </div>
-
-  <div class="section grid">
-    <div class="card">
-      <div class="stat-label">CHECKED</div>
-      <div class="stat blue" id="checked2">0</div>
-    </div>
-    <div class="card">
-      <div class="stat-label">HITS</div>
-      <div class="stat good" id="available2">0</div>
-    </div>
-    <div class="card">
-      <div class="stat-label">RATE</div>
-      <div class="stat" id="rate">0/min</div>
-    </div>
-    <div class="card">
-      <div class="stat-label">RUNNING</div>
-      <div class="stat" id="running">NO</div>
-    </div>
-  </div>
-</section>
-
-<section id="hitsPage" class="hidden">
-  <div class="top">
-    <div>
-      <h1>Hits</h1>
-      <div class="subtitle">Previously detected available usernames.</div>
-    </div>
-    <button class="btn danger" onclick="clearHits()">Clear hits</button>
-  </div>
-
-  <div class="card">
-    <div id="hitsList"></div>
-  </div>
-</section>
-
-<section id="settingsPage" class="hidden">
-  <div class="top">
-    <div>
-      <h1>Settings</h1>
-      <div class="subtitle">Local browser configuration.</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="field">
-      <label>DISPLAY NAME</label>
-      <input id="displayName">
-    </div>
-
-    <label class="switch">
-      <input id="sound" type="checkbox" checked>
-      Hit sound
-    </label>
-
-    <label class="switch">
-      <input id="dark" type="checkbox" checked disabled>
-      Dark interface
-    </label>
-
-    <br>
-    <button class="btn primary" onclick="saveSettings()">Save settings</button>
-  </div>
-
-  <div class="section card">
-    <h2>GitHub Pages limitation</h2>
-    <p style="color:var(--muted);line-height:1.6">
-      A browser page cannot guarantee continuous execution after iPadOS suspends
-      Safari. The keep-awake option reduces ordinary screen-sleep interruptions,
-      but it cannot override iPadOS background suspension. For true 24/7
-      monitoring, a server-side worker is required.
-    </p>
-  </div>
-</section>
-
-<section id="ownerPage" class="hidden">
-  <div class="top">
-    <div>
-      <h1>Owner Control</h1>
-      <div class="subtitle">BeamBlade owner features.</div>
-    </div>
-  </div>
-
-  <div class="card owner-panel">
-    <div class="section-head">
-      <h2>OWNER ACCESS</h2>
-      <span class="badge" style="color:#ffd36b">BEAMBLADE</span>
-    </div>
-
-    <div class="perks">
-      <div class="perk"><b>Priority Queue</b><small>Preferred local scan scheduling.</small></div>
-      <div class="perk"><b>Speed Controls</b><small>Custom interval configuration.</small></div>
-      <div class="perk"><b>Custom Charset</b><small>Use your own character set.</small></div>
-      <div class="perk"><b>Webhook Alerts</b><small>Instant hit notifications.</small></div>
-      <div class="perk"><b>Analytics+</b><small>Extended local statistics.</small></div>
-      <div class="perk"><b>Hit History</b><small>Persistent browser history.</small></div>
-    </div>
-  </div>
-
-  <div class="section card">
-    <h2>Owner statistics</h2>
-    <br>
-    <div class="grid">
-      <div><div class="stat-label">TOTAL CHECKS</div><div class="stat" id="ownerChecks">0</div></div>
-      <div><div class="stat-label">TOTAL HITS</div><div class="stat good" id="ownerHits">0</div></div>
-      <div><div class="stat-label">SESSION</div><div class="stat blue" id="sessionTime">0m</div></div>
-      <div><div class="stat-label">MODE</div><div class="stat">LOCAL</div></div>
-    </div>
-  </div>
-</section>
-
-</main>
-</div>
-
-<div id="mobilebar" class="mobilebar hidden">
-  <button onclick="page('dashboard')">⌂</button>
-  <button onclick="page('sniper')">◉</button>
-  <button onclick="page('hits')">★</button>
-  <button onclick="page('settings')">⚙</button>
-</div>
-
-<script>
-/*
-  ============================================================
-  GITHUB PAGES CONFIGURATION
-  ============================================================
-
-  IMPORTANT:
-  Anything in this file is publicly readable after deployment.
-
-  Do NOT put a valuable/private password in this file.
-
-  Set this only if you accept that limitation.
-*/
-const OWNER_USERNAME = "beamblade";
-
-/*
-  For a GitHub Pages-only demo, the owner password is intentionally
-  NOT embedded here. Replace the empty string with your own password
-  if you understand that visitors can inspect it.
-*/
-const OWNER_PASSWORD = "";
-
-const state = {
-  user:null,
-  running:false,
-  timer:null,
-  checked:0,
-  available:0,
-  errors:0,
-  hits:JSON.parse(localStorage.getItem("bb_hits") || "[]"),
-  sessionStart:Date.now(),
-  checksAtStart:0
-};
-
-const $ = id => document.getElementById(id);
-
-function log(message,type=""){
-  const el=$("console");
-  const line=document.createElement("div");
-  line.className="log "+type;
-  const t=new Date().toLocaleTimeString();
-  line.innerHTML='<span class="time">['+t+']</span> '+escapeHtml(message);
-  el.appendChild(line);
-  el.scrollTop=el.scrollHeight;
-}
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[c]));
-}
-
-function login(){
-  const u=$("loginUser").value.trim();
-  const p=$("loginPass").value;
-
-  if(u===OWNER_USERNAME && OWNER_PASSWORD && p===OWNER_PASSWORD){
-    state.user=u;
-    sessionStorage.setItem("bb_user",u);
-    enterApp();
-    return;
-  }
-
-  /*
-    If you don't want to embed a password, you can still use a local
-    demo login by changing this branch to your preferred local auth.
-  */
-  $("loginError").textContent =
-    "Owner password is not configured in this static build. Set OWNER_PASSWORD in index.html.";
-  $("loginError").classList.remove("hidden");
-}
-
-function enterApp(){
-  $("loginView").classList.add("hidden");
-  $("appView").classList.remove("hidden");
-  $("mobilebar").classList.remove("hidden");
-
-  $("sideUser").textContent=state.user;
-  $("avatar").textContent=state.user.charAt(0).toUpperCase();
-
-  renderHits();
-  updateStats();
-  log("BeamBlade dashboard initialized.","ok");
-  log("Roblox browser checker ready.","ok");
-  log("Discord/TikTok require supported API integrations.","warn");
-
-  loadSettings();
-}
-
-function page(name,button){
-  ["dashboard","sniper","hits","settings","owner"].forEach(x=>{
-    $(x+"Page").classList.add("hidden");
-  });
-
-  if(name==="owner" && state.user!==OWNER_USERNAME){
-    showInfo("Owner access only.");
-    return;
-  }
-
-  $(name+"Page").classList.remove("hidden");
-
-  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-  if(button)button.classList.add("active");
-
-  if(name==="hits")renderHits();
-  if(name==="owner")updateOwner();
-}
-
-function selectPlatform(platform){
-  $("platform").value=platform;
-  page("sniper");
-}
-
-function showInfo(text){
-  alert(text);
-}
-
-function randomChar(set){
-  return set[Math.floor(Math.random()*set.length)];
-}
-
-function generateUsername(){
-  let len=parseInt($("length").value,10);
-  let set=$("charset").value || "abcdefghijklmnopqrstuvwxyz0123456789";
-  let mode=$("mode").value;
-  let prefix=$("prefix").value;
-  let suffix=$("suffix").value;
-
-  set=set.replace(/[\s]/g,"");
-  if(!set) set="abcdefghijklmnopqrstuvwxyz";
-
-  if(mode==="prefix"){
-    let room=Math.max(0,len-prefix.length);
-    let result=prefix.slice(0,len);
-    while(result.length<len) result+=randomChar(set);
-    return result.slice(0,len);
-  }
-
-  if(mode==="suffix"){
-    let room=Math.max(0,len-suffix.length);
-    let result="";
-    while(result.length<room)result+=randomChar(set);
-    return (result+suffix).slice(-len);
-  }
-
-  let result="";
-  while(result.length<len)result+=randomChar(set);
-  return result;
-}
-
-async function checkRoblox(username){
-  const response=await fetch(
-    "https://users.roblox.com/v1/usernames/users",
-    {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        usernames:[username],
-        excludeBannedUsers:false
-      })
-    }
-  );
-
-  if(!response.ok){
-    throw new Error("Roblox HTTP "+response.status);
-  }
-
-  const data=await response.json();
-  const found=Array.isArray(data.data) && data.data.length>0;
-
-  return {
-    available:!found,
-    platform:"Roblox",
-    username
-  };
-}
-
-async function checkCurrent(){
-  const platform=$("platform").value;
-  const username=generateUsername();
-
-  if(platform!=="roblox"){
-    throw new Error("This platform needs an approved API integration.");
-  }
-
-  return checkRoblox(username);
-}
-
-async function startScanner(){
-  if(state.running)return;
-
-  state.running=true;
-  state.sessionStart=Date.now();
-  state.checksAtStart=state.checked;
-
-  $("running").textContent="YES";
-  $("status").textContent="RUNNING";
-  $("terminalState").textContent="RUNNING";
-
-  log("Scanner started.","ok");
-
-  if($("notify").checked && "Notification" in window){
-    if(Notification.permission==="default"){
-      try{await Notification.requestPermission()}catch(e){}
-    }
-  }
-
-  if($("keepAwake").checked){
-    requestWakeLock();
-  }
-
-  scheduleNext();
-}
-
-function scheduleNext(){
-  if(!state.running)return;
-
-  const delay=Math.max(
-    1000,
-    Number($("interval").value)||1500
-  );
-
-  state.timer=setTimeout(async()=>{
-    await performCheck();
-    scheduleNext();
-  },delay);
-}
-
-async function performCheck(){
-  if(!state.running)return;
-
-  try{
-    const result=await checkCurrent();
-
-    state.checked++;
-
-    if(result.available){
-      state.available++;
-
-      const hit={
-        username:result.username,
-        platform:result.platform,
-        time:new Date().toISOString()
-      };
-
-      state.hits.unshift(hit);
-      state.hits=state.hits.slice(0,200);
-      localStorage.setItem("bb_hits",JSON.stringify(state.hits));
-
-      log(
-        "HIT: "+result.platform+" / "+result.username,
-        "ok"
-      );
-
-      notifyHit(hit);
-      renderHits();
-    }else{
-      log(
-        "Taken: "+result.platform+" / "+result.username
-      );
-    }
-
-  }catch(err){
-    state.checked++;
-    state.errors++;
-    log("Check error: "+err.message,"err");
-  }
-
-  updateStats();
-}
-
-function notifyHit(hit){
-  if($("notify").checked && "Notification" in window){
-    if(Notification.permission==="granted"){
-      new Notification("Username available",{
-        body:hit.platform+" • "+hit.username
-      });
-    }
-  }
-
-  const webhook=$("webhook").value.trim();
-
-  if(webhook){
-    /*
-      Discord webhooks are intentionally user-configured rather
-      than hardcoded. Treat webhook URLs as secrets.
-    */
-    sendDiscordWebhook(webhook,hit);
-  }
-
-  if($("sound").checked){
-    playBeep();
-  }
-}
-
-async function sendDiscordWebhook(url,hit){
-  if(!/^https:\/\/discord(?:app)?\.com\/api\/webhooks\//i.test(url)){
-    log("Webhook ignored: URL does not look like a Discord webhook.","warn");
-    return;
-  }
-
-  try{
-    const response=await fetch(url,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        username:"BeamBlade Sniper",
-        embeds:[{
-          title:"Username Hit",
-          color:0x42e89d,
-          fields:[
-            {name:"Username",value:"`"+hit.username+"`",inline:true},
-            {name:"Platform",value:hit.platform,inline:true},
-            {name:"Detected",value:new Date(hit.time).toLocaleString(),inline:false}
-          ],
-          footer:{text:"BeamBlade • Browser Monitor"}
-        }]
-      })
-    });
-
-    if(response.ok){
-      log("Discord notification sent.","ok");
-    }else{
-      log("Discord webhook returned HTTP "+response.status,"err");
-    }
-  }catch(e){
-    log("Discord webhook error: "+e.message,"err");
-  }
-}
-
-function stopScanner(){
-  state.running=false;
-
-  if(state.timer){
-    clearTimeout(state.timer);
-    state.timer=null;
-  }
-
-  $("running").textContent="NO";
-  $("status").textContent="IDLE";
-  $("terminalState").textContent="STOPPED";
-
-  releaseWakeLock();
-  log("Scanner stopped.","warn");
-  updateStats();
-}
-
-let wakeLock=null;
-
-async function requestWakeLock(){
-  if(!("wakeLock" in navigator)){
-    log("Wake Lock API is unavailable in this browser.","warn");
-    return;
-  }
-
-  try{
-    wakeLock=await navigator.wakeLock.request("screen");
-    log("Screen wake lock enabled.","ok");
-
-    wakeLock.addEventListener("release",()=>{
-      log("Screen wake lock released.","warn");
-    });
-  }catch(e){
-    log("Could not acquire wake lock.","warn");
-  }
-}
-
-function releaseWakeLock(){
-  if(wakeLock){
-    wakeLock.release().catch(()=>{});
-    wakeLock=null;
-  }
-}
-
-function playBeep(){
-  try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-
-    osc.frequency.value=880;
-    gain.gain.value=.07;
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime+.15);
-  }catch(e){}
-}
-
-function updateStats(){
-  $("checked").textContent=state.checked.toLocaleString();
-  $("available").textContent=state.available.toLocaleString();
-  $("errors").textContent=state.errors.toLocaleString();
-
-  $("checked2").textContent=state.checked.toLocaleString();
-  $("available2").textContent=state.available.toLocaleString();
-
-  const mins=Math.max(
-    1,
-    (Date.now()-state.sessionStart)/60000
-  );
-
-  $("rate").textContent=
-    Math.round((state.checked-state.checksAtStart)/mins)+"/min";
-
-  updateOwner();
-}
-
-function updateOwner(){
-  if(!$("ownerChecks"))return;
-
-  $("ownerChecks").textContent=state.checked.toLocaleString();
-  $("ownerHits").textContent=state.available.toLocaleString();
-
-  const mins=Math.floor((Date.now()-state.sessionStart)/60000);
-  $("sessionTime").textContent=mins+"m";
-}
-
-function renderHits(){
-  const list=$("hitsList");
-
-  if(!state.hits.length){
-    list.innerHTML='<div class="empty">No hits detected yet.</div>';
-    return;
-  }
-
-  list.innerHTML=state.hits.map(h=>`
-    <div class="hit">
-      <b>${escapeHtml(h.username)}</b>
-      <span style="color:#6f7b90"> • ${escapeHtml(h.platform)}</span>
-      <div style="color:#647084;font-size:11px;margin-top:4px">
-        ${new Date(h.time).toLocaleString()}
-      </div>
-    </div>
-  `).join("");
-}
-
-function clearHits(){
-  if(!confirm("Delete local hit history?"))return;
-  state.hits=[];
-  localStorage.removeItem("bb_hits");
-  renderHits();
-}
-
-function clearLogs(){
-  $("console").innerHTML="";
-}
-
-function saveSettings(){
-  localStorage.setItem("bb_display",$("displayName").value);
-  localStorage.setItem("bb_sound",$("sound").checked?"1":"0");
-  alert("Settings saved locally.");
-}
-
-function loadSettings(){
-  $("displayName").value=
-    localStorage.getItem("bb_display")||state.user;
-
-  $("sound").checked=
-    localStorage.getItem("bb_sound")!=="0";
-}
-
-/*
-  If Safari/iPad suspends the page, attempt to reacquire the wake lock
-  when visibility returns.
-*/
-document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="visible" && state.running &&
-     $("keepAwake").checked){
-    requestWakeLock();
-  }
-});
-
-setInterval(updateStats,1000);
-
-(function boot(){
-  const u=sessionStorage.getItem("bb_user");
-
-  if(u===OWNER_USERNAME && OWNER_PASSWORD){
-    state.user=u;
-    enterApp();
-  }
-})();
-</script>
-
+    <script>
+        // System State
+        let isAuth = false;
+        let isRegistering = false;
+        let currentUser = null;
+        let isEngineRunning = false;
+        let engineInterval = null;
+
+        // Theme Palettes (36 Colors)
+        const colorPalettes = [
+            "#ffffff", "#888888", "#ff0055", "#00ff66", "#00ccff", "#ffcc00", "#9900ff", "#ff6600",
+            "#00ffcc", "#ff00cc", "#ccff00", "#0066ff", "#ff3300", "#33ff00", "#1188ff", "#e60073",
+            "#00b359", "#b300b3", "#ff9900", "#00e6e6", "#e60000", "#8000ff", "#00ff80", "#ff0080",
+            "#0080ff", "#ff8000", "#00ffaa", "#ff00aa", "#aaff00", "#00aaff", "#ff0055", "#55ff00",
+            "#0055ff", "#ff5500", "#aa00ff", "#00fa9a"
+        ];
+
+        // Platform Constraints
+        const platformLimits = {
+            discord: { min: 3, max: 10 },
+            roblox: { min: 3, max: 10 },
+            tiktok: { min: 2, max: 8 }
+        };
+
+        // Pre-seeded Users
+        const usersDb = JSON.parse(localStorage.getItem('bb_users')) || {
+            "beamblade": { pass: "beamblademsk123", role: "Owner", displayName: "Beamblade Master", perks: ["Owner Panel", "Bypass Delay", "Priority Hooks"] }
+        };
+
+        // Initialize App
+        window.onload = function() {
+            renderPalettes();
+            checkSession();
+            updateLengthBounds();
+            loadOwnerTable();
+        };
+
+        // Auth Logic
+        function toggleAuthMode() {
+            isRegistering = !isRegistering;
+            document.getElementById('auth-title').innerText = isRegistering ? "CREATE ACCOUNT" : "BEAMBLADE";
+            document.getElementById('auth-sub').innerText = isRegistering ? "Register a new username" : "Enter credentials to access sniper platform";
+            document.getElementById('auth-btn').innerText = isRegistering ? "REGISTER" : "LOGIN";
+            document.getElementById('auth-toggle-text').innerText = isRegistering ? "Have an account? Login" : "Need an account? Register";
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const u = document.getElementById('auth-user').value.trim();
+            const p = document.getElementById('auth-pass').value.trim();
+
+            if (isRegistering) {
+                if (usersDb[u]) {
+                    alert("User already exists!");
+                    return;
+                }
+                usersDb[u] = { pass: p, role: "Member", displayName: u, perks: ["Standard Engine"] };
+                localStorage.setItem('bb_users', JSON.stringify(usersDb));
+                alert("Account created successfully! Please login.");
+                toggleAuthMode();
+            } else {
+                if (usersDb[u] && usersDb[u].pass === p) {
+                    currentUser = { username: u, ...usersDb[u] };
+                    sessionStorage.setItem('bb_session', JSON.stringify(currentUser));
+                    applyUserSession();
+                } else {
+                    alert("Invalid credentials.");
+                }
+            }
+        }
+
+        function checkSession() {
+            const sess = sessionStorage.getItem('bb_session');
+            if (sess) {
+                currentUser = JSON.parse(sess);
+                applyUserSession();
+            }
+        }
+
+        function applyUserSession() {
+            document.getElementById('auth-overlay').style.display = 'none';
+            document.getElementById('display-user').innerText = currentUser.displayName || currentUser.username;
+            document.getElementById('display-role').innerText = currentUser.role;
+            document.getElementById('setting-display-name').value = currentUser.displayName || currentUser.username;
+
+            if (currentUser.role === "Owner" || currentUser.role === "Admin") {
+                document.getElementById('owner-nav').style.display = 'flex';
+            } else {
+                document.getElementById('owner-nav').style.display = 'none';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('bb_session');
+            location.reload();
+        }
+
+        // View Navigation
+        function switchView(viewName) {
+            const views = document.querySelectorAll('.view-panel');
+            const navs = document.querySelectorAll('.nav-item');
+            
+            views.forEach(v => v.classList.remove('active'));
+            navs.forEach(n => n.classList.remove('active'));
+
+            document.getElementById(`view-${viewName}`).classList.add('active');
+            document.getElementById('top-bar-title').innerText = viewName.charAt(0).toUpperCase() + viewName.slice(1);
+            
+            event.currentTarget.classList.add('active');
+        }
+
+        // Sniper Controls
+        function updateLengthBounds() {
+            const platform = document.getElementById('sniper-platform').value;
+            const bounds = platformLimits[platform];
+            document.getElementById('len-bounds').innerText = `Min: ${bounds.min}, Max: ${bounds.max}`;
+            document.getElementById('sniper-length').value = bounds.min === 2 ? 3 : 4;
+        }
+
+        function toggleEngine() {
+            const btn = document.getElementById('start-btn');
+            if (!isEngineRunning) {
+                isEngineRunning = true;
+                btn.innerText = "STOP SNIPER";
+                btn.style.background = "#ff3300";
+                document.getElementById('stat-status').innerText = "RUNNING";
+                document.getElementById('stat-status').style.color = "#00ff66";
+                startSniperLoop();
+            } else {
+                isEngineRunning = false;
+                btn.innerText = "START SNIPER";
+                btn.style.background = "var(--accent-color)";
+                document.getElementById('stat-status').innerText = "IDLE";
+                document.getElementById('stat-status').style.color = "#888";
+                clearInterval(engineInterval);
+            }
+        }
+
+        function startSniperLoop() {
+            const platform = document.getElementById('sniper-platform').value;
+            const len = parseInt(document.getElementById('sniper-length').value);
+            const delay = parseInt(document.getElementById('sniper-delay').value);
+
+            document.getElementById('stat-target').innerText = platform.toUpperCase();
+
+            engineInterval = setInterval(() => {
+                if (!isEngineRunning) return;
+
+                const targetName = generateRandomString(len);
+                logConsole(`[CHECKING] ${platform.toUpperCase()} -> ${targetName}`, 'info');
+
+                // Simulation Hit Probability (1 in 30)
+                if (Math.random() < 0.033) {
+                    recordHit(platform, targetName);
+                }
+            }, delay);
+        }
+
+        function generateRandomString(length) {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function logConsole(msg, type = 'info') {
+            const dashCons = document.getElementById('dashboard-console');
+            const engCons = document.getElementById('engine-console');
+
+            const entry = document.createElement('div');
+            entry.className = `console-entry ${type}`;
+            entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+
+            dashCons.appendChild(entry.cloneNode(true));
+            engCons.appendChild(entry);
+
+            dashCons.scrollTop = dashCons.scrollHeight;
+            engCons.scrollTop = engCons.scrollHeight;
+        }
+
+        function recordHit(platform, targetName) {
+            logConsole(`[HIT] Claimed target on ${platform.toUpperCase()}: ${targetName}`, 'hit');
+            
+            // Increment stat count
+            const countEl = document.getElementById('stat-hits');
+            countEl.innerText = parseInt(countEl.innerText) + 1;
+
+            // Add to hits table
+            const tbody = document.getElementById('user-hits-body');
+            if (tbody.children[0] && tbody.children[0].children.length === 1) {
+                tbody.innerHTML = '';
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td><strong>${targetName}</strong></td><td>${platform.toUpperCase()}</td><td>${new Date().toLocaleTimeString()}</td>`;
+            tbody.prepend(tr);
+
+            // Send Discord Webhook
+            sendWebhookNotification(platform, targetName);
+        }
+
+        // Webhook Functionality
+        function saveWebhook() {
+            const url = document.getElementById('webhook-url').value;
+            localStorage.setItem('bb_webhook', url);
+        }
+
+        function sendWebhookNotification(platform, targetName) {
+            const url = localStorage.getItem('bb_webhook') || document.getElementById('webhook-url').value;
+            if (!url) return;
+
+            const payload = {
+                content: `🔔 **BEAMBLADE HIT CLAIMED**\n**Target:** \`${targetName}\`\n**Platform:** ${platform.toUpperCase()}\n**User:** ${currentUser.displayName || currentUser.username}`
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(err => logConsole(`Webhook dispatch failed: ${err}`, 'error'));
+        }
+
+        function testWebhook() {
+            const url = document.getElementById('webhook-url').value;
+            if (!url) {
+                alert("Please enter a webhook URL first.");
+                return;
+            }
+            sendWebhookNotification("TEST", "demo_target");
+            alert("Test payload sent to webhook.");
+        }
+
+        // Customization & Settings
+        function renderPalettes() {
+            const grid = document.getElementById('palette-grid');
+            colorPalettes.forEach(color => {
+                const swatch = document.createElement('div');
+                swatch.className = 'color-swatch';
+                swatch.style.background = color;
+                swatch.onclick = () => setAccentColor(color, swatch);
+                grid.appendChild(swatch);
+            });
+        }
+
+        function setAccentColor(color, element) {
+            document.documentElement.style.setProperty('--accent-color', color);
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            if (element) element.classList.add('active');
+        }
+
+        function updateOpacity(val) {
+            document.documentElement.style.setProperty('--ui-opacity', val);
+        }
+
+        function updateDisplayName() {
+            const name = document.getElementById('setting-display-name').value;
+            if (!name) return;
+            currentUser.displayName = name;
+            usersDb[currentUser.username].displayName = name;
+            localStorage.setItem('bb_users', JSON.stringify(usersDb));
+            sessionStorage.setItem('bb_session', JSON.stringify(currentUser));
+            document.getElementById('display-user').innerText = name;
+        }
+
+        // Owner Functions
+        function loadOwnerTable() {
+            const tbody = document.getElementById('owner-user-table');
+            tbody.innerHTML = '';
+            
+            Object.keys(usersDb).forEach(u => {
+                const user = usersDb[u];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${u}</td>
+                    <td><span class="badge">${user.role}</span></td>
+                    <td>${(user.perks || []).join(', ')}</td>
+                    <td><button onclick="deleteUser('${u}')" style="background:none; border:none; color:#ff4444; cursor:pointer;">Remove</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function grantRole() {
+            const target = document.getElementById('owner-target-user').value.trim();
+            const role = document.getElementById('owner-role-select').value;
+
+            if (!usersDb[target]) {
+                alert("User not found.");
+                return;
+            }
+
+            usersDb[target].role = role;
+            if (role === "Admin") usersDb[target].perks = ["Owner Panel", "Priority Hooks", "Custom Themes"];
+            if (role === "Mod") usersDb[target].perks = ["Priority Hooks", "Console Logs"];
+            
+            localStorage.setItem('bb_users', JSON.stringify(usersDb));
+            loadOwnerTable();
+            alert(`Role updated for ${target}`);
+        }
+
+        function deleteUser(u) {
+            if (u === "beamblade") {
+                alert("Cannot delete primary owner account.");
+                return;
+            }
+            delete usersDb[u];
+            localStorage.setItem('bb_users', JSON.stringify(usersDb));
+            loadOwnerTable();
+        }
+    </script>
 </body>
 </html>
