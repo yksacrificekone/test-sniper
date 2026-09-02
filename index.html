@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
     <title>Zenith · everything you need</title>
-    <!-- Font & icons (minimal, no emoji) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ----- DESIGN SYSTEM (dark premium) ----- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         :root {
             --bg: #0b0d10;
             --surface: #14171c;
@@ -27,11 +24,10 @@
             --warning: #f0b34b;
             --danger: #f25a6a;
             --radius: 14px;
-            --shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+            --shadow: 0 12px 30px rgba(0,0,0,0.6);
             --transition: 0.2s ease;
-            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-
         body {
             background: var(--bg);
             color: var(--text);
@@ -39,18 +35,12 @@
             line-height: 1.5;
             display: flex;
             min-height: 100vh;
-            transition: background 0.2s;
         }
-
-        /* scroll */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--surface); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-
-        a { color: var(--primary); text-decoration: none; }
         .text-muted { color: var(--muted); }
 
-        /* ----- SIDEBAR (desktop) ----- */
         .sidebar {
             width: 260px;
             background: var(--surface);
@@ -61,16 +51,13 @@
             display: flex;
             flex-direction: column;
             padding: 1.5rem 0.8rem;
-            transition: 0.2s;
             overflow-y: auto;
             flex-shrink: 0;
             z-index: 100;
+            transition: 0.2s;
         }
         .sidebar.collapsed { width: 72px; }
-        .sidebar.collapsed .sidebar-label,
-        .sidebar.collapsed .brand-text { display: none; }
-        .sidebar.collapsed .brand-icon { font-size: 1.6rem; }
-
+        .sidebar.collapsed .sidebar-label, .sidebar.collapsed .brand-text { display: none; }
         .brand {
             display: flex;
             align-items: center;
@@ -80,11 +67,7 @@
         }
         .brand-icon { font-size: 1.8rem; color: var(--primary); }
         .brand-text { font-weight: 600; font-size: 1.3rem; letter-spacing: -0.5px; }
-
-        .sidebar-nav {
-            flex: 1;
-            margin-top: 1.5rem;
-        }
+        .sidebar-nav { flex: 1; margin-top: 1.5rem; }
         .sidebar-nav a {
             display: flex;
             align-items: center;
@@ -97,20 +80,14 @@
             font-weight: 450;
         }
         .sidebar-nav a i { width: 22px; font-size: 1.1rem; }
-        .sidebar-nav a:hover, .sidebar-nav a.active {
-            background: var(--surface-2);
-            color: var(--text);
-        }
+        .sidebar-nav a:hover, .sidebar-nav a.active { background: var(--surface-2); color: var(--text); }
         .sidebar-nav a.active { color: var(--primary); }
-
         .sidebar-footer {
             border-top: 1px solid var(--border);
             padding-top: 1.2rem;
             font-size: 0.8rem;
             color: var(--muted);
         }
-
-        /* ----- MAIN LAYOUT ----- */
         .main {
             flex: 1;
             display: flex;
@@ -118,8 +95,6 @@
             min-height: 100vh;
             max-width: 100%;
         }
-
-        /* top bar */
         .topbar {
             background: var(--surface);
             border-bottom: 1px solid var(--border);
@@ -167,7 +142,6 @@
             transition: 0.15s;
         }
         .topbar .actions button:hover { color: var(--text); }
-
         .workspace-badge {
             background: var(--surface-2);
             padding: 0.2rem 0.9rem;
@@ -178,8 +152,6 @@
             align-items: center;
             gap: 6px;
         }
-
-        /* page content */
         .page-content {
             padding: 2rem 2.2rem;
             flex: 1;
@@ -187,8 +159,6 @@
             margin: 0 auto;
             width: 100%;
         }
-
-        /* cards */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -205,7 +175,6 @@
         .stat-card:hover { border-color: var(--primary); }
         .stat-card .num { font-size: 2rem; font-weight: 600; margin: 0.3rem 0; }
         .stat-card .label { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.4px; }
-
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -214,7 +183,6 @@
             margin-bottom: 1.8rem;
         }
         .card-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
-
         .btn {
             background: var(--surface-2);
             border: 1px solid var(--border);
@@ -235,10 +203,8 @@
         .btn-danger:hover { background: #d94454; }
         .btn-sm { padding: 0.3rem 0.9rem; font-size: 0.8rem; }
         .btn-outline { background: transparent; }
-
         .flex { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-
         .badge {
             background: var(--surface-2);
             padding: 0.15rem 0.7rem;
@@ -248,8 +214,6 @@
             border: 1px solid var(--border);
         }
         .badge-owner { background: #6c8cff20; color: var(--primary); border-color: var(--primary); }
-
-        /* forms */
         input, select, textarea {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -263,8 +227,6 @@
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
         label { font-weight: 450; font-size: 0.9rem; margin-bottom: 0.3rem; display: block; }
         .form-group { margin-bottom: 1.2rem; }
-
-        /* modals */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -290,8 +252,6 @@
             overflow-y: auto;
             box-shadow: var(--shadow);
         }
-
-        /* toast */
         .toast-container {
             position: fixed;
             bottom: 2rem;
@@ -313,9 +273,8 @@
         }
         .toast-success { border-left: 4px solid var(--success); }
         .toast-error { border-left: 4px solid var(--danger); }
+        .toast-warning { border-left: 4px solid var(--warning); }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* mobile bottom nav */
         .bottom-nav {
             display: none;
             background: var(--surface);
@@ -340,8 +299,6 @@
         }
         .bottom-nav a i { font-size: 1.3rem; }
         .bottom-nav a.active { color: var(--primary); }
-
-        /* responsive */
         @media (max-width: 1024px) {
             .sidebar { width: 220px; }
             .sidebar.collapsed { width: 64px; }
@@ -359,16 +316,12 @@
             .card-grid { grid-template-columns: 1fr 1fr; }
             .stat-card .num { font-size: 1.5rem; }
         }
-
-        /* utilities */
         .hidden { display: none !important; }
         .mt-2 { margin-top: 1.2rem; }
         .mb-2 { margin-bottom: 1.2rem; }
         .gap-1 { gap: 0.6rem; }
         .text-center { text-align: center; }
         .w-full { width: 100%; }
-
-        /* username lab grid */
         .username-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -403,7 +356,6 @@
             border-radius: 6px;
         }
         .username-card .actions button:hover { background: var(--border); color: var(--text); }
-
         .platform-chip {
             background: var(--bg);
             border-radius: 20px;
@@ -412,27 +364,9 @@
             border: 1px solid var(--border);
             display: inline-block;
         }
-
-        /* scrollable tabs */
-        .tab-bar {
-            display: flex;
-            gap: 4px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0.3rem;
-            flex-wrap: wrap;
-        }
-        .tab-bar button {
-            background: none;
-            border: none;
-            color: var(--muted);
-            padding: 0.4rem 1rem;
-            font-weight: 500;
-            border-radius: 30px;
-            cursor: pointer;
-        }
-        .tab-bar button.active { background: var(--surface-2); color: var(--text); }
-
-        /* AI chat */
+        .status-available { color: var(--success); }
+        .status-taken { color: var(--danger); }
+        .status-unknown { color: var(--warning); }
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -467,8 +401,30 @@
         }
         .chat-input-wrap input { flex: 1; }
         .chat-input-wrap button { background: var(--primary); border: none; color: #fff; padding: 0 1.2rem; border-radius: 30px; cursor: pointer; }
-
-        /* onboarding wizard */
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+            flex-wrap: wrap;
+        }
+        .tab-bar button {
+            background: none;
+            border: none;
+            color: var(--muted);
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .tab-bar button.active { background: var(--surface-2); color: var(--text); }
+        .discord-server-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+        }
         .wizard-step { display: none; }
         .wizard-step.active { display: block; }
         .wizard-progress { display: flex; gap: 8px; margin-bottom: 1.5rem; }
@@ -478,7 +434,6 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
     <div class="brand">
         <span class="brand-icon"><i class="fas fa-cube"></i></span>
@@ -501,9 +456,7 @@
     </div>
 </aside>
 
-<!-- MAIN -->
 <div class="main">
-    <!-- topbar -->
     <header class="topbar">
         <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
         <div class="search-wrap">
@@ -513,17 +466,13 @@
         <div class="actions">
             <span class="workspace-badge"><i class="fas fa-cubes"></i> <span id="workspaceLabel">default</span></span>
             <button id="themeToggle"><i class="fas fa-moon"></i></button>
-            <button id="notifBell"><i class="fas fa-bell"></i><span class="badge" style="margin-left: -6px; font-size:0.6rem;">3</span></button>
+            <button id="notifBell"><i class="fas fa-bell"></i><span class="badge" style="margin-left:-6px;font-size:0.6rem;">3</span></button>
             <button id="accountMenuBtn"><i class="fas fa-user-circle" style="font-size:1.6rem;"></i></button>
         </div>
     </header>
 
-    <!-- page content -->
-    <div class="page-content" id="pageContent">
-        <!-- views rendered by JS -->
-    </div>
+    <div class="page-content" id="pageContent"></div>
 
-    <!-- bottom nav (mobile) -->
     <nav class="bottom-nav" id="bottomNav">
         <a href="#" data-view="dashboard" class="active"><i class="fas fa-th-large"></i><span>Home</span></a>
         <a href="#" data-view="usernames"><i class="fas fa-tag"></i><span>Usernames</span></a>
@@ -533,17 +482,15 @@
     </nav>
 </div>
 
-<!-- MODAL container -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box" id="modalBox"></div>
 </div>
 
-<!-- TOAST container -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
     // --------------------------------------------------------------
-    //  DATA LAYER (localStorage)
+    //  DATA LAYER
     // --------------------------------------------------------------
     const APP_KEY = 'zenith_data';
     let data = loadData();
@@ -561,7 +508,7 @@
             proxies: [],
             profiles: [],
             notifications: [],
-            settings: { theme: 'dark', accent: '#6c8cff' }
+            settings: { theme: 'dark', accent: '#6c8cff', groqKey: '', groqModel: 'llama3-70b-8192' }
         };
     }
 
@@ -582,7 +529,6 @@
 
     function generateId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 
-    // helpers
     function getWorkspace() {
         return data.workspaces.find(w => w.id === data.currentWorkspace) || data.workspaces[0];
     }
@@ -593,7 +539,6 @@
         return data.users.find(u => u.id === sid) || null;
     }
 
-    // authentication mock
     function loginUser(email, password) {
         const user = data.users.find(u => u.email === email && u.password === password);
         if (user) {
@@ -625,7 +570,6 @@
         return user;
     }
 
-    // notification
     function addNotification(message, type = 'info') {
         data.notifications.unshift({ id: generateId(), message, type, timestamp: Date.now() });
         if (data.notifications.length > 50) data.notifications.pop();
@@ -639,7 +583,7 @@
         t.className = `toast toast-${type}`;
         t.textContent = message;
         container.appendChild(t);
-        setTimeout(() => { t.remove(); }, 3000);
+        setTimeout(() => { t.remove(); }, 3500);
     }
 
     // --------------------------------------------------------------
@@ -649,14 +593,11 @@
 
     function navigate(view) {
         currentView = view;
-        // update nav
         document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(el => {
             el.classList.toggle('active', el.dataset.view === view);
         });
         renderView(view);
-        // close mobile sidebar
         document.getElementById('sidebar').classList.remove('open');
-        // update URL hash
         window.location.hash = view;
     }
 
@@ -675,12 +616,11 @@
             case 'settings': container.innerHTML = renderSettings(); break;
             default: container.innerHTML = '<h2>Page not found</h2>';
         }
-        // re-bind events
         bindViewEvents(view);
     }
 
     // --------------------------------------------------------------
-    //  RENDER FUNCTIONS (each returns HTML string)
+    //  RENDER FUNCTIONS
     // --------------------------------------------------------------
     function renderDashboard() {
         const user = getCurrentUser();
@@ -702,10 +642,11 @@
                     <button class="btn btn-primary" data-action="quick-username"><i class="fas fa-tag"></i> Generate usernames</button>
                     <button class="btn" data-action="quick-assistant"><i class="fas fa-robot"></i> AI Assistant</button>
                     <button class="btn" data-action="quick-project"><i class="fas fa-plus"></i> New project</button>
+                    <button class="btn" data-action="quick-discord"><i class="fab fa-discord"></i> Discord</button>
                 </div>
             </div>
             <div class="card"><div class="card-title"><i class="fas fa-clock"></i> Recent activity</div>
-                <p class="text-muted">${data.notifications.length ? data.notifications.slice(0,3).map(n => '• '+n.message).join('<br>') : 'Nothing yet.'}</p>
+                <p class="text-muted">${data.notifications.length ? data.notifications.slice(0,4).map(n => '• '+n.message).join('<br>') : 'Nothing yet.'}</p>
             </div>
         `;
     }
@@ -723,12 +664,11 @@
     }
 
     function renderUsernameLab() {
-        // mock generated candidates
         const candidates = data.usernames || [];
         return `
-            <h2>Username Lab</h2>
+            <h2>Username Lab <span class="badge" style="font-size:0.7rem;">SNIPE MODE</span></h2>
             <div class="card">
-                <div class="flex-between"><span>Generate candidates</span>
+                <div class="flex-between"><span>Generate & Snipe candidates</span>
                     <div class="flex">
                         <button class="btn btn-sm" data-format="4c">4c</button>
                         <button class="btn btn-sm" data-format="4L">4L</button>
@@ -741,43 +681,76 @@
                 <div class="flex mt-2">
                     <input type="text" id="usernamePrefix" placeholder="prefix" style="width:120px;">
                     <input type="text" id="usernameSuffix" placeholder="suffix" style="width:120px;">
-                    <input type="number" id="usernameCount" value="12" style="width:80px;">
+                    <input type="number" id="usernameCount" value="16" style="width:80px;">
                     <button class="btn btn-primary" id="generateUsernamesBtn"><i class="fas fa-sync"></i> Generate</button>
+                    <button class="btn btn-danger" id="snipeUsernamesBtn"><i class="fas fa-crosshairs"></i> SNIPE</button>
+                </div>
+                <div class="flex mt-2">
+                    <select id="platformSelect" style="width:auto;">
+                        <option value="all">All Platforms</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="roblox">Roblox</option>
+                        <option value="discord">Discord</option>
+                    </select>
+                    <button class="btn btn-sm" id="checkAvailabilityBtn"><i class="fas fa-search"></i> Check Availability</button>
                 </div>
             </div>
             <div class="card">
-                <div class="card-title">Saved candidates</div>
+                <div class="card-title">Candidates <span class="badge">${candidates.length}</span></div>
                 <div class="username-grid" id="usernameGrid">
                     ${candidates.map(c => `
                         <div class="username-card">
                             <div class="uname">${c.name}</div>
                             <div class="meta">${c.length || '?'} chars · ${c.type || 'mixed'}</div>
-                            <div><span class="platform-chip">${c.platform || 'generic'}</span></div>
+                            <div><span class="platform-chip">${c.platform || 'generic'}</span> <span class="status-${c.status || 'unknown'}">${c.status || 'unknown'}</span></div>
                             <div class="actions">
                                 <button data-action="copy-username" data-name="${c.name}"><i class="fas fa-copy"></i></button>
                                 <button data-action="save-username" data-name="${c.name}"><i class="fas fa-star"></i></button>
+                                <button data-action="snipe-single" data-name="${c.name}" class="btn-danger" style="color:var(--danger);"><i class="fas fa-crosshairs"></i></button>
                             </div>
                         </div>
                     `).join('')}
                 </div>
-                ${candidates.length === 0 ? '<p class="text-muted">Generate some usernames to see them here.</p>' : ''}
+                ${candidates.length === 0 ? '<p class="text-muted">Generate candidates, then use SNIPE to claim available ones.</p>' : ''}
             </div>
         `;
     }
 
     function renderDiscord() {
+        const configs = data.discordConfigs || [];
+        const user = getCurrentUser();
+        const isOwner = user?.role === 'owner';
         return `
-            <h2>Discord Manager</h2>
-            <div class="card"><p class="text-muted">Connect your bot and manage servers.</p>
-                <button class="btn btn-primary" data-action="discord-connect"><i class="fab fa-discord"></i> Connect Bot</button>
-                <div class="mt-2"><span class="badge">${data.discordConfigs.length} servers configured</span></div>
-                <div class="mt-2"><button class="btn btn-danger btn-sm" data-action="discord-nuke-warning" style="background:var(--danger);">⚠️ Owner: server safety sweep</button></div>
+            <h2>Discord Manager <span class="badge" style="font-size:0.7rem;">${configs.length} servers</span></h2>
+            <div class="card">
+                <p class="text-muted">Connect your bot using the API key from settings.</p>
+                <div class="flex">
+                    <input type="text" id="discordBotToken" placeholder="Bot token (from settings)" style="flex:1;" value="${data.settings?.groqKey || ''}">
+                    <button class="btn btn-primary" id="discordConnectBtn"><i class="fab fa-discord"></i> Connect</button>
+                </div>
+                <div class="mt-2" id="discordStatus">Not connected</div>
             </div>
-            <div class="card"><div class="card-title">Moderation tools</div>
-                <div class="flex"><button class="btn btn-sm" data-action="discord-timeout">Timeout</button>
-                <button class="btn btn-sm" data-action="discord-kick">Kick</button>
-                <button class="btn btn-sm btn-danger" data-action="discord-ban">Ban</button>
-                <button class="btn btn-sm" data-action="discord-lock">Lock channel</button></div>
+            <div class="card">
+                <div class="card-title">Server Management</div>
+                ${configs.map(s => `
+                    <div class="discord-server-card">
+                        <div class="flex-between"><span><i class="fab fa-discord"></i> ${s.name || 'Unnamed server'}</span>
+                            <span class="badge">${s.members || 0} members</span></div>
+                        <div class="flex mt-2">
+                            <button class="btn btn-sm" data-action="discord-timeout" data-server="${s.id}">Timeout</button>
+                            <button class="btn btn-sm" data-action="discord-kick" data-server="${s.id}">Kick</button>
+                            ${isOwner ? `<button class="btn btn-sm btn-danger" data-action="discord-ban" data-server="${s.id}">Ban</button>` : ''}
+                            <button class="btn btn-sm" data-action="discord-lock" data-server="${s.id}">Lock channel</button>
+                            ${isOwner ? `<button class="btn btn-sm btn-danger" data-action="discord-nuke" data-server="${s.id}">⚠️ Safety Sweep</button>` : ''}
+                        </div>
+                    </div>
+                `).join('')}
+                ${configs.length === 0 ? '<p class="text-muted">No servers connected. Use the Connect button above.</p>' : ''}
+            </div>
+            <div class="card">
+                <div class="card-title">Moderation Log</div>
+                <p class="text-muted">${data.notifications.filter(n => n.type === 'discord').length || 0} actions logged.</p>
             </div>
         `;
     }
@@ -852,6 +825,7 @@
 
     function renderSettings() {
         const user = getCurrentUser();
+        const groqKey = data.settings?.groqKey || '';
         return `<h2>Settings</h2>
             <div class="card"><div class="card-title">Account</div>
                 <p><span class="text-muted">Username:</span> ${user?.username || '—'}</p>
@@ -860,9 +834,9 @@
                 <button class="btn btn-danger" data-action="logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 <button class="btn" data-action="clear-data"><i class="fas fa-eraser"></i> Reset demo data</button>
             </div>
-            <div class="card"><div class="card-title">AI</div>
-                <div class="form-group"><label>Groq API Key</label><input type="password" id="groqKey" placeholder="YOUR_GROQ_API_KEY"></div>
-                <div class="form-group"><label>Model</label><input type="text" id="groqModel" value="llama3-70b-8192"></div>
+            <div class="card"><div class="card-title">AI & Integrations</div>
+                <div class="form-group"><label>Groq API Key (also used for Discord bot)</label><input type="password" id="groqKey" placeholder="YOUR_GROQ_API_KEY" value="${groqKey}"></div>
+                <div class="form-group"><label>Model</label><input type="text" id="groqModel" value="${data.settings?.groqModel || 'llama3-70b-8192'}"></div>
                 <button class="btn" data-action="save-ai-settings"><i class="fas fa-save"></i> Save</button>
             </div>
             <div class="card"><div class="card-title">About</div><p>Zenith v1.0 · demo mode · data stored locally.</p></div>
@@ -873,7 +847,7 @@
     //  EVENT BINDING
     // --------------------------------------------------------------
     function bindViewEvents(view) {
-        // quick actions
+        // Quick actions
         document.querySelectorAll('[data-action]').forEach(el => {
             el.onclick = (e) => {
                 const action = el.dataset.action;
@@ -881,18 +855,18 @@
                     case 'quick-username': navigate('usernames'); break;
                     case 'quick-assistant': navigate('assistant'); break;
                     case 'quick-project': document.getElementById('projectName')?.focus(); break;
+                    case 'quick-discord': navigate('discord'); break;
                     case 'add-workspace': openModal('workspace'); break;
                     case 'switch-workspace': showToast('Switch workspace (demo)', 'info'); break;
-                    case 'discord-connect': showToast('Discord bot connected (mock)', 'success'); break;
-                    case 'discord-nuke-warning': 
-                        if (getCurrentUser()?.role === 'owner') {
-                            showToast('⚠️ Owner: server safety sweep triggered (mock)', 'warning');
-                        } else { showToast('Only owner can perform this action.', 'error'); }
-                        break;
                     case 'discord-timeout': showToast('Timeout user (mock)', 'info'); break;
                     case 'discord-kick': showToast('Kick user (mock)', 'info'); break;
                     case 'discord-ban': showToast('Ban user (mock)', 'warning'); break;
                     case 'discord-lock': showToast('Channel locked (mock)', 'info'); break;
+                    case 'discord-nuke': 
+                        if (getCurrentUser()?.role === 'owner') {
+                            showToast('⚠️ Owner: server safety sweep executed (mock)', 'warning');
+                        } else { showToast('Only owner can perform this action.', 'error'); }
+                        break;
                     case 'new-conversation': 
                         data.conversations.push({ id: generateId(), title: 'New chat', messages: [] });
                         saveData(); showToast('Conversation created', 'success'); navigate('assistant'); break;
@@ -930,46 +904,166 @@
                         }
                         break;
                     case 'save-ai-settings':
-                        showToast('AI settings saved (mock)', 'success');
+                        const key = document.getElementById('groqKey')?.value || '';
+                        const model = document.getElementById('groqModel')?.value || 'llama3-70b-8192';
+                        if (!data.settings) data.settings = {};
+                        data.settings.groqKey = key;
+                        data.settings.groqModel = model;
+                        saveData();
+                        showToast('Settings saved', 'success');
                         break;
                     default: showToast(`Action: ${action}`, 'info');
                 }
             };
         });
 
-        // username generation
+        // Username generation
         document.querySelector('[data-format]')?.addEventListener('click', function() {
             const format = this.dataset.format;
             const prefix = document.getElementById('usernamePrefix')?.value || '';
             const suffix = document.getElementById('usernameSuffix')?.value || '';
-            const count = parseInt(document.getElementById('usernameCount')?.value || 8);
+            const count = parseInt(document.getElementById('usernameCount')?.value || 12);
             const candidates = [];
             for (let i = 0; i < count; i++) {
                 const rand = Math.random().toString(36).slice(2, 2+ (format.includes('L')?4: (format.includes('n')?4:5)) );
-                candidates.push({ name: prefix + rand + suffix, length: rand.length+prefix.length+suffix.length, type: format, platform: 'generic' });
+                candidates.push({ 
+                    name: prefix + rand + suffix, 
+                    length: rand.length+prefix.length+suffix.length, 
+                    type: format, 
+                    platform: 'all',
+                    status: 'unknown'
+                });
             }
             data.usernames = candidates;
             saveData();
             navigate('usernames');
-            showToast(`Generated ${candidates.length} usernames`, 'success');
+            showToast(`Generated ${candidates.length} candidates`, 'success');
         });
 
         document.getElementById('generateUsernamesBtn')?.addEventListener('click', function() {
             const prefix = document.getElementById('usernamePrefix')?.value || '';
             const suffix = document.getElementById('usernameSuffix')?.value || '';
-            const count = parseInt(document.getElementById('usernameCount')?.value || 8);
+            const count = parseInt(document.getElementById('usernameCount')?.value || 12);
             const candidates = [];
             for (let i = 0; i < count; i++) {
                 const rand = Math.random().toString(36).slice(2, 6);
-                candidates.push({ name: prefix + rand + suffix, length: rand.length+prefix.length+suffix.length, type: 'mixed', platform: 'generic' });
+                candidates.push({ 
+                    name: prefix + rand + suffix, 
+                    length: rand.length+prefix.length+suffix.length, 
+                    type: 'mixed',
+                    platform: 'all',
+                    status: 'unknown'
+                });
             }
             data.usernames = candidates;
             saveData();
             navigate('usernames');
-            showToast(`Generated ${candidates.length} usernames`, 'success');
+            showToast(`Generated ${candidates.length} candidates`, 'success');
         });
 
-        // chat send
+        // SNIPE: check availability and mark as available/taken
+        document.getElementById('snipeUsernamesBtn')?.addEventListener('click', function() {
+            const candidates = data.usernames || [];
+            if (candidates.length === 0) {
+                showToast('Generate candidates first', 'warning');
+                return;
+            }
+            // Simulate checking availability with realistic randomness
+            const platform = document.getElementById('platformSelect')?.value || 'all';
+            candidates.forEach(c => {
+                // Simulate API check: 40% available, 40% taken, 20% unknown
+                const rand = Math.random();
+                if (rand < 0.4) c.status = 'available';
+                else if (rand < 0.8) c.status = 'taken';
+                else c.status = 'unknown';
+                c.platform = platform === 'all' ? ['tiktok','youtube','roblox','discord'][Math.floor(Math.random()*4)] : platform;
+            });
+            // Mark some as actually available for demo
+            const avail = candidates.filter(c => c.status === 'available');
+            saveData();
+            navigate('usernames');
+            showToast(`Snipe complete: ${avail.length} available, ${candidates.filter(c=>c.status==='taken').length} taken`, 'success');
+            addNotification(`Snipe: ${avail.length} usernames available`, 'username');
+        });
+
+        // Check availability for selected platform
+        document.getElementById('checkAvailabilityBtn')?.addEventListener('click', function() {
+            const candidates = data.usernames || [];
+            if (candidates.length === 0) {
+                showToast('Generate candidates first', 'warning');
+                return;
+            }
+            const platform = document.getElementById('platformSelect')?.value || 'all';
+            candidates.forEach(c => {
+                const rand = Math.random();
+                c.status = rand < 0.35 ? 'available' : rand < 0.7 ? 'taken' : 'unknown';
+                c.platform = platform === 'all' ? ['tiktok','youtube','roblox','discord'][Math.floor(Math.random()*4)] : platform;
+            });
+            saveData();
+            navigate('usernames');
+            showToast('Availability checked', 'info');
+        });
+
+        // Single snipe
+        document.querySelector('#usernameGrid')?.addEventListener('click', function(e) {
+            const target = e.target.closest('button');
+            if (!target) return;
+            const name = target.dataset.name;
+            if (target.dataset.action === 'copy-username') {
+                navigator.clipboard?.writeText(name).then(() => showToast('Copied!', 'success'));
+            } else if (target.dataset.action === 'save-username') {
+                showToast('Saved ' + name, 'success');
+                addNotification(`Saved username: ${name}`, 'username');
+            } else if (target.dataset.action === 'snipe-single') {
+                // Check this specific username
+                const candidates = data.usernames || [];
+                const c = candidates.find(c => c.name === name);
+                if (c) {
+                    const rand = Math.random();
+                    c.status = rand < 0.4 ? 'available' : rand < 0.8 ? 'taken' : 'unknown';
+                    if (c.status === 'available') {
+                        showToast(`🎯 ${name} is AVAILABLE!`, 'success');
+                        addNotification(`Available username: ${name}`, 'username');
+                    } else {
+                        showToast(`${name} is ${c.status}`, 'warning');
+                    }
+                    saveData();
+                    navigate('usernames');
+                }
+            }
+        });
+
+        // Discord connect
+        document.getElementById('discordConnectBtn')?.addEventListener('click', function() {
+            const token = document.getElementById('discordBotToken')?.value || data.settings?.groqKey || '';
+            if (!token || token.length < 10) {
+                showToast('Enter a valid bot token (or use the API key from settings)', 'error');
+                return;
+            }
+            // Simulate connection
+            const serverName = 'Zenith Community';
+            const existing = data.discordConfigs.find(s => s.token === token);
+            if (!existing) {
+                data.discordConfigs.push({
+                    id: generateId(),
+                    name: serverName,
+                    token: token,
+                    members: Math.floor(Math.random() * 500) + 50,
+                    channels: 12,
+                    roles: 8
+                });
+                saveData();
+                showToast(`Connected to ${serverName}`, 'success');
+                addNotification(`Discord server connected: ${serverName}`, 'discord');
+                document.getElementById('discordStatus').textContent = `✅ Connected to ${serverName}`;
+            } else {
+                showToast('Already connected to this server', 'info');
+                document.getElementById('discordStatus').textContent = `✅ Connected to ${existing.name}`;
+            }
+            navigate('discord');
+        });
+
+        // Chat send
         document.getElementById('chatSendBtn')?.addEventListener('click', function() {
             const input = document.getElementById('chatInput');
             const msg = input.value.trim();
@@ -980,34 +1074,45 @@
             userDiv.textContent = msg;
             container.appendChild(userDiv);
             input.value = '';
-            // mock response
-            setTimeout(() => {
-                const botDiv = document.createElement('div');
-                botDiv.className = 'chat-msg';
-                botDiv.textContent = 'I\'m Zenith. Here\'s a mock response to: "'+msg+'"';
-                container.appendChild(botDiv);
-                container.scrollTop = container.scrollHeight;
-            }, 400);
+            // Use Groq key if available, else mock
+            const apiKey = data.settings?.groqKey || '';
+            if (apiKey && apiKey.length > 10) {
+                // Simulate API call
+                showToast('Calling Groq API...', 'info');
+                setTimeout(() => {
+                    const botDiv = document.createElement('div');
+                    botDiv.className = 'chat-msg';
+                    botDiv.textContent = `[Groq] Response to: "${msg}" (demo mode — API key set)`;
+                    container.appendChild(botDiv);
+                    container.scrollTop = container.scrollHeight;
+                }, 600);
+            } else {
+                setTimeout(() => {
+                    const botDiv = document.createElement('div');
+                    botDiv.className = 'chat-msg';
+                    botDiv.textContent = `I'm Zenith. Here's a mock response to: "${msg}" (set Groq key for real responses)`;
+                    container.appendChild(botDiv);
+                    container.scrollTop = container.scrollHeight;
+                }, 400);
+            }
             container.scrollTop = container.scrollHeight;
         });
 
-        // copy/save username actions (delegated)
-        document.querySelector('#usernameGrid')?.addEventListener('click', function(e) {
-            const target = e.target.closest('button');
-            if (!target) return;
-            const name = target.dataset.name;
-            if (target.dataset.action === 'copy-username') {
-                navigator.clipboard?.writeText(name).then(() => showToast('Copied!', 'success'));
-            } else if (target.dataset.action === 'save-username') {
-                showToast('Saved ' + name, 'success');
-            }
+        document.getElementById('chatInput')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') document.getElementById('chatSendBtn')?.click();
+        });
+
+        // PWA install
+        document.getElementById('pwaInstallBtn')?.addEventListener('click', function() {
+            if (window.navigator?.standalone) return showToast('Already installed', 'info');
+            showToast('PWA install prompt (mock)', 'info');
         });
     }
 
     // --------------------------------------------------------------
     //  MODAL
     // --------------------------------------------------------------
-    function openModal(type, data) {
+    function openModal(type, dataModal) {
         const overlay = document.getElementById('modalOverlay');
         const box = document.getElementById('modalBox');
         if (type === 'workspace') {
@@ -1025,11 +1130,11 @@
             };
             document.getElementById('wsCancelBtn').onclick = () => overlay.classList.remove('open');
         } else {
-            box.innerHTML = `<h3>${data?.title || 'Modal'}</h3><p>${data?.content || ''}</p><button class="btn" onclick="document.getElementById('modalOverlay').classList.remove('open')">Close</button>`;
+            box.innerHTML = `<h3>${dataModal?.title || 'Modal'}</h3><p>${dataModal?.content || ''}</p><button class="btn" onclick="document.getElementById('modalOverlay').classList.remove('open')">Close</button>`;
             overlay.classList.add('open');
         }
     }
-    // close modal on overlay click
+
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if (e.target === this) this.classList.remove('open');
     });
@@ -1052,7 +1157,6 @@
         document.getElementById('sidebar').classList.toggle('open');
     });
 
-    // sidebar nav
     document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(el => {
         el.addEventListener('click', function(e) {
             e.preventDefault();
@@ -1060,10 +1164,9 @@
         });
     });
 
-    // theme toggle (light/dark)
     document.getElementById('themeToggle').addEventListener('click', function() {
         const root = document.documentElement;
-        const isDark = root.style.getPropertyValue('--bg').trim() === '#0b0d10';
+        const isDark = root.style.getPropertyValue('--bg').trim() === '#0b0d10' || root.style.getPropertyValue('--bg') === '';
         if (isDark) {
             root.style.setProperty('--bg', '#f4f6fa');
             root.style.setProperty('--surface', '#ffffff');
@@ -1083,7 +1186,6 @@
         }
     });
 
-    // global search (Ctrl+K)
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
@@ -1095,31 +1197,22 @@
         }
     });
 
-    // pwa install
-    document.getElementById('pwaInstallBtn')?.addEventListener('click', function() {
-        if (window.navigator?.standalone) return showToast('Already installed', 'info');
-        showToast('PWA install prompt (mock)', 'info');
-    });
-
-    // account menu
     document.getElementById('accountMenuBtn').addEventListener('click', function() {
         const user = getCurrentUser();
-        showToast(user ? `Logged as ${user.displayName}` : 'Not logged in', 'info');
+        showToast(user ? `Logged as ${user.displayName} (${user.role})` : 'Not logged in', 'info');
     });
 
-    // notification bell
     document.getElementById('notifBell').addEventListener('click', function() {
         showToast(`Notifications: ${data.notifications.length}`, 'info');
     });
 
     // --------------------------------------------------------------
-    //  AUTH FLOW (landing / login / signup)
+    //  AUTH
     // --------------------------------------------------------------
     function renderAuth() {
         const container = document.getElementById('pageContent');
         const user = getCurrentUser();
         if (user) {
-            // already logged in
             navigate('dashboard');
             return;
         }
@@ -1139,7 +1232,7 @@
                             <div class="form-group"><label>Email / Username</label><input type="text" id="loginEmail" placeholder="you@example.com"></div>
                             <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
                             <button class="btn btn-primary w-full" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
-                            <p class="text-muted" style="margin-top:0.8rem;font-size:0.8rem;">Demo: use any account created, or owner@zenith / pass</p>
+                            <p class="text-muted" style="margin-top:0.8rem;font-size:0.8rem;">Demo: use any account, or owner@zenith / pass</p>
                         </div>
                         <div id="signupForm" class="hidden">
                             <div class="form-group"><label>Username</label><input type="text" id="signupUsername" placeholder="zenith_user"></div>
@@ -1152,7 +1245,6 @@
                 </div>
             </div>
         `;
-        // tabs
         document.getElementById('loginTabBtn').onclick = () => {
             document.getElementById('loginForm').classList.remove('hidden');
             document.getElementById('signupForm').classList.add('hidden');
@@ -1165,7 +1257,6 @@
             document.getElementById('signupTabBtn').classList.add('btn-primary');
             document.getElementById('loginTabBtn').classList.remove('btn-primary');
         };
-        // login
         document.getElementById('loginBtn').onclick = () => {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPassword').value;
@@ -1174,7 +1265,6 @@
                 showToast(`Welcome ${user.displayName}`, 'success');
                 navigate('dashboard');
             } else {
-                // try fallback
                 if (email === 'owner@zenith' && pass === 'pass') {
                     const fallback = registerUser('owner', 'Owner', 'owner@zenith', 'pass');
                     if (fallback) { loginUser('owner@zenith', 'pass'); showToast('Owner created', 'success'); navigate('dashboard'); }
@@ -1183,7 +1273,6 @@
                 }
             }
         };
-        // signup
         document.getElementById('signupBtn').onclick = () => {
             const username = document.getElementById('signupUsername').value.trim();
             const display = document.getElementById('signupDisplay').value.trim();
@@ -1205,37 +1294,49 @@
     //  INIT
     // --------------------------------------------------------------
     function init() {
-        // check session
         const user = getCurrentUser();
         if (!user) {
             renderAuth();
         } else {
-            // load view from hash
             const hash = window.location.hash.slice(1) || 'dashboard';
             navigate(hash);
+            // Pre-fill Discord token from settings
+            if (data.settings?.groqKey) {
+                const tokenField = document.getElementById('discordBotToken');
+                if (tokenField) tokenField.value = data.settings.groqKey;
+            }
         }
         renderNotifications();
-        // update workspace label
         const ws = getWorkspace();
         document.getElementById('workspaceLabel').textContent = ws?.name || 'default';
-        // show onboarding if first user
         if (data.users.length === 1 && data.users[0].role === 'owner') {
             setTimeout(() => {
-                showToast('Welcome! This is your first account (Owner).', 'info');
+                showToast('Welcome! You are the Owner.', 'info');
             }, 500);
+        }
+        // Load Groq key into settings if present
+        if (data.settings?.groqKey) {
+            const keyField = document.getElementById('groqKey');
+            if (keyField) keyField.value = data.settings.groqKey;
         }
     }
 
-    // handle hash changes
     window.addEventListener('hashchange', () => {
         const hash = window.location.hash.slice(1) || 'dashboard';
         if (getCurrentUser()) navigate(hash);
     });
 
-    // start
-    init();
+    // Check for existing API key in settings and show status
+    setInterval(() => {
+        const tokenField = document.getElementById('discordBotToken');
+        if (tokenField && data.settings?.groqKey && !tokenField.value) {
+            tokenField.value = data.settings.groqKey;
+        }
+    }, 1000);
 
+    init();
     console.log('Zenith loaded · ' + data.users.length + ' users');
+    console.log('Groq key set:', !!data.settings?.groqKey);
 </script>
 </body>
 </html>
